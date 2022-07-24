@@ -17,7 +17,9 @@
 # file
 # 
 # 4. Format: [parameter] [4 spaces] [value]
-
+# 
+# 5. newlines (empty lines) will be ignored. Additionally, lines that begin with '#'
+# is considered as comment, and thus will also be ignored.
 
 # =============================================================================
 # Basic information
