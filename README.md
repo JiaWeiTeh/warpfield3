@@ -15,6 +15,11 @@ Repo Structure:
 
 ./param: Folder storing parameter files.
 
-./src: Source code for WARPFIELD.
+<pre><code>./src<pre><code>: Source code for WARPFIELD.
+<ul>
+  <li><pre><code>/input_tools<pre><code>: useful tools to manimupate inputs</li>
+  <li>Tea</li>
+  <li>Milk</li>
+</ul> 
     - /input_tools: useful tools to manimupate inputs
     - /output_tools: useful tools to process outputs
