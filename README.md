@@ -1,20 +1,21 @@
 # WARPFIELD_Rewrite
 (README.MD TBD)
 
-A rewrite of WARPFILED, aiming to present a cleaner, more user-friendly file structure.
+<p>A re-implementation of WARPFILEDv2.1, aiming to present a cleaner, more user-friendly file structure.</p>
 
-Version history:
-This code includes changes such as:
-    -TBD
-    - Much more user-friendly input method.
-
+<p>Additionally, this code includes changes such as:</p>
+<ul>
+    <li>The ability to include the effect of stochastic sampling of the IMF function in the formation of clusters.</li>
+    <li>TBD</li>
+</ul>
     
-Repo Structure:
+<p>Repo Structure:</p>
 
-./lib: Useful libraries which WARPFIELD uses.
+<code>./lib</code> Useful libraries which WARPFIELD uses.
 
-./param: Folder storing parameter files.
+<code>./param</code> Folder storing parameter files.
 
+<<<<<<< HEAD
 <pre><code>./src<pre><code>: Source code for WARPFIELD.
 <ul>
   <li><pre><code>/input_tools<pre><code>: useful tools to manimupate inputs</li>
@@ -23,3 +24,10 @@ Repo Structure:
 </ul> 
     - /input_tools: useful tools to manimupate inputs
     - /output_tools: useful tools to process outputs
+=======
+<code>./src</code> Source code for WARPFIELD.
+<ul>
+  <li><code>/input_tools</code> useful tools to manipulate inputs</li>
+  <li><code>/output_tools</code> useful tools to process outputs</li>
+</ul> 
+>>>>>>> ab4ab2037cfb62795b772750051d304963466b1f
