@@ -15,19 +15,8 @@
 
 <code>./param</code> Folder storing parameter files.
 
-<<<<<<< HEAD
-<pre><code>./src<pre><code>: Source code for WARPFIELD.
-<ul>
-  <li><pre><code>/input_tools<pre><code>: useful tools to manimupate inputs</li>
-  <li>Tea</li>
-  <li>Milk</li>
-</ul> 
-    - /input_tools: useful tools to manimupate inputs
-    - /output_tools: useful tools to process outputs
-=======
 <code>./src</code> Source code for WARPFIELD.
 <ul>
   <li><code>/input_tools</code> useful tools to manipulate inputs</li>
   <li><code>/output_tools</code> useful tools to process outputs</li>
 </ul> 
->>>>>>> ab4ab2037cfb62795b772750051d304963466b1f
