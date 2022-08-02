@@ -10,6 +10,7 @@ shell.
 """
 
 import numpy as np
+from src.warpfield import get_InitCloudProp
 
 def expansion(param_dict):
     """
@@ -26,6 +27,10 @@ def expansion(param_dict):
     None.
 
     """
+    
+    
+    #  Get a dictionary of initial cloud properties
+    init_CloudProp = get_InitCloudProp.get_InitCloudProp(param_dict)
     
     
     

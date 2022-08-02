@@ -1,6 +1,4 @@
 
-#powerlaw parameters:
-navg = 170
 
 #include coverfraction? And with which end value?
 frag_cover=True

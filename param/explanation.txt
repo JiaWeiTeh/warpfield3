@@ -1,0 +1,1 @@
+"""Explanation for old files"""namb is ncore. It is the central density of cloudnavg is the average density of cloud; used when alpha = 0 n_intercl is nISM

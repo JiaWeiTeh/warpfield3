@@ -18,8 +18,9 @@
 # 
 # 4. Format: [parameter] [4 spaces] [value]
 # 
-# 5. newlines (empty lines) will be ignored. Additionally, lines that begin with '#'
-# is considered as comment, and thus will also be ignored.
+# 5. When .param file is being read, newlines (empty lines) will be ignored. 
+# Additionally, lines that begin with '#' is considered as comment, and 
+# thus will also be ignored.
 
 # =============================================================================
 # Basic information
@@ -31,7 +32,7 @@
 model_name    example
 
 # Directory for output files?
-# WARNING: MUST provide absolute path.
+# WARNING: MUST provide absolute path. Do not include ',' character in path.
 # type: string
 # DEFAULT: def_dir: directory in which WARPFIELD is being ran, i.e., path/to/warpfield/output/
 out_dir    def_dir
@@ -68,7 +69,7 @@ output_format    ASCII
 # -- 0 Disable random input
 # -- 1 Enable random input
 # DEFAULT: 0 
-rand_input    0
+rand_input    1
 
 # Log cloud mass (unit: solar mass). 
 # This will be the initial mass of the molecular cloud.
@@ -94,7 +95,7 @@ mCloud_beforeSF    1
 # DEFAULT: 0.01
 sfe    0.01
 
-# Density of cloud (unit: cm^-3). 
+# Number density of cloud core (unit: cm^-3). 
 # This parameter will be ignored, if rand_input is set to 1.
 # type: float
 # DEFAULT: 1000
@@ -218,11 +219,6 @@ stellar_tracks    geneva
 # =============================================================================
 # Note: the choice of density profile of cloud will affect the mass profile. 
 
-# Set the core number density of the molecular cloud (unit: 1/cm^3)
-# type: float
-# DEFAULT: 1000
-dens_cloud    1000
-
 # What is the density profile of the cloud? How does density scale with radius?
 # type: str
 # Available values:
@@ -252,6 +248,13 @@ dens_g_bE    14.1
 # whereas alpha = -2 corresponds to single isothermal sphere.
 # DEFAULT: -2
 dens_a_pL    -2
+
+# Additionally (for pL_prof) the user must also define the average number density
+# of the cloud. (unit: 1/cm3)
+# type: float
+# DEFAULT: 170
+dens_navg_pL    170
+
 
 # What is the core radius of the molecular cloud? (unit: pc)
 # type: string
@@ -442,12 +445,12 @@ sigma0    1.5e-21
 # DEFAULT: 0.05
 z_nodust    0.05
 
-# Mean mass per nucleus and the mean mass per particle? (unit: cgs)
+# Mean mass per nucleus and the mean mass per particle? (unit: cgs, i.e. g)
 # We assume the standard composition of 1 He atom every 10 H atoms.
-# DEFAULT:  -- u_n = (14/11)*m_H
-#           -- u_p = (14/23)*m_H
-u_n    2.1287915392418182e-24
-u_p    1.0181176926808696e-24
+# DEFAULT:  -- mu_n = (14/11)*m_H
+#           -- mu_p = (14/23)*m_H
+mu_n    2.1287915392418182e-24
+mu_p    1.0181176926808696e-24
 
 # Temperature of ionised and neutral H region? (unit: K)
 # DEFAULT:  -- t_ion = 1e4
@@ -467,6 +470,10 @@ n_ISM    0.1
 # constant value kappa_IR = 4 cm^2/g
 # DEFAULT: 4
 kappa_IR    4
+
+# What is the adiabatic index?
+# DEFAULT: 5/3
+gamma    1.6666666666666667
 
 # The thermalisation efficiency for colliding winds and supernova ejecta.
 # See Stevens and Hartwell 2003 or Kavanagh 2020 for a review.
