@@ -12,14 +12,14 @@ shell.
 import numpy as np
 from src.warpfield import get_InitCloudProp
 
-def expansion(param_dict):
+def expansion(params_dict):
     """
     This function takes in the parameters and feed them into smaller
     functions.
 
     Parameters
     ----------
-    param_dict : dict
+    params_dict : dict
         Dictionary of parameters obtained from .param file.
 
     Returns
@@ -30,15 +30,12 @@ def expansion(param_dict):
     
     
     #  Get a dictionary of initial cloud properties
-    rCore, rCloud, nEdge = get_InitCloudProp.get_InitCloudProp(sfe, 
-                                                               log_mCloud, 
-                                                               mCloud_beforeSF, 
-                                                               nCore, 
-                                                               rCore, 
-                                                               mu_n, 
-                                                               gamma)
+    _, rCloud, nEdge = get_InitCloudProp.get_InitCloudProp(params_dict['sfe'], 
+                                                               params_dict['log_mCloud'], 
+                                                               params_dict['mCloud_beforeSF'], 
+                                                               params_dict['nCore'], 
+                                                               params_dict['rCore'], 
+                                                               params_dict['mu_n'], 
+                                                               params_dict['gamma'])
     
-    print('rCore', rCore)
-    print('rCloud', rCloud)
-    print('nEdge', nEdge)
     return

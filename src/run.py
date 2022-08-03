@@ -25,7 +25,7 @@ parser.add_argument('path2param')
 # grab argument
 args = parser.parse_args()
 # Get dictionary and write summary file
-param_dict = read_param.read_param(args.path2param, write_summary = True)
+params_dict = read_param.read_param(args.path2param, write_summary = True)
 # With this dictionary, run the simulation.
-# main.expansion(param_dict)
+main.expansion(params_dict)
 # Done!

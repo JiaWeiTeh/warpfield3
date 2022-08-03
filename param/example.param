@@ -99,7 +99,13 @@ sfe    0.01
 # This parameter will be ignored, if rand_input is set to 1.
 # type: float
 # DEFAULT: 1000
-n_cloud    1000
+nCore    1000
+
+# What is the core radius of the molecular cloud? (unit: pc)
+# type: string
+# TODO: Do not change as it has not been tested.
+# DEFAULT: 0.099
+rCore    0.099
 
 # Cloud metallicity (unit: solar metallicity, $Z_\odot$).
 # This parameter will be ignored, if rand_input is set to 1.
@@ -254,12 +260,6 @@ dens_a_pL    -2
 # type: float
 # DEFAULT: 170
 dens_navg_pL    170
-
-# What is the core radius of the molecular cloud? (unit: pc)
-# type: string
-# TODO: Do not change as it has not been tested.
-# DEFAULT: 0.099
-dens_rcore    0.099
 
 # =============================================================================
 # parameters for fragmentation of cloud

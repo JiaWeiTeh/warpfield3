@@ -137,7 +137,7 @@ def get_density_profile(r_arr,
 #                           profile_type = "bE_prof", 
 #                           # profile_type = "pL_prof", 
 #                           alpha = -2, g = 14.1,
-#                           T = 451690.2638133162, #1e6
+#                           T = 451690.2638133162, #4e5
 #                           )
 
 # fig = plt.subplots(1, 1, figsize = (7, 5), dpi = 200)

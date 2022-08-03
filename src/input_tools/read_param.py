@@ -48,64 +48,65 @@ def read_param(path2file, write_summary = True):
     # =============================================================================
     # Routine for initialising parameters
     # First, initialise dictionary with default values. Includes all parameter
-    params_dict = {'model_name': 'example',
-                 'out_dir': 'def_dir',
-                 'verbose': '1',
-                 'output_format': 'ASCII',
-                 'rand_input': '0',
-                 'log_mCloud': '6.0',
-                 'mCloud_beforeSF': '1',
-                 'sfe': '0.01',
-                 'n_cloud': '1000',
-                 'metallicity': '1',
-                 'stochastic_sampling': '0',
-                 'n_trials': '1',
-                 'rand_log_mCloud': ['5', ' 7.47'],
-                 'rand_sfe': ['0.01', '0.10'],
-                 'rand_n_cloud': ['100.', ' 1000.'],
-                 'rand_metallicity': ['0.15', ' 1'],
-                 'mult_exp': '0',
-                 'r_coll': '1.0',
-                 'mult_SF': '1',
-                 'sfe_tff': '0.01',
-                 'imf': 'kroupa.imf',
-                 'stellar_tracks': 'geneva',
-                 'dens_profile': 'bE_prof',
-                 'dens_g_bE': '14.1',
-                 'dens_a_pL': '-2',
-                 'dens_navg_pL': '170',
-                 'dens_rcore': '0.099',
-                 'frag_enabled': '0',
-                 'frag_r_min': '0.1',
-                 'frag_grav': '0',
-                 'frag_grav_coeff': '0.67',
-                 'frag_RTinstab': '0',
-                 'frag_densInhom': '0',
-                 'frag_cf': '1',
-                 'frag_enable_timescale': '1',
-                 'stop_n_diss': '1',
-                 'stop_t_diss': '1.0',
-                 'stop_r': '1e3',
-                 'stop_t': '15.05',
-                 'stop_t_unit': 'Myr',
-                 'write_main': '1',
-                 'write_stellar_prop': '0',
-                 'write_bubble': '0',
-                 'inc_grav': '1',
-                 'f_Mcold_W': '0.0',
-                 'f_Mcold_SN': '0.0',
-                 'v_SN': '1e9',
-                 'sigma0': '1.5e-21',
-                 'z_nodust': '0.05',
-                 'mu_n': '2.1287915392418182e-24',
-                 'mu_p': '1.0181176926808696e-24',
-                 't_ion': '1e4',
-                 't_neu': '100',
-                 'n_ISM': '0.1',
-                 'kappa_IR': '4',
-                 'gamma': '1.6666666666666667',
-                 'thermcoeff_wind': '1.0',
-                 'thermcoeff_SN': '1.0'}
+    params_dict = {'model_name': 'example', 
+                   'out_dir': 'def_dir', 
+                   'verbose': 1.0, 
+                   'output_format': 'ASCII', 
+                   'rand_input': 0.0, 
+                   'log_mCloud': 6.0, 
+                   'mCloud_beforeSF': 1.0, 
+                   'sfe': 0.01, 
+                   'nCore': 1000.0, 
+                   'rCore': 0.099, 
+                   'metallicity': 1.0, 
+                   'stochastic_sampling': 0.0, 
+                   'n_trials': 1.0, 
+                   'rand_log_mCloud': ['5', ' 7.47'], 
+                   'rand_sfe': ['0.01', ' 0.10'], 
+                   'rand_n_cloud': ['100.', ' 1000.'], 
+                   'rand_metallicity': ['0.15', ' 1'], 
+                   'mult_exp': 0.0, 
+                   'r_coll': 1.0, 
+                   'mult_SF': 1.0, 
+                   'sfe_tff': 0.01, 
+                   'imf': 'kroupa.imf', 
+                   'stellar_tracks': 'geneva', 
+                   'dens_profile': 'bE_prof', 
+                   'dens_g_bE': 14.1, 
+                   'dens_a_pL': -2.0, 
+                   'dens_navg_pL': 170.0, 
+                   'frag_enabled': 0.0, 
+                   'frag_r_min': 0.1, 
+                   'frag_grav': 0.0, 
+                   'frag_grav_coeff': 0.67, 
+                   'frag_RTinstab': 0.0, 
+                   'frag_densInhom': 0.0, 
+                   'frag_cf': 1.0, 
+                   'frag_enable_timescale': 1.0, 
+                   'stop_n_diss': 1.0, 
+                   'stop_t_diss': 1.0, 
+                   'stop_r': 1000.0, 
+                   'stop_t': 15.05, 
+                   'stop_t_unit': 'Myr', 
+                   'write_main': 1.0, 
+                   'write_stellar_prop': 0.0, 
+                   'write_bubble': 0.0, 
+                   'inc_grav': 1.0, 
+                   'f_Mcold_W': 0.0, 
+                   'f_Mcold_SN': 0.0, 
+                   'v_SN': 1000000000.0, 
+                   'sigma0': 1.5e-21, 
+                   'z_nodust': 0.05, 
+                   'mu_n': 2.1287915392418182e-24, 
+                   'mu_p': 1.0181176926808696e-24, 
+                   't_ion': 10000.0, 
+                   't_neu': 100.0, 
+                   'n_ISM': 0.1, 
+                   'kappa_IR': 4.0, 
+                   'gamma': 1.6666666666666667, 
+                   'thermcoeff_wind': 1.0, 
+                   'thermcoeff_SN': 1.0,
+                   }
     
     # =============================================================================
     # Check if parameters given in .param file makes sense
@@ -125,23 +126,6 @@ def read_param(path2file, write_summary = True):
         else:
             params_dict[param] = value 
             
-    print(params_dict) 
-            
-            
-    #         for line in f:
-    #         if line.strip() and not line.strip().startswith("#"):
-    #             # Convert to float if possible
-    #             try:
-    #                 val = float(line.strip())
-    #             # otherwise remain as string
-    #             except ValueError:
-    #                 val = line.strip()
-    #             params_input_list.append(val)
-                
-    # print(params_input_list)
-    
-    
-    
     # TODO. E.g., if metalicity is >0, dens profile str is correct, etc. 
     # E.g., -2<nalpha<0
     # rCore < rCloud
@@ -238,8 +222,9 @@ def read_param(path2file, write_summary = True):
                 f.writelines(key+'    '+"".join(str(val))+'\n')
             # close
             f.close()
-        
-    print(params_dict)
+    
+   
+    print(f"Summary file created and saved at {path2output}{params_dict['model_name']}{'_summary.txt'}")
     
     return params_dict
 

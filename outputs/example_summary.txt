@@ -10,7 +10,8 @@ rand_input    0.0
 log_mCloud    9.0
 mCloud_beforeSF    1.0
 sfe    0.01
-n_cloud    1000.0
+nCore    1000.0
+rCore    0.099
 metallicity    1.0
 stochastic_sampling    0.0
 mult_exp    0.0
@@ -22,7 +23,6 @@ stellar_tracks    geneva
 dens_profile    bE_prof
 dens_g_bE    15.0
 dens_navg_pL    170.0
-dens_rcore    0.099
 frag_enabled    0.0
 stop_n_diss    1.0
 stop_t_diss    1.0

@@ -59,7 +59,11 @@ def get_InitCloudProp(sfe, log_mCloud,
     Returns
     -------
     rCore : float
-        cloud radius (Units: pc).
+        cloud radius (Units: pc). 
+        This value is only computed if power-law profile is selected.
+    bE_T: float
+        Temperature of the bE sphere.
+        This value is only computed if Bonnor-ebert profile is selected.
     rCloud : float
         cloud core radius (Units: pc).
     nEdge : float
@@ -71,10 +75,10 @@ def get_InitCloudProp(sfe, log_mCloud,
     # density is in 1/cm3 and radius is in pc.
     
     # mass of cloud
-    if mCloud_beforeSF == '1':
-        mCloud = np.log10(log_mCloud)
+    if mCloud_beforeSF == 1:
+        mCloud = 10**(log_mCloud)
     else:
-        mCloud = np.log10(log_mCloud) / (1 - sfe)
+        mCloud = 10**(log_mCloud) / (1 - sfe)
     # cluster mass
     mCluster = mCloud * sfe
     # cloud mass after SF
@@ -102,10 +106,11 @@ def get_InitCloudProp(sfe, log_mCloud,
     elif density_profile_type == "bE_prof":
         
         # Remembver that rCore is a property of power-law. it is bE_T for bE spheres.
+        # print(mCloud, nCore, g, mu_n, gamma)
         bE_T = bE.get_bE_T(mCloud, nCore, g, mu_n, gamma)
         rCloud, nEdge = bE.get_bE_rCloud_nEdge(nCore, bE_T, mCloud, mu_n, gamma)
         
-        return rCore, rCloud, nEdge
+        return bE_T, rCloud, nEdge
 
 
 

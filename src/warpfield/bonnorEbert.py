@@ -56,7 +56,7 @@ def massIntegral(xi, rhoCore, c_s):
 
     """
     # An array for the range of xi for solving
-    xi_arr = np.linspace(1e-12, xi, 4)
+    xi_arr = np.linspace(1e-12, xi, 200)
     # initial condition (set to a value that is very close to zero)
     y0 = [1e-12, 1e-12]
     # integrate the ODE to get values for psi and omega.
@@ -142,14 +142,13 @@ def get_bE_rCloud_nEdge(nCore, bE_T, mCloud, mu_n, gamma):
     # get r in pc
     rCloud = rCloud * u.m.to(u.pc)
     # An array for the range of xi for solving ODE
-    xi_arr = np.linspace(1e-12, xiCloud, 4)
+    xi_arr = np.linspace(1e-12, xiCloud, 200)
     # initial condition (set to a value that is very close to zero)
     y0 = [1e-12, 1e-12]
     # integrate the ODE to get values for psi and omega.
     psi, omega = zip(*scipy.integrate.odeint(laneEmden, y0, xi_arr))
-    psi = np.array(psi)
     # get density at xiCloud
-    nEdge = nCore * np.exp(-1 * psi[-1])
+    nEdge = nCore * np.exp(-psi[-1])
     # return
     return rCloud, nEdge
 
@@ -188,45 +187,10 @@ def get_bE_T(mCloud, nCore, g, mu_n, gamma):
     # Solve for T
     sol = scipy.optimize.root_scalar(solve_T,
                                      args=(mCloud, nCore, mu_n, gamma, nEdge_g),
-                                     bracket=[2e+02, 2e+10], 
+                                     bracket=[1e+5, 1e+7], 
                                      method='brentq')
     # temperature of the bE sphere
     bE_T = sol.root
     # return
     return bE_T
-
-
-
-
-# #%%
-
-
-# import matplotlib.pyplot as plt
-
-
-# # xi = 6.451
-# xi = 10
-# xi_arr = np.linspace(1e-12, xi, 2)
-# # xi_arr = np.array([10])
-# # initial condition (set to a value that is very close to zero)
-# y0 = [1e-12, 1e-12]
-# psi, omega = zip(*scipy.integrate.odeint(laneEmden, y0, xi_arr))
-# psi = np.array(psi)
-# omega = np.array(omega)
-
-# plt.scatter(xi_arr, psi)
-
-# # fig = plt.subplots(1, 1, figsize = (7, 5), dpi = 200)
-# # plt.vlines(6.45, 0, 1, linestyles = '--', 
-# #            colors = 'k',
-# #            label = '$\\xi_{max} = 6.45$')
-# # plt.ylim(0, 1)
-# # plt.xlim(0, xi)
-# # plt.plot(xi_arr, np.exp(psi * -1), 
-# #          label = '$e^{-\\psi(\\xi)}$',
-# #          )
-# # plt.xlabel('$\\xi(r)$')
-# # plt.legend()
-
-
 
