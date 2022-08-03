@@ -21,7 +21,7 @@ def get_density_profile(r_arr,
                          mu_n, gamma,
                          profile_type = "bE_prof", 
                          alpha = -2, g = 14.1,
-                         T = 1e4,
+                         T = 1e5,
                          ):
     """
     This function takes in a list of radius and evaluates the density profile
@@ -44,7 +44,7 @@ def get_density_profile(r_arr,
         ISM number density. (Units: 1/cm^3)
     mCloud : float
         Mass of cloud (Units: solar mass).
-    u_n : float
+    mu_n : float
         Mean mass per nucleus (Units: cgs, i.e., g)
     gamma: float
         Adiabatic index of gas.
@@ -58,7 +58,7 @@ def get_density_profile(r_arr,
         The ratio given as g = rho_core/rho_edge. The default is 14.1.
         This will only be considered if `bE_profile` is selected.
     T : float
-        The temperature of the BE sphere. (Units: K). The default value is 1e4 K.
+        The temperature of the BE sphere. (Units: K). The default value is 1e5 K.
         This will only be considered if `bE_profile` is selected. (Units: K)
 
     Returns
@@ -83,22 +83,22 @@ def get_density_profile(r_arr,
         dens_arr[r_arr <= rCore] = nCore
         dens_arr[r_arr > rCloud] = nISM
         # return n(r)
-        return dens_arr
+        return dens_arr, []
         
     # =============================================================================
     # For a Bonnor-Ebert profile
     # =============================================================================
     elif profile_type == "bE_prof":
+        # sound speed
+        c_s = bE.get_bE_soundspeed(T, mu_n, gamma)
+        # initialise
         dens_arr = np.nan * r_arr
         # Convert number density to mass density
         rhoCore = nCore * mu_n
         # First convert all to SI units
         rCloud = rCloud * u.pc.to(u.m)
         r_arr = r_arr * u.pc.to(u.m)
-        mu_n = mu_n * u.g.to(u.kg)
         rhoCore = rhoCore * (u.g/u.cm**3).to(u.kg/u.m**3)
-        # sound speed
-        c_s = bE.get_bE_soundspeed(T, mu_n, gamma)
         # dimensionless radius array
         xi_arr = np.sqrt(4 * np.pi * c.G.value * rhoCore / c_s**2) * r_arr
         # initial values (boundary conditions)

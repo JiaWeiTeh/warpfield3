@@ -57,7 +57,7 @@ def read_param(path2file, write_summary = True):
                  'mCloud_beforeSF': '1',
                  'sfe': '0.01',
                  'n_cloud': '1000',
-                 'metallicity': '0.15',
+                 'metallicity': '1',
                  'stochastic_sampling': '0',
                  'n_trials': '1',
                  'rand_log_mCloud': ['5', ' 7.47'],
@@ -116,9 +116,31 @@ def read_param(path2file, write_summary = True):
         param, value = pairs.split(maxsplit = 1)
         value = value.split(',')
         if len(value) == 1:
-            params_dict[param] = value[0]
+            # Convert to float if possible
+            try:
+                params_dict[param] = float(value[0])
+            # otherwise remain as string
+            except:
+                params_dict[param] = value[0]
         else:
             params_dict[param] = value 
+            
+    print(params_dict) 
+            
+            
+    #         for line in f:
+    #         if line.strip() and not line.strip().startswith("#"):
+    #             # Convert to float if possible
+    #             try:
+    #                 val = float(line.strip())
+    #             # otherwise remain as string
+    #             except ValueError:
+    #                 val = line.strip()
+    #             params_input_list.append(val)
+                
+    # print(params_input_list)
+    
+    
     
     # TODO. E.g., if metalicity is >0, dens profile str is correct, etc. 
     # E.g., -2<nalpha<0
@@ -126,14 +148,14 @@ def read_param(path2file, write_summary = True):
     # only pL and bE allowed as str
     # nedge < nintercl
     
-    input_warnings.input_warnings(params_dict)
+    # input_warnings.input_warnings(params_dict)
             
     # =============================================================================
     # Here we deal with conditional parameters.
     # =============================================================================
     
     # Check if random input is desired
-    if params_dict['rand_input'] == '1':
+    if params_dict['rand_input'] == 1:
         # if yes, read limits. Note: even if the user mixed up max/min values, random will deal with that.
         minM, maxM = params_dict['rand_log_mCloud']
         minSFE, maxSFE = params_dict['rand_sfe']
@@ -159,7 +181,7 @@ def read_param(path2file, write_summary = True):
         params_dict['n_cloud'] = np.random.choice(
                                         ['100', '1000'] #TODO add distribution once metallicity is done
                                         )
-    elif params_dict['rand_input'] == '0':
+    elif params_dict['rand_input'] == 0:
         params_dict.pop('rand_log_mCloud')
         params_dict.pop('rand_sfe')
         params_dict.pop('rand_n_cloud')
@@ -183,7 +205,7 @@ def read_param(path2file, write_summary = True):
     
     # Then, organise dictionary so that it does not include useless info
     # Remove fragmentation if frag_enabled == 0
-    if params_dict['frag_enabled'] == '0':
+    if params_dict['frag_enabled'] == 0:
         params_dict.pop('frag_r_min')
         params_dict.pop('frag_grav')
         params_dict.pop('frag_grav_coeff')
@@ -193,7 +215,7 @@ def read_param(path2file, write_summary = True):
         params_dict.pop('frag_enable_timescale')
     
     # Remove stochasticity related parameters
-    if params_dict['stochastic_sampling'] == '0':
+    if params_dict['stochastic_sampling'] == 0:
         params_dict.pop('n_trials')
     
     # Remove unrelated parameters depending on selected density profile
@@ -210,10 +232,10 @@ def read_param(path2file, write_summary = True):
 # =============================================================================\n\
 # Summary of \'%s\' run.\n\
 # =============================================================================\n\n\
-'%(params_dict['model_name'][0]))
+'%(params_dict['model_name']))
             # body
             for key, val in params_dict.items():
-                f.writelines(key+'    '+",".join(val)+'\n')
+                f.writelines(key+'    '+"".join(str(val))+'\n')
             # close
             f.close()
         

@@ -24,7 +24,7 @@ def get_mass_profile(r_arr,
                          return_rdot = False,
                          profile_type = "bE_prof", 
                          alpha = -2, g = 14.1,
-                         T = 1e4,
+                         T = 1e5,
                          ):
     """
     This function takes in basic properties of cloud and calculates the 
@@ -64,7 +64,7 @@ def get_mass_profile(r_arr,
         The ratio given as g = rho_core/rho_edge. The default is 14.1.
         This will only be considered if `bE_prof` is selected.
     T : float
-        The temperature of the BE sphere. (Units: K). The default value is 1e4 K.
+        The temperature of the BE sphere. (Units: K). The default value is 1e5 K.
         This will only be considered if `bE_prof` is selected.
 
     Returns
@@ -108,7 +108,7 @@ def get_mass_profile(r_arr,
         
         if return_rdot: # compute dM/dt?
             # is array given?
-            if len(rdot_arr) != 0: 
+            if len(rdot_arr) == len(r_arr): 
                 rdot_arr = np.array(rdot_arr)
                 # input values into mass array
                 # dm/dt, see above for expressions of m.
@@ -131,18 +131,18 @@ def get_mass_profile(r_arr,
                                                        nCore, nISM, mCloud, mu_n, gamma,
                                                        profile_type, alpha,
                                                        g, T)
+        # sound speed
+        c_s = bE.get_bE_soundspeed(T, mu_n, gamma)
         # Convert density profile 
+        dens_arr = dens_arr * (1/u.cm**3).to(1/u.m**3).value
         # Then convert all to SI units
         rCloud = rCloud * u.pc.to(u.m)
         r_arr = r_arr * u.pc.to(u.m)
         rdot_arr = rdot_arr * u.pc.to(u.m)
         rCore = rCore * u.pc.to(u.m)
-        mu_n = mu_n * u.g.to(u.kg)
         rhoCore = rhoCore * (u.g/u.cm**3).to(u.kg/u.m**3)
         rhoISM = rhoISM * (u.g/u.cm**3).to(u.kg/u.m**3)
         mCloud = mCloud * (u.M_sun).to(u.kg)
-        # sound speed
-        c_s = bE.get_bE_soundspeed(T, mu_n, gamma)
         # initial values (boundary conditions)
         # effectively 0.
         for ii, xi in enumerate(xi_arr):
@@ -155,7 +155,7 @@ def get_mass_profile(r_arr,
         
         if return_rdot: # compute dM/dt?
             # is array given?
-            if len(rdot_arr) != 0: 
+            if len(rdot_arr) == len(r_arr): 
                 # array-ise
                 rdot_arr = np.array(rdot_arr)   
                 
@@ -166,7 +166,6 @@ def get_mass_profile(r_arr,
                 # psi = np.array(psi)
                 # dens_arr = rhoCore * np.exp(-psi)
                 
-                dens_arr = dens_arr * (1/u.cm**3).to(1/u.m**3).value
                 mGasdot[r_arr <= rCloud] = 4 * np.pi * r_arr[r_arr <= rCloud]**2 * rdot_arr[r_arr <= rCloud] * dens_arr[r_arr <= rCloud] 
                 mGasdot[r_arr > rCloud]  = 4 * np.pi * r_arr[r_arr > rCloud]**2 * rdot_arr[r_arr > rCloud] * rhoISM 
             else:

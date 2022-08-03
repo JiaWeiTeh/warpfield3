@@ -69,14 +69,14 @@ output_format    ASCII
 # -- 0 Disable random input
 # -- 1 Enable random input
 # DEFAULT: 0 
-rand_input    1
+rand_input    0
 
 # Log cloud mass (unit: solar mass). 
 # This will be the initial mass of the molecular cloud.
 # This parameter will be ignored, if rand_input is set to 1.
 # type: float
 # DEFAULT: 6.0
-log_mCloud    6.0
+log_mCloud    9.0
 
 # Is log_mCloud given as mass BEFORE or AFTER cluster formation?
 # Available values:
@@ -107,8 +107,8 @@ n_cloud    1000
 # Available values:
 # -- 0.15
 # -- 1 (solar metallicity)
-# DEFAULT: 0.15
-metallicity    0.15
+# DEFAULT: 1
+metallicity    1
 
 # Include stochastic sampling of IMF in the creation of initial cluster?
 # This parameter will be ignored, if rand_input is set to 1.
@@ -233,7 +233,7 @@ dens_profile    bE_prof
 # according to literature, is the critical mass known as Bonner-Ebert mass. 
 # See The Formation of Stars (Stahler and Palla 2004), p247.
 # DEFAULT: 14.1
-dens_g_bE    14.1
+dens_g_bE    15
 
 # If pL_prof (power law) is specified for dens_profile, then the user must 
 # also define the power-law coefficient, alpha. Alpha is defined as follows:
@@ -254,7 +254,6 @@ dens_a_pL    -2
 # type: float
 # DEFAULT: 170
 dens_navg_pL    170
-
 
 # What is the core radius of the molecular cloud? (unit: pc)
 # type: string
@@ -461,7 +460,7 @@ t_neu    100
 # What is the number density of the ambient ISM? (unit: 1/cm^3)
 # type: float
 # DEFAULT: 0.1 
-n_ISM    0.1
+n_ISM    10
 
 # The Rosseland mean dust opacity kappa_IR. This parameter relates to the calculation 
 # of tau_IR, the optical depth of the shell in the IR by:

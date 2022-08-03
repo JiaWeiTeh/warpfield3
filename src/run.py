@@ -13,7 +13,7 @@ In the main directory, type (as an example):
 
 import argparse
 from src.input_tools import read_param
-from src.warpfield import expansion
+from src.warpfield import main
 
 # =============================================================================
 # Read in parameter files
@@ -27,5 +27,5 @@ args = parser.parse_args()
 # Get dictionary and write summary file
 param_dict = read_param.read_param(args.path2param, write_summary = True)
 # With this dictionary, run the simulation.
-expansion.expansion(param_dict)
+# main.expansion(param_dict)
 # Done!

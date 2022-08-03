@@ -30,12 +30,15 @@ def expansion(param_dict):
     
     
     #  Get a dictionary of initial cloud properties
-    init_CloudProp = get_InitCloudProp.get_InitCloudProp(param_dict)
+    rCore, rCloud, nEdge = get_InitCloudProp.get_InitCloudProp(sfe, 
+                                                               log_mCloud, 
+                                                               mCloud_beforeSF, 
+                                                               nCore, 
+                                                               rCore, 
+                                                               mu_n, 
+                                                               gamma)
     
-    
-    
-    
-    
-    
-    
+    print('rCore', rCore)
+    print('rCloud', rCloud)
+    print('nEdge', nEdge)
     return

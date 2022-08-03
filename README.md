@@ -27,4 +27,4 @@ run WARPFIELD on.
 </ul> 
 
 <p>To run, use the following in your terminal (an example):</p>
-<code> python3 -m src.input_tools.run param/example.param</code>
+<code> python3 -m src.run param/example.param </code>
