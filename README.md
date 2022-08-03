@@ -1,6 +1,6 @@
 # WARPFIELD3
 
-<p>A re-implementation of WARPFILEDv2.1</p>
+<p><h2>A re-implementation of WARPFILEDv2.1</h2></p>
 
 <p>This repo expands on WARPFIELD, and include changes such as:</p>
 <ul>
@@ -11,7 +11,7 @@
 	<li>Expand metallicity range</li>
 </ul>
     
-<p>Repo Structure:</p>
+<p><h2>Repo Structure:</h2></p>
 
 <code>./lib</code> Useful libraries which WARPFIELD uses.
 
@@ -26,5 +26,6 @@ run WARPFIELD on.
   <li><code>/warpfield</code> contains the main WARPFIELD codes</li>
 </ul> 
 
+<p><h2>Running WARPFIELD</h2></p>
 <p>To run, use the following in your terminal (an example):</p>
 <code> python3 -m src.run param/example.param </code>
