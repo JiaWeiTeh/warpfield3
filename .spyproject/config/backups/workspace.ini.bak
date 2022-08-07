@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['src/input_tools/read_param.py', 'TODO.txt', 'src/warpfield/mass_profile.py', 'src/warpfield/density_profile.py', 'test/test_bE.py', 'src/warpfield/get_InitCloudProp.py', 'param/explanation.txt', 'src/warpfield/bonnorEbert.py']
+recent_files = ['src/warpfield/main.py', 'src/warpfield/get_InitCloudProp.py', 'src/warpfield/bonnorEbert.py', 'src/warpfield/phase1_energy/run_energy_phase.py', 'checklist.txt']
 

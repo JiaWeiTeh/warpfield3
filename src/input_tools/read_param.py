@@ -10,6 +10,8 @@ The function will also create a summary.txt file in the output directory.
 
 """
 
+
+from datetime import datetime
 from pathlib import Path
 import random # for random numbers
 import numpy as np
@@ -119,7 +121,13 @@ def read_param(path2file, write_summary = True):
         if len(value) == 1:
             # Convert to float if possible
             try:
-                params_dict[param] = float(value[0])
+                val = float(value[0])
+                # However, if output is integer, write them as
+                # integer instead (for OCD purposes)
+                if int(val) == val:
+                    params_dict[param] = int(val)
+                else:
+                    params_dict[param] = val
             # otherwise remain as string
             except:
                 params_dict[param] = value[0]
@@ -135,9 +143,8 @@ def read_param(path2file, write_summary = True):
     # input_warnings.input_warnings(params_dict)
             
     # =============================================================================
-    # Here we deal with conditional parameters.
+    # Here we deal with randomised parameters.
     # =============================================================================
-    
     # Check if random input is desired
     if params_dict['rand_input'] == 1:
         # if yes, read limits. Note: even if the user mixed up max/min values, random will deal with that.
@@ -172,7 +179,7 @@ def read_param(path2file, write_summary = True):
         params_dict.pop('rand_metallicity')
         
     # =============================================================================
-    # Store only meaningful parameters into the summary.txt file
+    # Store only useful parameters into the summary.txt file
     # =============================================================================
     # First, grab output directory
     if params_dict['out_dir'] == 'def_dir':
@@ -207,22 +214,27 @@ def read_param(path2file, write_summary = True):
         params_dict.pop('dens_a_pL')
     elif params_dict['dens_profile'] == 'pL_prof':
         params_dict.pop('dens_g_bE')
-    
+        params_dict.pop('dens_navg_pL')
+        
+    # datetime object containing current date and time
+    now = datetime.now()
+    # dd/mm/YY H:M:S
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    # Store into summary file as output.
     if write_summary:
-        # Store into summary file as output.
         with open(path2output+params_dict['model_name']+'_summary.txt', 'w') as f:
             # header
             f.writelines('\
 # =============================================================================\n\
-# Summary of \'%s\' run.\n\
+# Summary of parameters in the \'%s\' run.\n\
+# Created at %s.\n\
 # =============================================================================\n\n\
-'%(params_dict['model_name']))
+'%(params_dict['model_name'], dt_string))
             # body
             for key, val in params_dict.items():
                 f.writelines(key+'    '+"".join(str(val))+'\n')
             # close
             f.close()
-    
    
     print(f"Summary file created and saved at {path2output}{params_dict['model_name']}{'_summary.txt'}")
     

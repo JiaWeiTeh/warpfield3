@@ -28,7 +28,7 @@
 
 # Model name?
 # type: string
-# DEFAULT: WARPFIELD_DEFAULT
+# DEFAULT: WARPFIELD_DEFAULT. Include ONLY alphabets, numbers, and '_'. No spaces.
 model_name    example
 
 # Directory for output files?

@@ -20,10 +20,12 @@ def get_InitCloudProp(sfe, log_mCloud,
                       T = 1e5,
                       ):
     """
-    This function computes the initial properties of the cloud, including:
+    This function computes the initial properties of the cloud, including (but not all):
         - cloud radius (Units: pc)
-        - cloud core radius (Units: pc)
         - cloud edge density (Units: 1/cm3)
+        And either of these two (depending on density profile):
+        - cloud core radius (Units: pc)  (for pL)
+        - cloud bE temperature (Units: K)  (for bE)
         
     Watch out units!
 
@@ -70,7 +72,7 @@ def get_InitCloudProp(sfe, log_mCloud,
         cloud edge density (Units: 1cm3).
 
     """
-    
+    # TODO: update docstrings
     # Returns initial properties like nEdge, rCloud, rCore.
     # density is in 1/cm3 and radius is in pc.
     
@@ -83,6 +85,10 @@ def get_InitCloudProp(sfe, log_mCloud,
     mCluster = mCloud * sfe
     # cloud mass after SF
     mCloud_afterSF = mCloud - mCluster
+    # Initialise dictionary
+    cloudProp_dict = {}
+    # record important properties
+    # cloudProp_dict[] = 
     
     # =============================================================================
     # For power-law density profile    
