@@ -10,7 +10,7 @@ shell.
 """
 
 import numpy as np
-from src.warpfield import get_InitCloudProp
+from src.warpfield.phase0_init import get_InitCloudProp
 
 def expansion(params_dict):
     """

@@ -108,6 +108,7 @@ def read_param(path2file, write_summary = True):
                    'gamma': 1.6666666666666667, 
                    'thermcoeff_wind': 1.0, 
                    'thermcoeff_SN': 1.0,
+                   'alpha_B': 2.59e-13,
                    }
     
     # =============================================================================
@@ -126,7 +127,6 @@ def read_param(path2file, write_summary = True):
                 # integer instead (for OCD purposes)
                 if int(val) == val:
                     params_dict[param] = int(val)
-                else:
                     params_dict[param] = val
             # otherwise remain as string
             except:
@@ -140,7 +140,8 @@ def read_param(path2file, write_summary = True):
     # only pL and bE allowed as str
     # nedge < nintercl
     
-    # input_warnings.input_warnings(params_dict)
+    # give warning if parameter does not make sense
+    input_warnings.input_warnings(params_dict)
             
     # =============================================================================
     # Here we deal with randomised parameters.

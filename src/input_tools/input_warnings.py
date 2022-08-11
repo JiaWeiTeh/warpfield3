@@ -38,7 +38,7 @@ def input_warnings(params_dict):
                        'mult_exp',
                        'frag_enabled',
                        'frag_grav',
-                       'frag_RTinstab',
+                       'frag_RTinstab', 
                        'frag_densInhom',
                        'frag_enable_timescale',
                        'inc_grav',

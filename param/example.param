@@ -482,7 +482,9 @@ gamma    1.6666666666666667
 thermcoeff_wind    1.0 
 thermcoeff_SN    1.0 
 
-
+# The case B recombination coefficient (unit: cm3/s)
+# Osterbrock and Ferland 2006
+alpha_B    2.59e-13
 
 
 

@@ -13,16 +13,16 @@
     
 <p><h2>Repo Structure</h2></p>
 <ul>
-    <li><code>./lib</code> Directory containing libraries used by WARPFIELD.</li>
-    <li><code>./param</code> Folder storing parameter files. Here, users can create a 
+    <li><code>./lib:</code> Directory containing libraries used by WARPFIELD.</li>
+    <li><code>./param:</code> Directory storing parameter files. Here, users can create a 
         <code>.param</code> file (following the syntax of <code>example.param</code>) to
         run WARPFIELD on.</li>
-    <li><code>./src</code> Source code for WARPFIELD.
+    <li><code>./src:</code> Directory containing source code for WARPFIELD.
         <ul class="square">
-          <li><code>/input_tools</code> useful tools to manipulate inputs</li>
-          <li><code>/output_tools</code> useful tools to process outputs</li>
-          <li><code>/warpfield</code> the main WARPFIELD code</li>
-          <li><code>run.py</code>wrapper that takes in parameter file and runs WARPFIELD</li>
+          <li><code>/input_tools:</code> Contains useful tools to manipulate inputs</li>
+          <li><code>/output_tools:</code> Contains useful tools to process outputs</li>
+          <li><code>/warpfield:</code> Contains the main WARPFIELD code</li>
+          <li><code>run.py:</code> A wrapper that takes in the parameter file and runs WARPFIELD</li>
         </ul> 
     </li>
 </ul> 
