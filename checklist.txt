@@ -1,1 +1,1 @@
-This script records the progress of file re-structuring.==============================DONE=================================mass_profile.pydensity_profile.py
+This script records the progress of file re-structuring.==============================DONE=================================mass_profiledensity_profileshell_structure

@@ -472,7 +472,7 @@ kappa_IR    4
 
 # What is the adiabatic index?
 # DEFAULT: 5/3
-gamma    1.6666666666666667
+gamma_adia    1.6666666666666667
 
 # The thermalisation efficiency for colliding winds and supernova ejecta.
 # See Stevens and Hartwell 2003 or Kavanagh 2020 for a review.
@@ -485,6 +485,31 @@ thermcoeff_SN    1.0
 # The case B recombination coefficient (unit: cm3/s)
 # Osterbrock and Ferland 2006
 alpha_B    2.59e-13
+
+# The effective magnetic adiabatic index?
+# Available values:
+# 0: Implies a constant magnetic field strength throughout the model.
+# 4/3: Implies conservation of magnetic flux and is what would be expected 
+#       in the absence of dynamo action or magnetic reconnection. (sphere)
+# See Henney et al 2005 Apped C: https://ui.adsabs.harvard.edu/abs/2005ApJ...621..328H/abstract
+# DEFAULT: 4/3
+gamma_mag    1.3333333333333333
+
+# BMW, nMW
+# TODO
+log_BMW    -4.3125
+log_nMW    2.065
+
+
+
+
+
+
+
+
+
+
+
 
 
 

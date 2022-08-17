@@ -12,15 +12,15 @@ shell.
 import numpy as np
 from src.warpfield.phase0_init import get_InitCloudProp
 
-def expansion(params_dict):
+def expansion(params):
     """
     This function takes in the parameters and feed them into smaller
     functions.
 
     Parameters
     ----------
-    params_dict : dict
-        Dictionary of parameters obtained from .param file.
+    params : Object
+        An object describing WARPFIELD parameters.
 
     Returns
     -------
@@ -28,16 +28,14 @@ def expansion(params_dict):
 
     """
     
-    
     #  Get a dictionary of initial cloud properties
-    cloudProp_dict = get_InitCloudProp.get_InitCloudProp(params_dict['sfe'], 
-                                                               params_dict['log_mCloud'], 
-                                                               params_dict['mCloud_beforeSF'], 
-                                                               params_dict['nCore'], 
-                                                               params_dict['rCore'], 
-                                                               params_dict['mu_n'], 
-                                                               params_dict['gamma'])
-    
-    
+    cloudProp_dict = get_InitCloudProp.get_InitCloudProp(params.sfe, 
+                                                         params.log_mCloud,
+                                                         params.mCloud_beforeSF,
+                                                         params.nCore,
+                                                         params.rCore,
+                                                         params.mu_n,
+                                                         params.gamma_adia,
+                                                         )
     
     return

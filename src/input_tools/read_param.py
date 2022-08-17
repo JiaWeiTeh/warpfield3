@@ -15,7 +15,6 @@ from datetime import datetime
 from pathlib import Path
 import random # for random numbers
 import numpy as np
-import sys
 import src.input_tools.input_warnings as input_warnings 
 
 def read_param(path2file, write_summary = True):    
@@ -33,8 +32,8 @@ def read_param(path2file, write_summary = True):
 
     Returns
     -------
-    params_dict : dict
-        Dictionary of parameters.
+    params : Object
+        An object describing WARPFIELD parameters.
 
     """
     # =============================================================================
@@ -105,10 +104,13 @@ def read_param(path2file, write_summary = True):
                    't_neu': 100.0, 
                    'n_ISM': 0.1, 
                    'kappa_IR': 4.0, 
-                   'gamma': 1.6666666666666667, 
+                   'gamma_adia': 1.6666666666666667, 
                    'thermcoeff_wind': 1.0, 
                    'thermcoeff_SN': 1.0,
                    'alpha_B': 2.59e-13,
+                   'gamma_mag': 1.3333333333333333,
+                   'log_BMW': -4.3125,
+                   'log_nMW': 2.065,
                    }
     
     # =============================================================================
@@ -143,6 +145,7 @@ def read_param(path2file, write_summary = True):
     # give warning if parameter does not make sense
     input_warnings.input_warnings(params_dict)
             
+
     # =============================================================================
     # Here we deal with randomised parameters.
     # =============================================================================
@@ -238,7 +241,19 @@ def read_param(path2file, write_summary = True):
             f.close()
    
     print(f"Summary file created and saved at {path2output}{params_dict['model_name']}{'_summary.txt'}")
-    
-    return params_dict
+        
+    # =============================================================================
+    # Define a class for parameters as the dictionary is rather large
+    # =============================================================================
+    class Dict2Class(object):
+        # set object attribute
+        def __init__(self, dictionary):
+            for k, v in dictionary.items():
+                setattr(self, k, v)
+                
+    # initialise the class
+    params = Dict2Class(params_dict)
+    # return
+    return params
 
 

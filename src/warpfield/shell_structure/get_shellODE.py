@@ -19,6 +19,7 @@ def get_shellODE(y,
                  # tau
                  r, 
                  cons,
+                 # Ln, Li, Qi,
                  # sigma_dust,
                  # mu_n, mu_p, t_ion, t_neu,
                  # alpha_B
@@ -35,7 +36,7 @@ def get_shellODE(y,
     Parameters
     ----------
     y : list
-        A list of ODE variable.
+        A list of ODE variable, including:
         # nShell : float
             the number density of the shell.
         # phi : float
@@ -45,12 +46,12 @@ def get_shellODE(y,
     r : list
         An array of radii where y is evaluated.
     cons : list
-        A list of constants used in the ODE.
+        A list of constants used in the ODE, including:
         # sigma_dust : float
             Dust cross-section (scaled!).
-        # mu_n : float
+        # mu_n : float (units: g)
             Mean mass per nucleus
-        # mu_p : float
+        # mu_p : float (units: g)
             Mean mass per particle
         # t_ion : float
             Temperature of ionised region.
@@ -62,8 +63,8 @@ def get_shellODE(y,
             The fraction of shell that remained after fragmentation process.
             f_cover = 1: all remained.
     is_ionised: boolean
-            Is this part of the shell ionised? If not, then phi = Li = 0, etc.
-            This happens at r > R_ionised.
+            Is this part of the shell ionised? If not, then phi = Li = 0, where
+            r > R_ionised.
 
     Returns
     -------
