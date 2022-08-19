@@ -19,9 +19,9 @@ import src.input_tools.input_warnings as input_warnings
 
 def read_param(path2file, write_summary = True):    
     """
-    This function takes in the path to .param file, and returns a dictionary of parameters.
-    Additionally, this function filters out non-useful parameters, then write them into 
-    a .txt summary file in the output directory.
+    This function takes in the path to .param file, and returns an object containing parameters.
+    Additionally, this function filters out non-useful parameters, then writes
+    useful parameters into a .txt summary file in the output directory.
 
     Parameters
     ----------
@@ -34,6 +34,7 @@ def read_param(path2file, write_summary = True):
     -------
     params : Object
         An object describing WARPFIELD parameters.
+        Example: To extract value for `sfe`, simply invoke params.sfe
 
     """
     # =============================================================================
@@ -135,12 +136,6 @@ def read_param(path2file, write_summary = True):
                 params_dict[param] = value[0]
         else:
             params_dict[param] = value 
-            
-    # TODO. E.g., if metalicity is >0, dens profile str is correct, etc. 
-    # E.g., -2<nalpha<0
-    # rCore < rCloud
-    # only pL and bE allowed as str
-    # nedge < nintercl
     
     # give warning if parameter does not make sense
     input_warnings.input_warnings(params_dict)

@@ -26,5 +26,5 @@
     <li><code>run.py:</code> A wrapper that takes in the parameter file and runs WARPFIELD.</li>
 </ul> 
 <p><h2>Running WARPFIELD</h2></p>
-<p>To run, use the following in your terminal (an example):</p>
-<code> python3 ./run.py param/example.param </code>
+<p>To run, use the following in your terminal in the main WARPFIELD directory (an example):</p>
+<code> python3 run.py param/example.param </code>

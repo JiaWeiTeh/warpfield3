@@ -26,6 +26,11 @@ def input_warnings(params_dict):
 
     """
     
+    # TODO. E.g., if metalicity is >0, dens profile str is correct, etc. 
+    # E.g., -2<nalpha<0
+    # rCore < rCloud
+    # only pL and bE allowed as str
+    # nedge < nintercl
     
     # =============================================================================
     # Parameters with only True or False

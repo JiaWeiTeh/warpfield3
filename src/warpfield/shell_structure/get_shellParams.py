@@ -38,10 +38,11 @@ def get_nShell0(pBubble, T,
             
     Returns
     -------
-    nShell0 : TYPE
-        DESCRIPTION.
-    nShell0_cloudy : TYPE
-        DESCRIPTION.
+    nShell0 : float
+        The density of shell at inner edge/radius.
+    nShell0_cloudy : float
+        The density of shell at inner edge/radius, but including B-field, as
+        this will be passed to CLOUDY.
 
     """
     # TODO: Add description for BMW nMW

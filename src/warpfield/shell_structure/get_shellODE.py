@@ -69,7 +69,7 @@ def get_shellODE(y,
     Returns
     -------
     dndr : ODE
-    dphidr : ODE
+    dphidr : ODE (only in ionised region)
     dtaudr : ODE
 
     """
