@@ -13,7 +13,13 @@
     
 <p><h2>Repo Structure</h2></p>
 <ul>
-    <li><code>./lib:</code> Directory containing libraries used by WARPFIELD.</li>
+    <li><code>./lib:</code> Directory containing libraries used by WARPFIELD.
+    <ul class="square">
+          <li><code>/cooling_tables:</code> OPIATE cooling tables. </li>
+          <li><code>/imf:</code> Initial mass functions. </li>
+          <li><code>/cloudy:</code> CLOUDY data. </li>
+          <li><code>/sps:</code> SB99, SLUG, etc. </li>
+        </ul></li>
     <li><code>./param:</code> Directory storing parameter files. Here, users can create a 
         <code>.param</code> file (following the syntax of <code>example.param</code>) to
         run WARPFIELD on.</li>

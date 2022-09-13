@@ -1,6 +1,6 @@
 # =============================================================================
 # Summary of parameters in the 'example' run.
-# Created at 17/08/2022 17:53:04.
+# Created at 24/08/2022 14:56:14.
 # =============================================================================
 
 model_name    example
@@ -33,6 +33,7 @@ stop_t_unit    Myr
 write_main    1.0
 write_stellar_prop    0.0
 write_bubble    0.0
+write_shell    0.0
 inc_grav    1.0
 f_Mcold_W    0.0
 f_Mcold_SN    0.0
@@ -43,7 +44,7 @@ mu_n    2.1287915392418182e-24
 mu_p    1.0181176926808696e-24
 t_ion    10000.0
 t_neu    100.0
-n_ISM    10.0
+nISM    10.0
 kappa_IR    4.0
 gamma_adia    1.6666666666666667
 thermcoeff_wind    1.0

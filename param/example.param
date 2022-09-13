@@ -339,7 +339,7 @@ frag_enable_timescale    1
 # Shell with density below this threshold for an extended period of time 
 # (see stop_t_diss) will be considered dissolved and indistinguishable from the 
 # diffuse ambient ISM.
-# Ideally, this should be the same value as n_ISM.
+# Ideally, this should be the same value as nISM.
 # type: float
 # DEFAULT: 1
 stop_n_diss    1
@@ -396,12 +396,39 @@ write_stellar_prop    0
 # DEFAULT: 0
 write_bubble    0
 
+# Create bubble.in file for CLOUDY?
+# Available values:
+# -- 0 Do not save output
+# -- 1 Save output
+# DEFAULT: 0
+write_bubble_CLOUDY    0
+
+# Save structure of the shell? 
+# Available values:
+# -- 0 Do not save output
+# -- 1 Save output
+# DEFAULT: 0
+write_shell    0
+
+
+# =============================================================================
+# parameters for integrators
+# =============================================================================
 
 
 
-# write_shell
 
+# =============================================================================
+# parameters for bubble structures
+# =============================================================================
+# Note: This section includes parameters dictating the computation of bubble structure.
 
+# What is the relative radius xi = r/R2, at which to measure the bubble temperature?
+# See Weaver+77, Equation 23.  
+# Available values:
+# 0 < xi_Tb < 1
+# DEFAULT: 0.99
+xi_Tb    0.99
 
 
 # =============================================================================
@@ -460,7 +487,7 @@ t_neu    100
 # What is the number density of the ambient ISM? (unit: 1/cm^3)
 # type: float
 # DEFAULT: 0.1 
-n_ISM    10
+nISM    10
 
 # The Rosseland mean dust opacity kappa_IR. This parameter relates to the calculation 
 # of tau_IR, the optical depth of the shell in the IR by:
@@ -500,8 +527,15 @@ gamma_mag    1.3333333333333333
 log_BMW    -4.3125
 log_nMW    2.065
 
-
-
+# What the thermal confuction coefficient C? (units: cgs)
+# C, where thermal conductivity k = C * T**(5/2), see Spitzer 1962. 
+# C is a weak function of temperature, but can be treated as constant.
+# Available values: 
+# -- 1.2e-6 (used in Weaver 1977 and Harper-Clark & Murray 2009, 
+    presumably cited from Spitzer 1962 Table 5.1)
+# -- 6e-7 (used in  MacLow 1988, in agreement with Spitzer 1956)
+# DEFAULT: 1.2e-6
+c_therm    1.2e-6
 
 
 

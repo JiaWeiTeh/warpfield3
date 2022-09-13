@@ -11,20 +11,17 @@ This script contains function which computes the mass profile of cloud.
 import astropy.units as u
 import scipy.integrate
 import numpy as np
-import src.warpfield.bonnorEbert as bE
-import src.warpfield.density_profile as density_profile
+import src.warpfield.cloud_properties.bonnorEbert as bE
+import src.warpfield.cloud_properties.density_profile as density_profile
 
     
 def get_mass_profile(r_arr,
-                         rCore, rCloud, 
-                         nCore, nISM,
+                         density_specific_param, 
+                         rCloud, 
                          mCloud,
-                         mu_n, gamma,
+                         warpfield_params,
                          rdot_arr = [],
                          return_rdot = False,
-                         profile_type = "bE_prof", 
-                         alpha = -2, g = 14.1,
-                         T = 1e5,
                          ):
     """
     This function takes in basic properties of cloud and calculates the 
@@ -36,20 +33,17 @@ def get_mass_profile(r_arr,
     ----------
     r_arr : list/array of radius of interest
         Radius at which we are interested in the density (Units: pc).
-    rCore : float
-        Core radius. (Units: pc)
-    rCloud : float
-        Cloud radius. (Units: pc)
-    nCore : float
-        Core number density. (Units: 1/cm^3)
-    nISM : float
-        ISM number density. (Units: 1/cm^3)
+    density_specific_param: float
+        Available parameters = { rCore | T }
+        - rCore : float
+            Core radius (Units: pc). 
+            This parameter is only invoked if profile_type == 'pL_prof'
+        - T : float
+            The temperature of the BE sphere. (Units: K). The default value is 1e5 K.
+            This will only be considered if `bE_prof` is selected.
+            This parameter is only invoked if profile_type == 'bE_prof'
     mCloud : float
         Mass of cloud (Units: solar mass).
-    mu_n : float
-        Mean mass per nucleus (Units: cgs, i.e., g)
-    gamma: float
-        Adiabatic index of gas.
     return_rdot: boolean { True | False }
         Whether or not to also compute the time-derivative of radius.
     rdot_arr: None or an array of float
@@ -57,15 +51,6 @@ def get_mass_profile(r_arr,
     profile_type : string { bE_prof | pL_prof }
         The type of density profile. Currently supports either a power-law 
         distribution, or a Bonnor-Ebert sphere. The default is "bE_prof".
-    alpha : float
-        The exponent, if pL_prof is chosen for `profile_type`. 
-        The default is -2.
-    g : float
-        The ratio given as g = rho_core/rho_edge. The default is 14.1.
-        This will only be considered if `bE_prof` is selected.
-    T : float
-        The temperature of the BE sphere. (Units: K). The default value is 1e5 K.
-        This will only be considered if `bE_prof` is selected.
 
     Returns
     -------
@@ -83,13 +68,16 @@ def get_mass_profile(r_arr,
     r_arr = np.array(r_arr)
     
     # Setting up values
-    rhoCore = nCore * mu_n
-    rhoISM = nISM * mu_n
+    rhoCore = warpfield_params.nCore * warpfield_params.mu_n
+    rhoISM = warpfield_params.nISM * warpfield_params.mu_n
     
     # =============================================================================
     # power-law density profile (alpha < 0)
     # =============================================================================
-    if profile_type == "pL_prof":
+    if warpfield_params.dens_profile == "pL_prof":
+        # redefine for clarity
+        rCore = density_specific_param
+        alpha = warpfield_params.dens_a_pL
         # Change from g/cm3 to pc/Msol for further computation
         rhoCore = rhoCore * (u.g/u.cm**3).to(u.M_sun/u.pc**3)
         rhoISM = rhoISM * (u.g/u.cm**3).to(u.M_sun/u.pc**3)
@@ -125,14 +113,14 @@ def get_mass_profile(r_arr,
     # Bonnor-Ebert density profile 
     # =============================================================================
     # Get density profile
-    elif profile_type == "bE_prof":
+    elif warpfield_params.dens_profile == "bE_prof":
+        # redefine for clarity
+        T = density_specific_param
         # Get density profile before altering units
-        dens_arr, xi_arr = density_profile.get_density_profile(r_arr, rCore, rCloud, 
-                                                       nCore, nISM, mCloud, mu_n, gamma,
-                                                       profile_type, alpha,
-                                                       g, T)
+        dens_arr, xi_arr = density_profile.get_density_profile(r_arr,
+                         density_specific_param,  rCloud,  mCloud, warpfield_params)
         # sound speed
-        c_s = bE.get_bE_soundspeed(T, mu_n, gamma)
+        c_s = bE.get_bE_soundspeed(T, warpfield_params.mu_n, warpfield_params.gamma_adia)
         # Convert density profile 
         dens_arr = dens_arr * (1/u.cm**3).to(1/u.m**3).value
         # Then convert all to SI units
@@ -237,6 +225,7 @@ def get_mass_profile(r_arr,
 # # plt.legend()
 
 
+    
 
 
 

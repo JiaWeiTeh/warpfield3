@@ -14,15 +14,8 @@ import numpy as np
 import astropy.constants as c
 
 def get_shellODE(y, 
-                 # nShell,
-                 # phi,
-                 # tau
                  r, 
                  cons,
-                 # Ln, Li, Qi,
-                 # sigma_dust,
-                 # mu_n, mu_p, t_ion, t_neu,
-                 # alpha_B
                  f_cover = 1,
                  is_ionised = True
                  ):

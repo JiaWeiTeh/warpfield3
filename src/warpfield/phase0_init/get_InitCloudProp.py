@@ -8,7 +8,7 @@ Created on Sun Jul 24 23:42:14 2022
 This script contains a function that returns initial properties of the cloud.
 """
 import numpy as np
-import src.warpfield.bonnorEbert as bE
+import src.warpfield.cloud_properties.bonnorEbert as bE
 
 def get_InitCloudProp(sfe, log_mCloud,
                       mCloud_beforeSF, 
@@ -70,9 +70,11 @@ def get_InitCloudProp(sfe, log_mCloud,
         cloud core radius (Units: pc).
     nEdge : float
         cloud edge density (Units: 1cm3).
+    mCloud_afterSF: float
+        cloud mass after cluster formation (Units: Msun).
 
     """
-    # TODO: update docstrings
+    # TODO: update docstrings and make sure the output is in dictionary
     # Returns initial properties like nEdge, rCloud, rCore.
     # density is in 1/cm3 and radius is in pc.
     
@@ -85,10 +87,6 @@ def get_InitCloudProp(sfe, log_mCloud,
     mCluster = mCloud * sfe
     # cloud mass after SF
     mCloud_afterSF = mCloud - mCluster
-    # Initialise dictionary
-    cloudProp_dict = {}
-    # record important properties
-    # cloudProp_dict[] = 
     
     # =============================================================================
     # For power-law density profile    
@@ -104,7 +102,7 @@ def get_InitCloudProp(sfe, log_mCloud,
         # compute the density at edge
         nEdge = nCore * mu_n * (rCloud/rCore)**alpha
         # return
-        return rCore, rCloud, nEdge
+        return rCore, rCloud, nEdge, mCloud_afterSF
 
     # =============================================================================
     # For Bonnor-Ebert density profile
@@ -116,7 +114,7 @@ def get_InitCloudProp(sfe, log_mCloud,
         bE_T = bE.get_bE_T(mCloud, nCore, g, mu_n, gamma)
         rCloud, nEdge = bE.get_bE_rCloud_nEdge(nCore, bE_T, mCloud, mu_n, gamma)
         
-        return bE_T, rCloud, nEdge
+        return bE_T, rCloud, nEdge, mCloud_afterSF
 
 
 

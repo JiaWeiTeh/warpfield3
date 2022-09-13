@@ -93,6 +93,8 @@ def read_param(path2file, write_summary = True):
                    'write_main': 1.0, 
                    'write_stellar_prop': 0.0, 
                    'write_bubble': 0.0, 
+                   'write_shell': 0.0, 
+                   'xi_Tb': 0.99,
                    'inc_grav': 1.0, 
                    'f_Mcold_W': 0.0, 
                    'f_Mcold_SN': 0.0, 
@@ -103,7 +105,7 @@ def read_param(path2file, write_summary = True):
                    'mu_p': 1.0181176926808696e-24, 
                    't_ion': 10000.0, 
                    't_neu': 100.0, 
-                   'n_ISM': 0.1, 
+                   'nISM': 0.1, 
                    'kappa_IR': 4.0, 
                    'gamma_adia': 1.6666666666666667, 
                    'thermcoeff_wind': 1.0, 
@@ -112,6 +114,7 @@ def read_param(path2file, write_summary = True):
                    'gamma_mag': 1.3333333333333333,
                    'log_BMW': -4.3125,
                    'log_nMW': 2.065,
+                   'c_therm': 1.2e-6,
                    }
     
     # =============================================================================
