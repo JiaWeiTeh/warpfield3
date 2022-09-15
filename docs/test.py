@@ -75,9 +75,9 @@ This section sets the density profile, :math:`\rho(r)`, of the cloud.
 
     * ``pL_prof``: Power-law profile. Setting ``dens_a_pL = 0`` (see below) gives a homogeneous cloud, whereas ``dens_a_pL = -2`` gives an isothermal sphere. 
 
-        * ``dens_a_pL [-2]``: If power-law is selected, then the user must also define the power-law coefficient :math:`\alpha`, which takes value between :math:`-2\leq\alpha<0` and is defined as the following:
+        * ``dens_a_pL [-2]``: If power-law is selected, then the user must also define the power-law coefficient :math:`\alpha`, which takes value between :math:`-2\leq\alpha<0`. Suppose that :math:`r_0` is the core radius, :math:`\rho_0` is the core density, and :math:`\rho_{\rm ambISM}` is the density of the ISM, then :math:`\alpha` is defined such that:
 
-        .. math:: \rho_{\rm cloud}(r) = \left\{\begin{array}{lll} \rho_0 , & r \leq r_{\rm core} \\ \rho_0 \times (r / r_{\rm core})^\alpha, & r_{\rm core} < r \leq r_{\rm cloud} \\ \rho_{\rm ambISM}, & r > r_{\rm cloud} \end{array} \right.
+        .. math:: \rho_{\rm cloud}(r) = \left\{\begin{array}{lll} \rho_0 , & r \leq r_0 \\ \rho_0 \times (r / r_0)^\alpha, & r_0 < r \leq r_{\rm cloud} \\ \rho_{\rm ambISM}, & r > r_{\rm cloud} \end{array} \right.
 
         * ``dens_navg_pL [170]``: The average number density of the cloud (unit: cm\ :math:`^{-3}`).       
         
@@ -101,6 +101,8 @@ Unless necessary, these parameters should be kept at their default values.
 * ``gamma_adia [1.6666666666666667]``: The adiabatic index (:math:`\gamma = 5/3`).
 * ``gamma_mag [1.3333333333333333]``: The effective magnetic adiabatic index (:math:`\gamma = 4/3`). Setting to ``0`` implies a constant magnetic field strength throughout the model, whereas ``4/3`` implies conservation of magnetic flux and is what would be expected in the absence of dynamo action or magnetic reconnection (sphere). See `Henney et al 2005 <https://ui.adsabs.harvard.edu/abs/2005ApJ...621..328H/abstract>`_, Appendix C.
 * ``alpha_B [2.59e-13]``: The case B recombination coefficient (unit: cm\ :math:`^{3}`/s). See `Osterbrock and Ferland 2006 <https://ui.adsabs.harvard.edu/abs/2006agna.book.....O/abstract>`_.     
+
+
 # # The Rosseland mean dust opacity kappa_IR. This parameter relates to the calculation 
 # # of tau_IR, the optical depth of the shell in the IR by:
 # #           tau_IR = kappa_IR * \int u_n * n_sh dr
