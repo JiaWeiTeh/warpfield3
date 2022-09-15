@@ -49,7 +49,6 @@ These are the main parameters which WARPFIELD depends on.
     * ``rand_sfe [0.01, 0.10]``: Star formation effeciency
     * ``rand_n_cloud [100, 1000]``: Number density of cloud core (unit: cm\ :math:`^{-3}`)
     * ``rand_metallicity [0.15, 1]``: Cloud metallicity (unit: solar metallicity, :math:`Z_\odot`)
- Clearly, these will all be ignored if ``rand_input`` is set to ``0``.
 
 * ``log_mCloud [6.0]``:  Log cloud mass (unit: solar mass). This will be the initial mass of the molecular cloud. This parameter is ignored if ``rand_input`` is set to ``1``.
 
@@ -78,8 +77,18 @@ This section sets the density profile, :math:`\rho(r)` , of the cloud.
 .. math:: \rho_{\rm cloud}(r) = \left\{\begin{array}{lll} \rho_0 , & r \leq r_{\rm core} \\ rho_0 \times (r / r_{\rm core})^\alpha, & r_{\rm core} < r \leq r_{\rm cloud} \\ \rho_{\rm ambISM}, & r > r_{\rm cloud} \end{array} \right.
 
         * ``dens_navg_pL [170]``: The average number density of the cloud (unit: cm\ :math:`^{-3}`).
+        
+        
+        
+        
+        
 
+        
+        
+        
+        
 
+    
 
 
 
@@ -214,42 +223,6 @@ This section sets the density profile, :math:`\rho(r)` , of the cloud.
 # # DEFAULT: 1
 # frag_enable_timescale    1
 
-# # =============================================================================
-# # parameters dictating the stopping of simulation
-# # =============================================================================
-
-# # Density at which the shell is considered dissolved. (unit: 1/cm^3)
-# # Shell with density below this threshold for an extended period of time 
-# # (see stop_t_diss) will be considered dissolved and indistinguishable from the 
-# # diffuse ambient ISM.
-# # Ideally, this should be the same value as nISM.
-# # type: float
-# # DEFAULT: 1
-# stop_n_diss    1
-
-# # How long after n_shell < n_diss is satistied (continually) that the 
-# # shell is considered dissolved? (unit: Myr)
-# # See also the stop_n_diss parameter.
-# # type: float
-# # DEFAULT: 1
-# stop_t_diss    1.0
-
-# # Maximum radius of shell expansion? (unit: pc)
-# # If shell radius exceeds this threshold, consider the shell destroyed and halt the simulation.
-# # Set to an arbritrary high value (> 1e3) if stopping is not desired.
-# # DEFAULT: 1e3 (at this point the galactic shear will have disrupted the cloud).
-# stop_r    1e3
-
-# # What is the maximum simulation running time?
-# # After this period of time, the simulation will stop running.
-# # Avoid values greater than the last possible SN (i.e., 44 Myr for single cluster)
-# # Available units:
-# # -- Myr 
-# # -- tff (free-fall time)
-# # DEFAULT value: 15.05
-# # DEFAULT unit: Myr
-# stop_t    15.05
-# stop_t_unit    Myr
 
 
 # # =============================================================================
