@@ -13,6 +13,7 @@ import numpy as np
 import os
 import sys
 import scipy.optimize
+import scipy.integrate
 from scipy.interpolate import interp1d
 import astropy.units as u
 import astropy.constants as c
@@ -161,6 +162,98 @@ def initialise_bstruc(Mcloud, SFE, path):
     # return
     return 0
 
+
+
+# testruns
+
+data_struc = {'alpha': 0.6, 'beta': 0.8, 'delta': -0.17142857142857143, 
+              'R2': 0.4188936946067258, 't_now': 0.00016506818386985737,
+              'Eb': 15649519.367987147, 'Lw': 201648867747.70163,
+              'vw': 3810.2196532385897, 'dMdt_factor': 1.646, 
+              'Qi': 1.6994584609226492e+67, 
+              'mypath': '/Users/jwt/Documents/Code/WARPFIELD_Rewrite/outputs/'}
+
+cool_struc = np.load('/Users/jwt/Documents/Code/WARPFIELD_Rewrite/outputs/cool.npy', allow_pickle = True).item()
+
+warpfield_params = {'model_name': 'example', 
+                   'out_dir': 'def_dir', 
+                   'verbose': 1.0, 
+                   'output_format': 'ASCII', 
+                   'rand_input': 0.0, 
+                   'log_mCloud': 6.0, 
+                   'mCloud_beforeSF': 1.0, 
+                   'sfe': 0.01, 
+                   'nCore': 1000.0, 
+                   'rCore': 0.099, 
+                   'metallicity': 1.0, 
+                   'stochastic_sampling': 0.0, 
+                   'n_trials': 1.0, 
+                   'rand_log_mCloud': ['5', ' 7.47'], 
+                   'rand_sfe': ['0.01', ' 0.10'], 
+                   'rand_n_cloud': ['100.', ' 1000.'], 
+                   'rand_metallicity': ['0.15', ' 1'], 
+                   'mult_exp': 0.0, 
+                   'r_coll': 1.0, 
+                   'mult_SF': 1.0, 
+                   'sfe_tff': 0.01, 
+                   'imf': 'kroupa.imf', 
+                   'stellar_tracks': 'geneva', 
+                   'dens_profile': 'bE_prof', 
+                   'dens_g_bE': 14.1, 
+                   'dens_a_pL': -2.0, 
+                   'dens_navg_pL': 170.0, 
+                   'frag_enabled': 0.0, 
+                   'frag_r_min': 0.1, 
+                   'frag_grav': 0.0, 
+                   'frag_grav_coeff': 0.67, 
+                   'frag_RTinstab': 0.0, 
+                   'frag_densInhom': 0.0, 
+                   'frag_cf': 1.0, 
+                   'frag_enable_timescale': 1.0, 
+                   'stop_n_diss': 1.0, 
+                   'stop_t_diss': 1.0, 
+                   'stop_r': 1000.0, 
+                   'stop_t': 15.05, 
+                   'stop_t_unit': 'Myr', 
+                   'write_main': 1.0, 
+                   'write_stellar_prop': 0.0, 
+                   'write_bubble': 0.0, 
+                   'write_bubble_CLOUDY': 0.0, 
+                   'write_shell': 0.0, 
+                   'xi_Tb': 0.9,
+                   'inc_grav': 1.0, 
+                   'f_Mcold_W': 0.0, 
+                   'f_Mcold_SN': 0.0, 
+                   'v_SN': 1000000000.0, 
+                   'sigma0': 1.5e-21, 
+                   'z_nodust': 0.05, 
+                   'mu_n': 2.1287915392418182e-24, 
+                   'mu_p': 1.0181176926808696e-24, 
+                   't_ion': 10000.0, 
+                   't_neu': 100.0, 
+                   'nISM': 0.1, 
+                   'kappa_IR': 4.0, 
+                   'gamma_adia': 1.6666666666666667, 
+                   'thermcoeff_wind': 1.0, 
+                   'thermcoeff_SN': 1.0,
+                   'alpha_B': 2.59e-13,
+                   'gamma_mag': 1.3333333333333333,
+                   'log_BMW': -4.3125,
+                   'log_nMW': 2.065,
+                   'c_therm': 1.2e-6,
+                   }
+
+
+class Dict2Class(object):
+    # set object attribute
+    def __init__(self, dictionary):
+        for k, v in dictionary.items():
+            setattr(self, k, v)
+            
+# initialise the class
+warpfield_params = Dict2Class(warpfield_params)
+
+
 def get_bubbleLuminosity(data_struc,
                 cool_struc,
                 warpfield_params,
@@ -174,24 +267,24 @@ def get_bubbleLuminosity(data_struc,
     # Unpack input data
     # cgs units unless otherwise stated!!!
     # parameters for ODEs
-    alpha = data_struc.alpha
-    beta = data_struc.beta
-    delta = data_struc.delta
+    alpha = data_struc['alpha']
+    beta = data_struc['beta']
+    delta = data_struc['delta']
     # Bubble energy
-    Eb = data_struc.Eb
+    Eb = data_struc['Eb']
     # shell radius in pc (or outer radius of bubble)
-    R2 = data_struc.R2 
+    R2 = data_struc['R2'] 
     # current time in Myr
-    t_now = data_struc.t_now 
+    t_now = data_struc['t_now'] 
     # mechanical luminosity
-    Lw = data_struc.Lw 
+    Lw = data_struc['Lw'] 
     # wind luminosity (and SNe ejecta)
-    vw = data_struc.vw 
+    vw = data_struc['vw'] 
     # guess for dMdt_factor (classical Weaver is 1.646; this is given as the 
     # constant 'A' in Eq 33, Weaver+77)
-    dMdt_factor = data_struc.dMdt_factor 
+    dMdt_factor = data_struc['dMdt_factor'] 
     # current photon flux of ionizing photons
-    Qi = data_struc.Qi 
+    Qi = data_struc['Qi'] 
     # velocity at r --> 0.
     v0 = 0.0 
 
@@ -200,18 +293,22 @@ def get_bubbleLuminosity(data_struc,
                                1e-3 * R2, R2, 
                                args=([Lw, Eb, vw, R2]), 
                                xtol=1e-18) # can go to high precision because computationally cheap (2e-5 s)
+    
     # get bubble pressure
     press = bubble_E2P(Eb, R1, R2, warpfield_params.gamma_adia)
     
-    # These constants maps to system of ODEs for bubble structure (see Weaver+77, eqs. 42 and 43).
-    cons = calc_cons(alpha, beta, delta, t_now, press, warpfield_params.c_therm)
-    cons["Qi"] = Qi
-    
-    # See eq. 33, Weaver+77
     # thermal coefficient in astronomical units
     c_therm = warpfield_params.c_therm * u.cm.to(u.pc) * u.g.to(u.Msun) / (u.s.to(u.Myr))**3
     # boltzmann constant in astronomical units 
     k_B = c.k_B.cgs.value * u.g.to(u.Msun) * u.cm.to(u.pc)**2 / u.s.to(u.Myr)**2
+
+    # These constants maps to system of ODEs for bubble structure (see Weaver+77, eqs. 42 and 43).
+    cons = calc_cons(alpha, beta, delta, t_now, press, c_therm)
+    cons["Qi"] = Qi
+    
+    print("cons", cons)
+    
+    # See eq. 33, Weaver+77
     # get guess value
     dMdt_guess = float(os.environ["DMDT"])
     # if not given, then set it 
@@ -229,7 +326,8 @@ def get_bubbleLuminosity(data_struc,
     # load r1/r2, r2prime/r2
     R1R2, R2pR2 = np.loadtxt(path2bubble, skiprows=1, delimiter='\t', usecols=(0,1), unpack=True)
     # what xi = r/R2 should we measure the bubble temperature?
-    xi_goal = get_xi_Tb(R1R2, R2pR2)
+    xi_goal = get_xi_Tb(R1R2, R2pR2, warpfield_params)
+    print('xi_goal', xi_goal, R2)
     r_goal = xi_goal * R2
     # update 
     R1R2 = np.append(R1R2, R1/R2)
@@ -248,17 +346,20 @@ def get_bubbleLuminosity(data_struc,
     R_small = R1 # I presume Weaver meant: v -> 0 for R -> R1 (since in that chapter he talks about R1 being very small)
     bubble_params = {"v0": v0, "cons": cons, "rgoal": r_goal,
               "Tgoal": TR2_prime, "R2": R2, "R_small": R_small,
-              "press": press, "cool_struc": cool_struc, "path": path2bubble}
+              "press": press, "Cool_Struc": cool_struc, "path": path2bubble}
 
     # prepare wrapper (to skip 2 superflous calls in fsolve)
     bubble_params["dMdtx0"] = dMdt_guess
     bubble_params["dMdty0"] = compare_boundaryValues(dMdt_guess, bubble_params, warpfield_params)
 
+    print("bubble_params[\"dMdty0\"]", bubble_params["dMdty0"])
+    # print(bubble_params)
+    
     # 1. < factor_fsolve < 100.; if factor_fsolve is chose large, the rootfinder usually finds the solution faster
     # however, the rootfinder may then also enter a regime where the ODE soultion becomes unphysical
     # low factor_fsolve: slow but robust, high factor_fsolve: fast but less robust
     factor_fsolve = 50. #50
-
+    
     # TODO: Add output_verbosity  
     # if i.output_verbosity <= 0:
     #     with stdout_redirected():
@@ -267,6 +368,8 @@ def get_bubbleLuminosity(data_struc,
     # compute the mass loss rate to find out how much of that is loss 
     # from shell into the shocked region.
     dMdt = get_dMdt(dMdt_guess, bubble_params, warpfield_params, factor_fsolve = factor_fsolve, xtol = 1e-3)
+    
+    print("dMdt", dMdt_guess, dMdt)
         
     # if output is an array, make it a float (this is here because some
     # scipy.integrate solver returns float and some an array).
@@ -287,6 +390,8 @@ def get_bubbleLuminosity(data_struc,
     # get initial values
     R2_prime, y0 = get_start_bstruc(dMdt, bubble_params, warpfield_params)
     [vR2_prime, TR2_prime, dTdrR2_prime] = y0
+    
+    print("R2_prime, y0", R2_prime, y0)
 
     # now we know the correct dMdt, but since we did not store the solution for T(r), calculate the solution once again (IMPROVE?)
     # figure out at which positions to calculate solution
@@ -300,19 +405,26 @@ def get_bubbleLuminosity(data_struc,
     r[r_goal_idx] = r_goal 
 
     # Create dictionary to feed into another ODE
-    data_struc = {"cons": cons, "cool_struc": cool_struc}
+    data_struc = {"cons": cons, "Cool_Struc": cool_struc}
 
     # TODO: if output verbosity is low, do not show warnings
     # if i.output_verbosity <= 0:
     #     with stdout_redirected():
     #         psoln = scipy.integrate.odeint(bubble_struct, y0, r, args=(Data_Struc,), tfirst=True)
     
-    psoln = scipy.integrate.odeint(bubble_ODEs.get_bubbleODEs, y0, r, args=(data_struc,), tfirst=True)
+    psoln = scipy.integrate.odeint(bubble_ODEs.get_bubbleODEs, y0, r, args=(data_struc, warpfield_params.metallicity), tfirst=True)
     v = psoln[:,0]
     T = psoln[:,1]
     dTdr = psoln[:,2]
     # electron density ( = proton density), assume astro units (Msun, pc, Myr)
     n_e = press/((warpfield_params.mu_n/warpfield_params.mu_p) * k_B * T) 
+    
+    print('v', v)
+    print('T', T)
+    print('dTdr', dTdr)
+    print('n_e', n_e)
+    
+    return
 
     # CHECK 2: negative velocities must not happen! (??) [removed]
 
@@ -401,7 +513,8 @@ def get_bubbleLuminosity(data_struc,
 
             # since we are taking very small steps in r, the solver might bitch around --> shut it up
             # with stdout_redirected():
-            psoln = scipy.integrate.odeint(bubble_ODEs.get_bubbleODEs, [v[idx_4],T[idx_4],dTdr[idx_4]], r_cz, args=(data_struc,), tfirst=True) # solve ODE again, there should be a better way (event finder!)
+            psoln = scipy.integrate.odeint(bubble_ODEs.get_bubbleODEs, [v[idx_4],T[idx_4],dTdr[idx_4]], r_cz, 
+                                           args=(data_struc, warpfield_params.metallicity), tfirst=True) # solve ODE again, there should be a better way (event finder!)
 
             T_cz = psoln[:,1]
             dTdr_cz = psoln[:,2]
@@ -538,8 +651,9 @@ def get_bubbleLuminosity(data_struc,
         tab.write(outname, format='ascii', formats=formats, delimiter="\t", overwrite=True)
 
         # create cloudy bubble.in file?
-        if warpfield_params.write_bubble_CLOUDY == True:
-            __cloudy_bubble__.write_bubble(outname, Z = warpfield_params.metallicity)
+        # TODO
+        # if warpfield_params.write_bubble_CLOUDY == True:
+            # __cloudy_bubble__.write_bubble(outname, Z = warpfield_params.metallicity)
 
         # Should I uncomment this and add to thefinal return?
         # # some random debug values
@@ -553,6 +667,17 @@ def get_bubbleLuminosity(data_struc,
         # return Lb, T_rgoal, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav
         
     return Lb, T_rgoal, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg
+
+
+initialise_bstruc(990000000, 0.01, '/Users/jwt/Documents/Code/WARPFIELD_Rewrite/outputs')
+
+a = get_bubbleLuminosity(data_struc, cool_struc,
+                warpfield_params)
+
+
+
+
+
 
 def get_r1(r1, params):
     """
@@ -592,11 +717,11 @@ def calc_cons(alpha, beta, delta,
     to help solve bubble structure. (see Weaver+77, eqs. 42 and 43)"""
     a = alpha/t_now
     b = (beta+delta)/t_now
-    c = press/c_therm
+    C = press/c_therm
     d = press
     e = (beta+2.5*delta)/t_now
     # save into dictionary
-    cons={"a":a, "b":b, "c":c, "d":d, "e":e}
+    cons={"a":a, "b":b, "c":C, "d":d, "e":e}
     # return
     return cons
 
@@ -804,18 +929,19 @@ def compare_boundaryValues(dMdt, bubble_params, warpfield_params):
     # An array of r
     r, _, _, _ = get_r_list(R2_prime, bubble_params["R_small"], dx0, n_extra=n_extra)
     
+    # print('comp values', vR2_prime, TR2_prime, dTdrR2_prime, r, warpfield_params.metallicity)
     # try to solve the ODE (might not have a solution)
     try:
-        psoln = scipy.integrate.odeint(bubble_ODEs.get_bubbleODEs, y0, r, args=(Data_Struc,), tfirst=True)
+        psoln = scipy.integrate.odeint(bubble_ODEs.get_bubbleODEs, y0, r, args=(Data_Struc, warpfield_params.metallicity), tfirst=True)
         # get
         v = psoln[:, 0]
         T = psoln[:, 1]
-
+    
         # this are the calculated boundary value (velocity at r=R_small)
         v_bot = v[-(n_extra+1)]
         # compare these to correct calues!
         residual = (bubble_params["v0"] - v_bot)/v[0]
-
+    
         # very low temperatures are not allowed! 
         # This check is also necessary to prohibit rare fast (and unphysical) oscillations in the temperature profile
         min_T = np.min(T)
@@ -824,7 +950,7 @@ def compare_boundaryValues(dMdt, bubble_params, warpfield_params):
     # should the ODE solver fail
     except:
         # this is the case when the ODE has no solution with chosen inital values
-        print("giving a wrong residual here")
+        print("Giving a wrong residual here; unable to solve the ODE. Suggest to set xi_Tb to default value of 0.9.")
         if dTdrR2_prime < 0.:
             residual = -1e30
         else:

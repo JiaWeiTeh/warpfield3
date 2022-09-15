@@ -532,7 +532,7 @@ log_nMW    2.065
 # C is a weak function of temperature, but can be treated as constant.
 # Available values: 
 # -- 1.2e-6 (used in Weaver 1977 and Harper-Clark & Murray 2009, 
-    presumably cited from Spitzer 1962 Table 5.1)
+#    presumably cited from Spitzer 1962 Table 5.1)
 # -- 6e-7 (used in  MacLow 1988, in agreement with Spitzer 1956)
 # DEFAULT: 1.2e-6
 c_therm    1.2e-6

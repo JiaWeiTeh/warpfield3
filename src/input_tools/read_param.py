@@ -93,6 +93,7 @@ def read_param(path2file, write_summary = True):
                    'write_main': 1.0, 
                    'write_stellar_prop': 0.0, 
                    'write_bubble': 0.0, 
+                   'write_bubble_CLOUDY': 0.0, 
                    'write_shell': 0.0, 
                    'xi_Tb': 0.99,
                    'inc_grav': 1.0, 

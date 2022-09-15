@@ -12,6 +12,8 @@ This script contains ODEs which dictates the strucuture (e.g., temperature,
 import numpy as np
 import astropy.constants as c
 import astropy.units as u
+#--
+import src.warpfield.cooling.get_coolingFunction as get_coolingFunction
 
 def delta2dTdt(t, T, delta):
     """
@@ -154,22 +156,7 @@ def Edot2beta(bubble_P, bubble_E,
     return beta
 
 
-def get_bubbleODEs(r, y0, data_struc):
-    
-    # Note:
-    # old code: bubble_struct()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    return 
-
-def bubble_struct(r, x, Data_Struc, units = 'au'):
+def get_bubbleODEs(r, y0, data_struc, metallicity):
     """
     system of ODEs for bubble structure (see Weaver+77, eqs. 42 and 43)
     :param x: velocity v, temperature T, spatial derivate of temperature dT/dr
@@ -177,22 +164,26 @@ def bubble_struct(r, x, Data_Struc, units = 'au'):
     :param cons: constants
     :return: spatial derivatives of v,T,dTdr
     """
+    
+    # Note:
+    # old code: bubble_struct()
+    
+    # unravel
+    a = data_struc["cons"]["a"]
+    b = data_struc["cons"]["b"]
+    C = data_struc["cons"]["c"]
+    d = data_struc["cons"]["d"]
+    e = data_struc["cons"]["e"]
+    Qi = data_struc["cons"]["Qi"]
+    Cool_Struc = data_struc["Cool_Struc"]
+    v, T, dTdr = y0
 
-    a = Data_Struc["cons"]["a"]
-    b = Data_Struc["cons"]["b"]
-    c = Data_Struc["cons"]["c"]
-    d = Data_Struc["cons"]["d"]
-    e = Data_Struc["cons"]["e"]
-    Qi = Data_Struc["cons"]["Qi"]
-    Cool_Struc = Data_Struc["Cool_Struc"]
+    # boltzmann constant in astronomical units 
+    k_B = c.k_B.cgs.value * u.g.to(u.Msun) * u.cm.to(u.pc)**2 / u.s.to(u.Myr)**2
 
-    v, T, dTdr = x
-
-    my_kboltz = myc.kboltz_au
-
-    Qi = Qi/myc.Myr
-    ndens = d / (2. * my_kboltz * T) /(myc.pc**3)
-    Phi = Qi / (4. * np.pi * (r*myc.pc) ** 2)
+    Qi = Qi / u.Myr.to(u.s)
+    ndens = d / (2. * k_B * T) /(u.pc.to(u.cm)**3)
+    Phi = Qi / (4. * np.pi * (r*u.pc.to(u.cm)) ** 2)
 
     # interpolation range (currently repeated in calc_Lb --> merge?)
     log_T_interd = 0.1
@@ -206,29 +197,17 @@ def bubble_struct(r, x, Data_Struc, units = 'au'):
         T = 10.**3.61
 
     # loss (or gain) of internal energy
-    dudt = coolnoeq.cool_interp_master({"n":ndens, "T":T, "Phi":Phi}, Cool_Struc, log_T_noeqmin=log_T_noeqmin, log_T_noeqmax=log_T_noeqmax, log_T_intermin=log_T_intermin, log_T_intermax=log_T_intermax)
+    dudt = get_coolingFunction.cool_interp_master({"n":ndens, "T":T, "Phi":Phi}, Cool_Struc, metallicity,
+                                       log_T_noeqmin=log_T_noeqmin, log_T_noeqmax=log_T_noeqmax, 
+                                       log_T_intermin=log_T_intermin, log_T_intermax=log_T_intermax)
+    
 
     vd = b + (v-a*r)*dTdr/T - 2.*v/r
     Td = dTdr
-    dTdrd = c/(T**2.5) * (e + 2.5*(v-a*r)*dTdr/T - dudt/d) - 2.5*dTdr**2./T - 2.*dTdr/r # negative sign for dudt term (because of definition of dudt)
-
+    # negative sign for dudt term (because of definition of dudt)
+    dTdrd = C/(T**2.5) * (e + 2.5*(v-a*r)*dTdr/T - dudt/d) - 2.5*dTdr**2./T - 2.*dTdr/r 
+    # return
     return [vd,Td,dTdrd]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

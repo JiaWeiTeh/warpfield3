@@ -14,6 +14,8 @@ import numpy as np
 import sys
 from scipy import spatial
 from scipy.interpolate import interp1d
+import astropy.constants as c
+import astropy.units as u
 
 # =============================================================================
 # Here, we provide values (hardcoded) quoted from studies.
@@ -176,6 +178,127 @@ def create_coolCIE(metallicity):
     f_logLambdaCIE = interp1d(logT_mod_list, logLambda_mod_list, kind = 'linear')
     # return
     return f_logLambdaCIE
+
+
+# =============================================================================
+# Interpolation functions
+# =============================================================================
+
+
+def trilinear(x, X0, X1, data):
+    """
+    trilinear interpolation inside a cuboid
+    need to provide function values at corners of cuboid, i.e. 8 values
+    :param x: coordinates of point at which to interpolate (array or list with 3 elements: x, y, z)
+    :param X0: coordinates of lower gridpoint (array or list with 3 elements: x0, y0, z0)
+    :param X1: coordinates of upper gridpoint (array or list with 3 elements: x1, y1, z1)
+    :param data: function values at all 8 gridpoints of cube (3x2 array)
+    :return: interpolated value at (x, y, z)
+    """
+
+    xd = (x[0] - X0[0]) / (X1[0] - X0[0])
+    yd = (x[1] - X0[1]) / (X1[1] - X0[1])
+    zd = (x[2] - X0[2]) / (X1[2] - X0[2])
+
+    c00 = data[0, 0, 0] * (1. - xd) + data[1, 0, 0] * xd
+    c01 = data[0, 0, 1] * (1. - xd) + data[1, 0, 1] * xd
+    c10 = data[0, 1, 0] * (1. - xd) + data[1, 1, 0] * xd
+    c11 = data[0, 1, 1] * (1. - xd) + data[1, 1, 1] * xd
+    
+    c0 = c00*(1.-yd) + c10*yd
+    c1 = c01*(1.-yd) + c11*yd
+    
+    c = c0*(1.-zd) + c1*zd
+    
+    return c
+
+def linear(x, X, Y):
+    """
+    linear interpolation
+    :param x: scalar, must lie between X[0] and X[1]
+    :param X: list or array with 2 elements, X[0], X[1]
+    :param Y: list or array with 2 elements, function values at X[0] and X[1]
+    :return:
+    """
+
+    if (x > max(X)) or (x < min(X)):
+        sys.exit("Cannot interpolate, x is not in range [X0, X1]")
+    else:
+        y = Y[0] + (x-X[0]) * (Y[1]-Y[0])/(X[1]-X[0])
+
+    return y
+
+def Interp3_dudt(point, Cool_Struc, element = "Netcool"):
+    """
+    Interpolates cooling function which depends on density, temperature, and photon number flux (ionizing)
+    This is the main routine to call every time you request a cooling value for some parameter tuple
+    :param point: structure (not log), containing number density "n", temperature "T", and photon number flux (ionizing) "Phi"
+    :param Cool_Struc: see output of get_Cool_dat()
+    :return: energy (net cooling/heating) rate du/dt, i.e. ne*np*(Lambda - Gamma)
+    """
+
+    # point at which to interpolate (not log)
+    x = point["n"]
+    y = point["T"]
+    z = point["Phi"]
+
+    # got to log (necessary to find corners of surrounding cuboid as distance between points in constant in log only)
+    log_x = np.log10(x)
+    log_y = np.log10(y)
+    log_z = np.log10(z)
+
+    # unpack tabulated data
+    my_element = Cool_Struc[element]
+    ln_dat = Cool_Struc["log_n"]
+    lT_dat = Cool_Struc["log_T"]
+    lP_dat = Cool_Struc["log_Phi"]
+
+    # find indices of cuboid in which "point" lies
+    ii_n_0 = int((log_x-ln_dat["min"])/ln_dat["d"])
+    jj_T_0 = int((log_y-lT_dat["min"])/lT_dat["d"])
+    kk_P_0 = int((log_z-lP_dat["min"])/lP_dat["d"])
+
+    ii_n_1 = ii_n_0 + 1
+    jj_T_1 = jj_T_0 + 1
+    kk_P_1 = kk_P_0 + 1
+
+    # to have true linear interpolation go to linear space instead of log-space
+    x0 = 10. ** ln_dat["dat"][ii_n_0]
+    x1 = 10. ** ln_dat["dat"][ii_n_1]
+
+    y0 = 10. ** lT_dat["dat"][jj_T_0]
+    y1 = 10. ** lT_dat["dat"][jj_T_1]
+
+    z0 = 10. ** lP_dat["dat"][kk_P_0]
+    z1 = 10. ** lP_dat["dat"][kk_P_1]
+
+    # call interpolator
+    dudt = trilinear([x, y, z], [x0, y0, z0], [x1, y1, z1],
+                         my_element[ii_n_0:ii_n_0 + 2, jj_T_0:jj_T_0 + 2, kk_P_0:kk_P_0 + 2])
+
+    return dudt
+
+def cool_interp_master(point, Cool_Struc, metallicity, log_T_intermin = 3.9, log_T_noeqmin = 4.0, log_T_noeqmax = 5.4, log_T_intermax=5.499):
+
+    if (np.log10(point["T"]) > log_T_intermax) or (np.log10(point["T"]) < log_T_intermin):
+        Lambda = get_coolingFunction(point["T"], metallicity)
+        dudt = -1. * (point["n"]) ** 2 * Lambda / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
+
+    elif (np.log10(point["T"]) >= log_T_noeqmax):
+        dudt1 = -1. * (point["n"]) ** 2 * get_coolingFunction(point["T"], metallicity) / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
+        dudt0 = -1. * Interp3_dudt({"n": point["n"], "T": point["T"], "Phi": point["Phi"]}, Cool_Struc) / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
+        dudt = linear(np.log10(point["T"]), [log_T_noeqmax, log_T_intermax], [dudt0, dudt1])
+
+    elif (np.log10(point["T"]) <= log_T_noeqmin):
+        dudt0 = -1. * (point["n"]) ** 2 * get_coolingFunction(point["T"], metallicity) / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
+        dudt1 = -1. * Interp3_dudt({"n": point["n"], "T": point["T"], "Phi": point["Phi"]}, Cool_Struc) / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
+        dudt = linear(np.log10(point["T"]), [log_T_intermin, log_T_noeqmin], [dudt0, dudt1])
+
+    else:
+        dudt = -1. * Interp3_dudt({"n": point["n"], "T": point["T"], "Phi": point["Phi"]}, Cool_Struc) / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
+
+    return dudt
+
 
 # =============================================================================
 # Mini functions
