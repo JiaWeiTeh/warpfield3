@@ -62,29 +62,64 @@ These are the main parameters which WARPFIELD depends on.
 Parameters for the density profile of the cloud
 -----------------------------------------------
 
+Parameters for the density profile of the cloud
+-----------------------------------------------
+
 This section sets the density profile, :math:`\rho(r)` , of the cloud.
 
 * ``dens_profile [bE_prof]``: How does the density scale with radius?
     
-    * ``bE_prof``: Bonnor-Ebert sphere profile (`Ebert 1955 <https://ui.adsabs.harvard.edu/abs/1955ZA.....37..217E/abstract>`_; `Bonnor 1956 <https://ui.adsabs.harvard.edu/abs/1956MNRAS.116..351B/abstract>`_).
+    * ``bE_prof``: Bonnor-Ebert sphere profile (see `Ebert 1955 <https://ui.adsabs.harvard.edu/abs/1955ZA.....37..217E/abstract>`_; `Bonnor 1956 <https://ui.adsabs.harvard.edu/abs/1956MNRAS.116..351B/abstract>`_).
 
-        * ``dens_g_bE [14.1]``: If Bonnor-Ebert is selected, then the user must also define the parameter :math:`g_{BE} = \frac{rho_{\rm centre}}{rho\_{\rm edge}}`, such that all clouds exceeding this value are gravitationally unstable. The corresponding mass is the critical mass known as the Bonner-Ebert mass (see `Stahler and Palla 2004 <https://ui.adsabs.harvard.edu/abs/2004fost.book.....S/abstract>`_). 
+        * ``dens_g_bE [14.1]``: If Bonnor-Ebert is selected, then the user must also define the parameter :math:`g_{\rm BE} = \frac{\rho\_{\rm centre}}{\rho\_{\rm edge}}`, such that all clouds exceeding this value are gravitationally unstable. The corresponding mass is the critical mass known as the Bonner-Ebert mass (see `Stahler and Palla 2004 <https://ui.adsabs.harvard.edu/abs/2004fost.book.....S/abstract>`_). 
 
     * ``pL_prof``: Power-law profile. Setting ``dens_a_pL = 0`` (see below) gives a homogeneous cloud, whereas ``dens_a_pL = -2`` gives an isothermal sphere. 
 
         * ``dens_a_pL [-2]``: If power-law is selected, then the user must also define the power-law coefficient :math:`\alpha`, which takes value between :math:`-2\leq\alpha<0` and is defined as the following:
 
-.. math:: \rho_{\rm cloud}(r) = \left\{\begin{array}{lll} \rho_0 , & r \leq r_{\rm core} \\ rho_0 \times (r / r_{\rm core})^\alpha, & r_{\rm core} < r \leq r_{\rm cloud} \\ \rho_{\rm ambISM}, & r > r_{\rm cloud} \end{array} \right.
+        .. math:: \rho_{\rm cloud}(r) = \left\{\begin{array}{lll} \rho_0 , & r \leq r_{\rm core} \\ \rho_0 \times (r / r_{\rm core})^\alpha, & r_{\rm core} < r \leq r_{\rm cloud} \\ \rho_{\rm ambISM}, & r > r_{\rm cloud} \end{array} \right.
 
-        * ``dens_navg_pL [170]``: The average number density of the cloud (unit: cm\ :math:`^{-3}`).
+        * ``dens_navg_pL [170]``: The average number density of the cloud (unit: cm\ :math:`^{-3}`).       
         
         
         
-        
-        
+Other parameters
+----------------
 
-        
-        
+Here, we provide users the ability to adjust the value of these parameters;
+however, they are (mostly) standard constants and are rarely being changed. 
+Unless necessary, these parameters should be kept at their default values.
+
+
+* ``mu_n [2.1287915392418182e-24]``: The mean mass per nucleus (unit: g). We assume the standard composition of 1 He atom every 10 H atoms. By default, :math:`\mu_{\rm n} = (14/11)m_{\rm H}`.
+* ``mu_p [1.0181176926808696e-24]``: The mean mass per particle (unit: g). We assume the standard composition of 1 He atom every 10 H atoms. By default, :math:`\mu_{\rm p} = (14/23)m_{\rm H}`.
+* ``nISM [10]``: The number density of the ambient ISM (unit: cm\ :math:`^{-3}`).       
+* ``t_ion [1e4]``: Temperature of ionised region (unit: K).
+* ``t_neu [1e2]``: Temperature of neutral region (unit: K).
+* ``sigma0 [1.5e-21]``: Dust cross-section at solar metallicity (unit: cm\ :math:`^2`). Thus for other metallicities the dust cross section is scaled as :math:`\sigma_d = \sigma_0 * (Z/Z_\odot)`.
+* ``z_nodust [0.05]``: Metallicity below which there is no dust (i.e., :math:`\sigma_d = 0`). (unit: :math:`Z_\odot`). 
+* ``gamma_adia [1.6666666666666667]``: The adiabatic index (:math:`\gamma = 5/3`).
+* ``gamma_mag [1.3333333333333333]``: The effective magnetic adiabatic index (:math:`\gamma = 4/3`). Setting to ``0`` implies a constant magnetic field strength throughout the model, whereas ``4/3`` implies conservation of magnetic flux and is what would be expected in the absence of dynamo action or magnetic reconnection (sphere). See `Henney et al 2005 <https://ui.adsabs.harvard.edu/abs/2005ApJ...621..328H/abstract>`_, Appendix C.
+* ``alpha_B [2.59e-13]``: The case B recombination coefficient (unit: cm\ :math:`^{3}`/s). See `Osterbrock and Ferland 2006 <https://ui.adsabs.harvard.edu/abs/2006agna.book.....O/abstract>`_.     
+
+
+# # The Rosseland mean dust opacity kappa_IR. This parameter relates to the calculation 
+# # of tau_IR, the optical depth of the shell in the IR by:
+# #           tau_IR = kappa_IR * \int u_n * n_sh dr
+# # For simplicity we do not relate kappa_IR to dust temperature, but adopt a 
+# # constant value kappa_IR = 4 cm^2/g
+# # DEFAULT: 4
+# kappa_IR    4
+
+
+# # The thermalisation efficiency for colliding winds and supernova ejecta.
+# # See Stevens and Hartwell 2003 or Kavanagh 2020 for a review.
+# # The new mechanical energy will thus be:
+# #       Lw_new = thermcoeff * Lw_old
+# # DEFAULT: 1.0
+# thermcoeff_wind    1.0 
+# thermcoeff_SN    1.0 
+
         
         
 

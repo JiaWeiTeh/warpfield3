@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parameter Specifications &mdash; WARPFIELD3 0.1 documentation</title>
+  <title>Parameter Specifica†ions &mdash; WARPFIELD3 0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -42,11 +42,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="running.html">Running WARPFIELD</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Parameter Specifications</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Parameter Specifica†ions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#creating-the-parameter-file">Creating the parameter file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#basic-parameters">Basic parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#main-parameters-for-warpfield">Main parameters for WARPFIELD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parameters-for-the-density-profile-of-the-cloud">Parameters for the density profile of the cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Parameters for the density profile of the cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-parameters">Other parameters</a></li>
 </ul>
 </li>
 </ul>
@@ -65,7 +67,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Parameter Specifications</li>
+      <li>Parameter Specifica†ions</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/parameters.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -75,8 +77,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="parameter-specifications">
-<span id="sec-parameters"></span><h1>Parameter Specifications<a class="headerlink" href="#parameter-specifications" title="Permalink to this headline"></a></h1>
+  <section id="parameter-specificaions">
+<span id="sec-parameters"></span><h1>Parameter Specifica†ions<a class="headerlink" href="#parameter-specificaions" title="Permalink to this headline"></a></h1>
 <section id="creating-the-parameter-file">
 <h2>Creating the parameter file<a class="headerlink" href="#creating-the-parameter-file" title="Permalink to this headline"></a></h2>
 <p>This section documents how one can create and format parameter files (<code class="docutils literal notranslate"><span class="pre">*.param</span></code>). Here are some basic rules:</p>
@@ -132,15 +134,18 @@
 </section>
 <section id="parameters-for-the-density-profile-of-the-cloud">
 <h2>Parameters for the density profile of the cloud<a class="headerlink" href="#parameters-for-the-density-profile-of-the-cloud" title="Permalink to this headline"></a></h2>
+</section>
+<section id="id1">
+<h2>Parameters for the density profile of the cloud<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
 <p>This section sets the density profile, <span class="math notranslate nohighlight">\(\rho(r)\)</span> , of the cloud.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">dens_profile</span> <span class="pre">[bE_prof]</span></code>: How does the density scale with radius?</p>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">bE_prof</span></code>: Bonnor-Ebert sphere profile (<a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1955ZA.....37..217E/abstract">Ebert 1955</a>; <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1956MNRAS.116..351B/abstract">Bonnor 1956</a>).</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">bE_prof</span></code>: Bonnor-Ebert sphere profile (see <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1955ZA.....37..217E/abstract">Ebert 1955</a>; <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1956MNRAS.116..351B/abstract">Bonnor 1956</a>).</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">dens_g_bE</span> <span class="pre">[14.1]</span></code>: If Bonnor-Ebert is selected, then the user must also define the parameter <span class="math notranslate nohighlight">\(g_{BE} = \frac{rho_{\rm centre}}{rho\_{\rm edge}}\)</span>, such that all clouds exceeding this value are gravitationally unstable. The corresponding mass is the critical mass known as the Bonner-Ebert mass (see <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2004fost.book.....S/abstract">Stahler and Palla 2004</a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dens_g_bE</span> <span class="pre">[14.1]</span></code>: If Bonnor-Ebert is selected, then the user must also define the parameter <span class="math notranslate nohighlight">\(g_{\rm BE} = \frac{\rho\_{\rm centre}}{\rho\_{\rm edge}}\)</span>, such that all clouds exceeding this value are gravitationally unstable. The corresponding mass is the critical mass known as the Bonner-Ebert mass (see <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2004fost.book.....S/abstract">Stahler and Palla 2004</a>).</p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -150,7 +155,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">dens_a_pL</span> <span class="pre">[-2]</span></code>: If power-law is selected, then the user must also define the power-law coefficient <span class="math notranslate nohighlight">\(\alpha\)</span>, which takes value between <span class="math notranslate nohighlight">\(-2\leq\alpha&lt;0\)</span> and is defined as the following:</p></li>
 </ul>
 <div class="math notranslate nohighlight">
-\[\begin{split}\rho_{\rm cloud}(r) = \left\{\begin{array}{lll} \rho_0 , &amp; r \leq r_{\rm core} \\ \rho_0 \times (r / r_{\rm core})^\alpha, &amp; r_{\rm core} &lt; r \leq r_{\rm cloud} \\ \rho_{\rm ambISM}, &amp; r &gt; r_{\rm cloud} \end{array} \right.,\end{split}\]</div>
+\[\begin{split}\rho_{\rm cloud}(r) = \left\{\begin{array}{lll} \rho_0 , &amp; r \leq r_{\rm core} \\ \rho_0 \times (r / r_{\rm core})^\alpha, &amp; r_{\rm core} &lt; r \leq r_{\rm cloud} \\ \rho_{\rm ambISM}, &amp; r &gt; r_{\rm cloud} \end{array} \right.\end{split}\]</div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">dens_navg_pL</span> <span class="pre">[170]</span></code>: The average number density of the cloud (unit: cm<span class="math notranslate nohighlight">\(^{-3}\)</span>).</p></li>
 </ul>
@@ -159,6 +164,24 @@
 </ul>
 </div></blockquote>
 </li>
+</ul>
+</section>
+<section id="other-parameters">
+<h2>Other parameters<a class="headerlink" href="#other-parameters" title="Permalink to this headline"></a></h2>
+<p>Here, we provide users the ability to adjust the value of these parameters;
+however, they are (mostly) standard constants and are rarely being changed.
+Unless necessary, these parameters should be kept at their default values.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mu_n</span> <span class="pre">[2.1287915392418182e-24]</span></code>: The mean mass per nucleus (unit: g). We assume the standard composition of 1 He atom every 10 H atoms. By default, <span class="math notranslate nohighlight">\(\mu_{\rm n} = (14/11)m_{\rm H}\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mu_p</span> <span class="pre">[1.0181176926808696e-24]</span></code>: The mean mass per particle (unit: g). We assume the standard composition of 1 He atom every 10 H atoms. By default, <span class="math notranslate nohighlight">\(\mu_{\rm p} = (14/23)m_{\rm H}\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nISM</span> <span class="pre">[10]</span></code>: The number density of the ambient ISM (unit: cm<span class="math notranslate nohighlight">\(^{-3}\)</span>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">t_ion</span> <span class="pre">[1e4]</span></code>: Temperature of ionised region (unit: K).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">t_neu</span> <span class="pre">[1e2]</span></code>: Temperature of neutral region (unit: K).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sigma0</span> <span class="pre">[1.5e-21]</span></code>: Dust cross-section at solar metallicity (unit: cm<span class="math notranslate nohighlight">\(^2\)</span>). Thus for other metallicities the dust cross section is scaled as <span class="math notranslate nohighlight">\(\sigma_d = \sigma_0 * (Z/Z_\odot)\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">z_nodust</span> <span class="pre">[0.05]</span></code>: Metallicity below which there is no dust (i.e., <span class="math notranslate nohighlight">\(\sigma_d = 0\)</span>). (unit: <span class="math notranslate nohighlight">\(Z_\odot\)</span>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gamma_adia</span> <span class="pre">[1.6666666666666667]</span></code>: The adiabatic index (<span class="math notranslate nohighlight">\(\gamma = 5/3\)</span>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gamma_mag</span> <span class="pre">[1.3333333333333333]</span></code>: The effective magnetic adiabatic index (<span class="math notranslate nohighlight">\(\gamma = 4/3\)</span>). Setting to <code class="docutils literal notranslate"><span class="pre">0</span></code> implies a constant magnetic field strength throughout the model, whereas <code class="docutils literal notranslate"><span class="pre">4/3</span></code> implies conservation of magnetic flux and is what would be expected in the absence of dynamo action or magnetic reconnection (sphere). See <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2005ApJ...621..328H/abstract">Henney et al 2005</a>, Appendix C.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">alpha_B</span> <span class="pre">[2.59e-13]</span></code>: The case B recombination coefficient (unit: cm<span class="math notranslate nohighlight">\(^{3}\)</span>/s). See <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2006agna.book.....O/abstract">Osterbrock and Ferland 2006</a>.</p></li>
 </ul>
 </section>
 </section>
