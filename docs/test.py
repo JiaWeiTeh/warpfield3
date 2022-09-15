@@ -60,73 +60,26 @@ These are the main parameters which WARPFIELD depends on.
 * ``metallicity [1]``: Cloud metallicity (unit: solar metallicity, :math:`Z_\odot`). Currently available values are 1 :math:`Z_\odot` and 0.15 :math:`Z_\odot`. This parameter is ignored if ``rand_input`` is set to ``1``.
 * ``stochastic_sampling [0]``: Include stochastic sampling of IMF in the creation of initial cluster? If set to ``1``, apply scaling relations when computing cluster properties assuming that the IMF is fully sampled. This parameter is ignored if ``rand_input`` is set to ``1``.
 
-# # How many iterations / how many SLUG cluster do you want to create?
-# # This parameter will be ignored if stochastic_sampling is set to 0 (false).
-# # As a rule of thumb we suggest n_trails = 1e6/mCluster = 1e6/(mCloud*sfe).
-# # In other words, for high mass clusters where we expect fully sampled IMF,
-# # there is no need for a lot of iterations; conversely, for low mass clusters
-# # where stochasticity is important, we require more iterations for better
-# # understanding of the distribution of outputs (such as the ionising luminosity).
-# # DEFAULT: 1
-# n_trials    1
-
-
 Parameters for the density profile of the cloud
 -----------------------------------------------
 
 This section sets the density profile, :math:`\rho(r)` , of the cloud.
 
-* ``dens_profile [bE_prof]``: 
+* ``dens_profile [bE_prof]``: How does the density scale with radius?
     
-    * ``bE_prof``: Bonnor Ebert 
+    * ``bE_prof``: Bonnor-Ebert sphere profile (`Ebert 1955 <https://ui.adsabs.harvard.edu/abs/1955ZA.....37..217E/abstract>`_; `Bonnor 1956 <https://ui.adsabs.harvard.edu/abs/1956MNRAS.116..351B/abstract>`_).
 
- Ebert)
-(Bonnor  
+        * ``dens_g_bE [14.1]``: If Bonnor-Ebert is selected, then the user must also define the parameter :math:`g_{BE} = \frac{rho_{\rm centre}}{rho\_{\rm edge}}`, such that all clouds exceeding this value are gravitationally unstable. The corresponding mass is the critical mass known as the Bonner-Ebert mass (see `Stahler and Palla 2004 <https://ui.adsabs.harvard.edu/abs/2004fost.book.....S/abstract>`_). 
 
-https://ui.adsabs.harvard.edu/abs/1955ZA.....37..217E/abstract
+    * ``pL_prof``: Power-law profile. Setting ``dens_a_pL = 0`` (see below) gives a homogeneous cloud, whereas ``dens_a_pL = -2`` gives an isothermal sphere. 
 
-https://ui.adsabs.harvard.edu/abs/1956MNRAS.116..351B/abstract
+        * ``dens_a_pL [-2]``: If power-law is selected, then the user must also define the power-law coefficient :math:`\alpha`, which takes value between :math:`-2\leq\alpha<0` and is defined as the following:
+
+.. math:: \rho_{\rm cloud}(r) = \left\{\begin{array}{lll} \rho_0 , & r \leq r_{\rm core} \\ rho_0 \times (r / r_{\rm core})^\alpha, & r_{\rm core} < r \leq r_{\rm cloud} \\ \rho_{\rm ambISM}, & r > r_{\rm cloud} \end{array} \right.
+
+        * ``dens_navg_pL [170]``: The average number density of the cloud (unit: cm\ :math:`^{-3}`).
 
 
-
-
-
-
-# # What is the density profile of the cloud? How does density scale with radius?
-# # type: str
-# # Available values:
-# # -- pL_prof  power-law profile. 
-# # -- bE_prof  Bonnor-Ebert density profile.
-# # DEFAULT: bE_prof
-# dens_profile    bE_prof
-
-# # If bE_prof (Bonner-Ebert) is specified for dens_profile, then the user must
-# # also define the parameter g_BE = rho_centre/rho_edge, such that all clouds 
-# # exceeding this value are grativationally unstable. The corresponding mass, 
-# # according to literature, is the critical mass known as Bonner-Ebert mass. 
-# # See The Formation of Stars (Stahler and Palla 2004), p247.
-# # DEFAULT: 14.1
-# dens_g_bE    15
-
-If pL_prof (power law) is specified for dens_profile, then the user must 
-also define the power-law coefficient, alpha. Alpha is defined as follows:
-# #       rho_cloud(r):
-# #           = rho_0                         for r <= r_core
-# #           = rho_0 * ( r / r_core)**alpha  for r_core < r <= r_cloud
-# #           = rho_ambISM                    for r > r_cloud
-# # type: float
-# # Available values: 
-# # -2 <= alpha <= 0
-# # Here, alpha = 0 corresponds to an homogeneous cloud, 
-# # whereas alpha = -2 corresponds to single isothermal sphere.
-# # DEFAULT: -2
-# dens_a_pL    -2
-
-# # Additionally (for pL_prof) the user must also define the average number density
-# # of the cloud. (unit: 1/cm3)
-# # type: float
-# # DEFAULT: 170
-# dens_navg_pL    170
 
 
 
