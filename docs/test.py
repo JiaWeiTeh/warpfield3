@@ -14,9 +14,9 @@ This section documents how one can create and format parameter files (``*.param`
 
 * The parameters need not be specified in order. 
 
-* Some parameters will only run under certain conditions; if the conditions are not met, these parameters will be ignored. These conditions, if present, are documented below.
+* Some parameters will only take effect under certain conditions; if the conditions are not satisfied, the parameters will be ignored.
 
-* Lines beginning with ``#`` in the ``.param`` file will be ignored. 
+* Lines beginning with ``#`` in the ``.param`` file is treated as comment and will be ignored. 
 
 * One can specify parameters in the file using the following syntax:
 
@@ -98,10 +98,9 @@ Unless necessary, these parameters should be kept at their default values.
 * ``gamma_adia [1.6666666666666667]``: The adiabatic index (:math:`\gamma_{\rm adia} = 5/3`).
 * ``gamma_mag [1.3333333333333333]``: The effective magnetic adiabatic index (:math:`\gamma_{\rm mag} = 4/3`). Setting to ``0`` implies a constant magnetic field strength throughout the model, whereas ``4/3`` implies conservation of magnetic flux and is what would be expected in the absence of dynamo action or magnetic reconnection (sphere). See `Henney et al 2005 <https://ui.adsabs.harvard.edu/abs/2005ApJ...621..328H/abstract>`_, Appendix C.
 * ``alpha_B [2.59e-13]``: The case B recombination coefficient (unit: cm\ :math:`^{3}`/s). See `Osterbrock and Ferland 2006 <https://ui.adsabs.harvard.edu/abs/2006agna.book.....O/abstract>`_.     
-* ``kappa_IR [4]``: The Rosseland mean dust opacity :math:`\kappa_{\rm IR}` (unit: cm\ :math:`^{2}` /g). For simplicity we do not relate :math:`\kappa_{\rm IR}` to dust temperature, but adopt a constant value. This parameter relates to the calculation of :math:`\tau_{\rm IR}`, the optical depth of the shell in the IR by:
-.. math:: \tau_{\rm IR} = \kappa_{\rm IR} * \int \mu_n * n_{\rm sh} {\rm d}r
+* ``kappa_IR [4]``: The Rosseland mean dust opacity :math:`\kappa_{\rm IR}` (unit: cm\ :math:`^{2}`/g). For simplicity we do not relate :math:`\kappa_{\rm IR}` to dust temperature, but adopt a constant value. This parameter relates to the calculation of :math:`\tau_{\rm IR}`, the optical depth of the shell in the IR by:
+ .. math:: \tau_{\rm IR} = \kappa_{\rm IR} \int \mu_n n_{\rm sh} {\rm d}r
     
-
 
 
 
