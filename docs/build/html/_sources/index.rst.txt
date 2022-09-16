@@ -2,7 +2,7 @@
     :class: small-caps
 
 Welcome to :small-caps:`warpfield3`'s documentation!
-=====================================
+====================================================
 
 :small-caps:`warpfield3` (\ **W**\inds \ **A**\nd \ **R**\adiation \ **P**\ressure: \ **F**\eedback \ **I**\nduced \ **E**\xpansion, col\ **L**\apse and \ **D**\issolution; `Rahner et al. 2017 <https://ui.adsabs.harvard.edu/abs/2017MNRAS.470.4453R/abstract>`_; `Rahner et al. 2019 <https://ui.adsabs.harvard.edu/abs/2019MNRAS.483.2547R/abstract>`_) 
 is a python package that allows one to model the evolution and physical structure of the HII region. 
