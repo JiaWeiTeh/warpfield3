@@ -1,1 +1,1 @@
-.. highlight:: rest.. _sec-running:Running WARPFIELD=================One can run WARPFIELD using the following command in the WARPFIELD root directory:.. code-block:: console    python3 ./run.py param/example.param
+.. highlight:: rest.. _sec-running:Running :small-caps:`warpfield3`=================One can run :small-caps:`warpfield3` using the following command in the :small-caps:`warpfield3` root directory:.. code-block:: console    python3 ./run.py param/example.param
