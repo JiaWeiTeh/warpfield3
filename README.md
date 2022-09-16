@@ -1,8 +1,8 @@
 # WARPFIELD3
 
-<p><h2>A re-implementation of WARPFILEDv2.1</h2></p>
+<p><h2>A re-implementation of WARPFILEDv2</h2></p>
 
-<p>This repo expands on WARPFIELD, and include changes such as:</p>
+<p>This repo expands on WARPFIELD2, and include changes such as:</p>
 <ul>
     <li>The ability to include the effect of stochastic sampling of the IMF function in the formation of low-mass clusters.</li>
     <li>Implement an easier-to-use file structure for future users and developers.</li>
