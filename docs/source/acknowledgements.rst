@@ -1,1 +1,1 @@
-.. highlight:: rest.. _sec-acknowledgements:Acknowledgements================We gratefully acknowledge the following people who have contributed to WARPFIELD3:* Daniel Rahner* Eric Pellegrini* Moritz Sturm* Simon Glover* Ralf Klessen
+.. highlight:: rest.. _sec-acknowledgements:Acknowledgements================We gratefully acknowledge the following people who have contributed to WARPFIELD3:    * Daniel Rahner    * Eric Pellegrini    * Moritz Sturm    * Simon Glover    * Ralf Klessen
