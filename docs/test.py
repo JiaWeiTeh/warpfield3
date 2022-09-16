@@ -8,7 +8,7 @@ Parameter Specifications
 Creating the parameter file
 ---------------------------
 
-This section documents how one can create and format parameter files (``*.param``). Here are some basic rules:
+This section documents how one can create and format parameter files (``*.param``). Here are the basic rules:
 
 * Most parameters have default values (given in ``[]`` below). If a parameter is not specified in the parameter file, the default parameter-value pair will be assumed.
 
@@ -45,18 +45,18 @@ These are the main parameters which WARPFIELD depends on.
 
 * ``rand_input [0]``: Enable random input parameters? ``1`` to enable randomiser, ``0`` to disable. If ``1``, WARPFIELD will generate randomised inputs of ``log_mCloud``, ``sfe``, ``nCore``, and ``metallicity``. The user must then define the limits of the randomiser:
 
-    * ``rand_log_mCloud [5,7.47]``: Log cloud mass (unit: solar mass)
+    * ``rand_log_mCloud [5,7.47]``: Log cloud mass (unit: M\ :math:`\odot`)
     * ``rand_sfe [0.01, 0.10]``: Star formation effeciency
     * ``rand_n_cloud [100, 1000]``: Number density of cloud core (unit: cm\ :math:`^{-3}`)
     * ``rand_metallicity [0.15, 1]``: Cloud metallicity (unit: solar metallicity, :math:`Z_\odot`)
 
-* ``log_mCloud [6.0]``:  Log cloud mass (unit: solar mass). This will be the initial mass of the molecular cloud. This parameter is ignored if ``rand_input`` is set to ``1``.
+* ``log_mCloud [6.0]``:  Log cloud mass (unit: M\ :math:`\odot`). This will be the initial mass of the molecular cloud. This parameter is ignored if ``rand_input`` is set to ``1``.
 
     * ``mCloud_beforeSF [1]``: Is ``log_mCloud`` given as mass before or after cluster formation? ``0`` indicates after star formation, and ``1`` indicates indicates before.
 
 * ``sfe [0.01]``: Star formation effeciency (``0 < sfe < 1``). This sets the fraction of cloud mass that is converted into the mass of the initial star cluster. This parameter is ignored if ``rand_input`` is set to ``1``.
-* ``nCore [1000]``: Number density of cloud core (unit: cm\ :math:`^{-3}`). This parameter is ignored if ``rand_input`` is set to ``1``.
-* ``metallicity [1]``: Cloud metallicity (unit: solar metallicity, :math:`Z_\odot`). Currently available values are 1 :math:`Z_\odot` and 0.15 :math:`Z_\odot`. This parameter is ignored if ``rand_input`` is set to ``1``.
+* ``nCore [1000]``: Number density of cloud core (unit: Z\ :math:`\odot`). This parameter is ignored if ``rand_input`` is set to ``1``.
+* ``metallicity [1]``: Cloud metallicity (unit: solar metallicity, :math:`Z_\odot`). Currently available values are 1 Z\ :math:`\odot` and 0.15 Z\ :math:`\odot`. This parameter is ignored if ``rand_input`` is set to ``1``.
 * ``stochastic_sampling [0]``: Include stochastic sampling of IMF in the creation of initial cluster? If set to ``1``, apply scaling relations when computing cluster properties assuming that the IMF is fully sampled. This parameter is ignored if ``rand_input`` is set to ``1``.
 
 Parameters for the density profile of the cloud
@@ -93,8 +93,8 @@ Unless necessary, these parameters should be kept at their default values.
 * ``nISM [10]``: The number density of the ambient ISM (unit: cm\ :math:`^{-3}`).       
 * ``t_ion [1e4]``: Temperature of ionised region (unit: K).
 * ``t_neu [1e2]``: Temperature of neutral region (unit: K).
-* ``sigma0 [1.5e-21]``: Dust cross-section at solar metallicity (unit: cm\ :math:`^2`). Thus for other metallicities the dust cross section is scaled as :math:`\sigma_d = \sigma_0 * (Z/Z_\odot)`.
-* ``z_nodust [0.05]``: Metallicity below which there is effectively no dust (i.e., :math:`\sigma_d = 0`. Unit: :math:`Z_\odot`). 
+* ``sigma0 [1.5e-21]``: Dust cross-section at solar metallicity (unit: cm\ :math:`^2`). Thus for other metallicities the dust cross section is scaled as :math:`\sigma_d = \sigma_0 * (Z/{\rm Z}_\odot)`.
+* ``z_nodust [0.05]``: Metallicity below which there is effectively no dust (i.e., :math:`\sigma_d = 0`. Unit: Z\ :math:`\odot`). 
 * ``gamma_adia [1.6666666666666667]``: The adiabatic index (:math:`\gamma_{\rm adia} = 5/3`).
 * ``gamma_mag [1.3333333333333333]``: The effective magnetic adiabatic index (:math:`\gamma_{\rm mag} = 4/3`). Setting to ``0`` implies a constant magnetic field strength throughout the model, whereas ``4/3`` implies conservation of magnetic flux and is what would be expected in the absence of dynamo action or magnetic reconnection (sphere). See `Henney et al 2005 <https://ui.adsabs.harvard.edu/abs/2005ApJ...621..328H/abstract>`_, Appendix C.
 * ``alpha_B [2.59e-13]``: The case B recombination coefficient (unit: cm\ :math:`^{3}`/s). See `Osterbrock and Ferland 2006 <https://ui.adsabs.harvard.edu/abs/2006agna.book.....O/abstract>`_.     
