@@ -1,1 +1,1 @@
-.. highlight:: rest.. _sec-running:Running WARPFIELD=================One can run WARPFIELD simply by using the following command in the root directory of WARPFIELD:.. code-block:: console    python3 ./run.py param/example.param
+.. highlight:: rest.. _sec-running:Running WARPFIELD=================One can run WARPFIELD using the following command in the WARPFIELD root directory:.. code-block:: console    python3 ./run.py param/example.param
