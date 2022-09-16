@@ -98,27 +98,8 @@ Unless necessary, these parameters should be kept at their default values.
 * ``gamma_adia [1.6666666666666667]``: The adiabatic index (:math:`\gamma_{\rm adia} = 5/3`).
 * ``gamma_mag [1.3333333333333333]``: The effective magnetic adiabatic index (:math:`\gamma_{\rm mag} = 4/3`). Setting to ``0`` implies a constant magnetic field strength throughout the model, whereas ``4/3`` implies conservation of magnetic flux and is what would be expected in the absence of dynamo action or magnetic reconnection (sphere). See `Henney et al 2005 <https://ui.adsabs.harvard.edu/abs/2005ApJ...621..328H/abstract>`_, Appendix C.
 * ``alpha_B [2.59e-13]``: The case B recombination coefficient (unit: cm\ :math:`^{3}`/s). See `Osterbrock and Ferland 2006 <https://ui.adsabs.harvard.edu/abs/2006agna.book.....O/abstract>`_.     
-
-# # The Rosseland mean dust opacity kappa_IR. This parameter relates to the calculation 
-# # of tau_IR, the optical depth of the shell in the IR by:
-# #           tau_IR = kappa_IR * \int u_n * n_sh dr
-# # For simplicity we do not relate kappa_IR to dust temperature, but adopt a 
-# # constant value kappa_IR = 4 cm^2/g
-# # DEFAULT: 4
-# kappa_IR    4
-
-
-# # The thermalisation efficiency for colliding winds and supernova ejecta.
-# # See Stevens and Hartwell 2003 or Kavanagh 2020 for a review.
-# # The new mechanical energy will thus be:
-# #       Lw_new = thermcoeff * Lw_old
-# # DEFAULT: 1.0
-# thermcoeff_wind    1.0 
-# thermcoeff_SN    1.0 
-
-        
-        
-
+* ``kappa_IR [4]``: The Rosseland mean dust opacity :math:`\kappa_{\rm IR}` (unit: cm\ :math:`^{2}` /g). For simplicity we do not relate :math:`\kappa_{\rm IR}` to dust temperature, but adopt a constant value. This parameter relates to the calculation of :math:`\tau_{\rm IR}`, the optical depth of the shell in the IR by:
+.. math:: \tau_{\rm IR} = \kappa_{\rm IR} * \int \mu_n * n_{\rm sh} {\rm d}r
     
 
 
@@ -346,47 +327,6 @@ Unless necessary, these parameters should be kept at their default values.
 # # DEFAULT: 1e9
 # v_SN    1e9
 
-# # Dust cross-section at solar metallicity? (unit: cm^2)
-# # If non-solar metallicity is given, the repective dust cross-section, sigma_d,
-# # will be scaled linearly such that:
-# #           sigma_d = sigma_0 * (Z/Z_sol)
-# # DEFAULT: 1.5e-21; see Draine 2011.
-# sigma0    1.5e-21
-
-# # Metallicity below which there is no dust? (unit: solar metallicity)
-# # Consequently any Z < z_nodust we have sigmad = 0.
-# # DEFAULT: 0.05
-# z_nodust    0.05
-
-# # Mean mass per nucleus and the mean mass per particle? (unit: cgs, i.e. g)
-# # We assume the standard composition of 1 He atom every 10 H atoms.
-# # DEFAULT:  -- mu_n = (14/11)*m_H
-# #           -- mu_p = (14/23)*m_H
-# mu_n    2.1287915392418182e-24
-# mu_p    1.0181176926808696e-24
-
-# # Temperature of ionised and neutral H region? (unit: K)
-# # DEFAULT:  -- t_ion = 1e4
-# #           -- t_neu = 100
-# t_ion    1e4
-# t_neu    100
-
-# # What is the number density of the ambient ISM? (unit: 1/cm^3)
-# # type: float
-# # DEFAULT: 0.1 
-# nISM    10
-
-# # The Rosseland mean dust opacity kappa_IR. This parameter relates to the calculation 
-# # of tau_IR, the optical depth of the shell in the IR by:
-# #           tau_IR = kappa_IR * \int u_n * n_sh dr
-# # For simplicity we do not relate kappa_IR to dust temperature, but adopt a 
-# # constant value kappa_IR = 4 cm^2/g
-# # DEFAULT: 4
-# kappa_IR    4
-
-# # What is the adiabatic index?
-# # DEFAULT: 5/3
-# gamma_adia    1.6666666666666667
 
 # # The thermalisation efficiency for colliding winds and supernova ejecta.
 # # See Stevens and Hartwell 2003 or Kavanagh 2020 for a review.
@@ -396,18 +336,6 @@ Unless necessary, these parameters should be kept at their default values.
 # thermcoeff_wind    1.0 
 # thermcoeff_SN    1.0 
 
-# # The case B recombination coefficient (unit: cm3/s)
-# # Osterbrock and Ferland 2006
-# alpha_B    2.59e-13
-
-# # The effective magnetic adiabatic index?
-# # Available values:
-# # 0: Implies a constant magnetic field strength throughout the model.
-# # 4/3: Implies conservation of magnetic flux and is what would be expected 
-# #       in the absence of dynamo action or magnetic reconnection. (sphere)
-# # See Henney et al 2005 Apped C: https://ui.adsabs.harvard.edu/abs/2005ApJ...621..328H/abstract
-# # DEFAULT: 4/3
-# gamma_mag    1.3333333333333333
 
 # # BMW, nMW
 # # TODO

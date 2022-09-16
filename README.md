@@ -13,7 +13,7 @@
     
 <p><h2>Repo Structure</h2></p>
 <ul>
-    <li><code>./doc:</code> WARPFIELD documentation (TBD; see <a href="https://warpfield3.readthedocs.io/en/latest/">Official page</a>).
+    <li><code>./doc:</code> WARPFIELD documentation (TBD; check out the <a href="https://warpfield3.readthedocs.io/en/latest/">official page</a>).
     <li><code>./lib:</code> Directory containing libraries used by WARPFIELD.
     <ul class="square">
           <li><code>/cooling_tables:</code> OPIATE cooling tables. </li>
