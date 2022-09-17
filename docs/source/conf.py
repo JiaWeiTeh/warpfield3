@@ -2,7 +2,7 @@
 
 # -- Project information
 
-project = 'WARPFIELD3'
+project = 'WARPFIELD'
 copyright = '2022, Jia Wei Teh, Daniel Rahner, et al.'
 author = 'Jia Wei Teh'
 

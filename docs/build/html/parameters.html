@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parameter Specifications &mdash; WARPFIELD3 0.1 documentation</title>
+  <title>Parameter Specifications &mdash; WARPFIELD 0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Acknowledgements" href="acknowledgements.html" />
-    <link rel="prev" title="Running WARPFIELD3" href="running.html" /> 
+    <link rel="prev" title="Running WARPFIELD" href="running.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -28,7 +28,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> WARPFIELD3
+            <a href="index.html" class="icon icon-home"> WARPFIELD
           </a>
               <div class="version">
                 0.1.0
@@ -42,11 +42,12 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="running.html">Running WARPFIELD3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">LICENSE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running.html">Running WARPFIELD</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Parameter Specifications</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#creating-the-parameter-file">Creating the parameter file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#basic-parameters">Basic parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#main-parameters-for-warpfield3">Main parameters for WARPFIELD3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main-parameters-for-warpfield">Main parameters for WARPFIELD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parameters-for-the-density-profile-of-the-cloud">Parameters for the density profile of the cloud</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#other-parameters">Other parameters</a></li>
 </ul>
@@ -60,7 +61,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">WARPFIELD3</a>
+          <a href="index.html">WARPFIELD</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -101,16 +102,16 @@
 <p>These set the basic parameters for the run.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">model_name</span> <span class="pre">[WARPFIELD_DEFAULT]</span></code>: The model name. This sets the prefix for all output filenames. WARNING: Do not include spaces.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">out_dir</span> <span class="pre">[def_dir]</span></code>: The directory for output files. This is the absolute path in which output files will be stored. The default directory is the root directory in which WARPFIELD3 is being run.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">out_dir</span> <span class="pre">[def_dir]</span></code>: The directory for output files. This is the absolute path in which output files will be stored. The default directory is the root directory in which WARPFIELD is being run.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">verbose</span> <span class="pre">[1]</span></code>: The output intensity level in terminal. <code class="docutils literal notranslate"><span class="pre">1</span></code> for minimal output, <code class="docutils literal notranslate"><span class="pre">2</span></code> for basic output, and <code class="docutils literal notranslate"><span class="pre">3</span></code> for everything.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">output_format</span> <span class="pre">[ASCII]</span></code>: The output format. In the future we will implement options for FITS files.</p></li>
 </ul>
 </section>
-<section id="main-parameters-for-warpfield3">
-<h2>Main parameters for WARPFIELD3<a class="headerlink" href="#main-parameters-for-warpfield3" title="Permalink to this headline"></a></h2>
-<p>These are the main parameters which WARPFIELD3 depends on.</p>
+<section id="main-parameters-for-warpfield">
+<h2>Main parameters for WARPFIELD<a class="headerlink" href="#main-parameters-for-warpfield" title="Permalink to this headline"></a></h2>
+<p>These are the main parameters which WARPFIELD depends on.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">rand_input</span> <span class="pre">[0]</span></code>: Enable random input parameters? <code class="docutils literal notranslate"><span class="pre">1</span></code> to enable randomiser, <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable. If <code class="docutils literal notranslate"><span class="pre">1</span></code>, WARPFIELD3 will generate randomised inputs of <code class="docutils literal notranslate"><span class="pre">log_mCloud</span></code>, <code class="docutils literal notranslate"><span class="pre">sfe</span></code>, <code class="docutils literal notranslate"><span class="pre">nCore</span></code>, and <code class="docutils literal notranslate"><span class="pre">metallicity</span></code>. The user must then define the limits of the randomiser:</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">rand_input</span> <span class="pre">[0]</span></code>: Enable random input parameters? <code class="docutils literal notranslate"><span class="pre">1</span></code> to enable randomiser, <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable. If <code class="docutils literal notranslate"><span class="pre">1</span></code>, WARPFIELD will generate randomised inputs of <code class="docutils literal notranslate"><span class="pre">log_mCloud</span></code>, <code class="docutils literal notranslate"><span class="pre">sfe</span></code>, <code class="docutils literal notranslate"><span class="pre">nCore</span></code>, and <code class="docutils literal notranslate"><span class="pre">metallicity</span></code>. The user must then define the limits of the randomiser:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">rand_log_mCloud</span> <span class="pre">[5,</span> <span class="pre">7.47]</span></code>: Log cloud mass (unit: <span class="math notranslate nohighlight">\(M_\odot\)</span>)</p></li>
@@ -188,7 +189,7 @@ Unless necessary, these parameters should be kept at their default values.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="running.html" class="btn btn-neutral float-left" title="Running WARPFIELD3" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="running.html" class="btn btn-neutral float-left" title="Running WARPFIELD" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="acknowledgements.html" class="btn btn-neutral float-right" title="Acknowledgements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
