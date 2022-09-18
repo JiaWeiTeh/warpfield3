@@ -1,1 +1,0 @@
-/* * Container to help create floating images. * */div.leftside {    width: 414px;    padding: 0px 3px 0px 0px;    float: left;}div.rightside {    margin-left: 425px;}
