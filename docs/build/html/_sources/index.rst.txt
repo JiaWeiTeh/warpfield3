@@ -21,4 +21,5 @@ Contents
    license
    running
    parameters
+   publications
    acknowledgements
