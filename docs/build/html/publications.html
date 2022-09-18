@@ -50,6 +50,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#warpfield-2-0-feedback-regulated-minimum-star-formation-efficiencies-of-giant-molecular-clouds">WARPFIELD 2.0: feedback-regulated minimum star formation efficiencies of giant molecular clouds</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#warpfield-emp-the-self-consistent-prediction-of-emission-lines-from-evolving-hii-regions-in-dense-molecular-clouds">WARPFIELD-EMP: The self-consistent prediction of emission lines from evolving HII regions in dense molecular clouds</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#warpfield-population-synthesis-the-physics-of-extra-galactic-star-formation-and-feedback-driven-cloud-structure-and-emission-from-sub-to-kpc-scales">WARPFIELD population synthesis: the physics of (extra-)Galactic star formation and feedback-driven cloud structure and emission from sub-to-kpc scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#emission-line-diagnostics-of-hii-regions-using-conditional-invertible-neural-network">Emission-line diagnostics of HII regions using conditional invertible neural network</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
@@ -101,7 +102,7 @@ manner, including the coupling of radiation and matter. We present a new semi-an
 feedback model for isolated massive clouds (<span class="math notranslate nohighlight">\(\geq 10^5 M_\odot\)</span>) to calculate shell dynamics and shell
 structure simultaneously. It allows us to scan a large range of physical parameters
 (gas density, star formation efficiency, and metallicity) and to estimate escape fractions
-of ionizing radiation <span class="math notranslate nohighlight">\(f_{\rm esc, i}\)</span>, the minimum star formation efficiency <span class="math notranslate nohighlight">\(\epsilon_{\rm ff}\)</span> required to drive
+of ionizing radiation <span class="math notranslate nohighlight">\(f_{\rm esc, i}\)</span>, the minimum star formation efficiency <span class="math notranslate nohighlight">\(\varepsilon_{\rm ff}\)</span> required to drive
 an outflow, and recollapse time-scales for clouds that are not destroyed by feedback.
 Our results show that there is no simple answer to the question of what dominates cloud dynamics,
 and that each feedback process significantly influences the efficiency of the others.
@@ -130,13 +131,13 @@ for the combined effects of photoionization and collisional ionization on the co
 rate, which we now make publicly available. We employ our updated version of WARPFIELD
 to investigate the impact of stellar feedback on GMCs with a broad range of masses and
 surface densities and a variety of density profiles. We show that the minimum star
-formation efficiency (SFE) <span class="math notranslate nohighlight">\(\epsilon_{\rm min}\)</span>, i.e., the SFE above which the cloud is destroyed by
+formation efficiency (SFE) <span class="math notranslate nohighlight">\(\varepsilon_{\rm min}\)</span>, i.e., the SFE above which the cloud is destroyed by
 feedback, is mainly set by the average cloud surface density. An SFE of 1-6 per cent
-is generally sufficient to destroy a GMC. We also find an SFE per free-fall time <span class="math notranslate nohighlight">\(\epsilon_{\rm ff}\)</span> ~ 0.3 per cent,
+is generally sufficient to destroy a GMC. We also find an SFE per free-fall time <span class="math notranslate nohighlight">\(\varepsilon_{\rm ff}\)</span> ~ 0.3 per cent,
 in good agreement with recent observations. Our results imply that feedback alone is
 sufficient to explain the low observed SFE of GMCs. Finally, we show that very massive
 clouds with steep density profiles - possible proxies of the giant clumps observed
-in galaxies at <span class="math notranslate nohighlight">\(z \approx 2\)</span> - are more resilient to feedback than typical GMCs, with <span class="math notranslate nohighlight">\(\epsilon_{\rm min}\)</span> between 1 and 12 per cent.</p>
+in galaxies at <span class="math notranslate nohighlight">\(z \approx 2\)</span> - are more resilient to feedback than typical GMCs, with <span class="math notranslate nohighlight">\(\varepsilon_{\rm min}\)</span> between 1 and 12 per cent.</p>
 </section>
 <section id="warpfield-emp-the-self-consistent-prediction-of-emission-lines-from-evolving-hii-regions-in-dense-molecular-clouds">
 <h2>WARPFIELD-EMP: The self-consistent prediction of emission lines from evolving HII regions in dense molecular clouds<a class="headerlink" href="#warpfield-emp-the-self-consistent-prediction-of-emission-lines-from-evolving-hii-regions-in-dense-molecular-clouds" title="Permalink to this headline"></a></h2>
@@ -191,6 +192,32 @@ Next, we predict [S III] 9530 Å, a key emission line that will be observed in s
 suffers less extinction than other lines and provides information about star formation in very dense environments
 that are otherwise observationally inaccessible optically. Finally, we explore the effects of differential extinction,
 and discuss the consequences for the interpretation of H<span class="math notranslate nohighlight">\(\alpha\)</span> emission at different viewing angles by an extragalactic observer.</p>
+</section>
+<section id="emission-line-diagnostics-of-hii-regions-using-conditional-invertible-neural-network">
+<h2>Emission-line diagnostics of HII regions using conditional invertible neural network<a class="headerlink" href="#emission-line-diagnostics-of-hii-regions-using-conditional-invertible-neural-network" title="Permalink to this headline"></a></h2>
+<p>Kang, Da Eun; Pellegrini, Eric W.; Ardizzone, Lynton; Klessen, Ralf S.; Koethe, Ullrich; Glover, Simon C. O.; Ksoll, Victor F.; <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2022MNRAS.512..617K/abstract">MNRAS, 512(1), 617-647 (2022)</a>.</p>
+<figure class="align-default" id="id5">
+<img alt="_images/warpfieldML.png" src="_images/warpfieldML.png" />
+<figcaption>
+<p><span class="caption-text">A schematic overview of the cINN architecture with the information of input parameters and observations for a condition (Figure 2).</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Young massive stars play an important role in the evolution of the interstellar medium (ISM) and the
+self-regulation of star formation in giant molecular clouds (GMCs) by injecting energy, momentum,
+and radiation (stellar feedback) into surrounding environments, disrupting the parental clouds,
+and regulating further star formation. Information of the stellar feedback inheres in the emission we
+observe, however inferring the physical properties from photometric and spectroscopic measurements is
+difficult, because stellar feedback is a highly complex and non-linear process, so that the observational
+data are highly degenerate. On this account, we introduce a novel method that couples a conditional invertible
+neural network (cINN) with the WARPFIELD-emission predictor (WARPFIELD-EMP) to estimate the physical properties
+of star-forming regions from spectral observations. We present a cINN that predicts the posterior distribution of
+seven physical parameters (cloud mass, star formation efficiency, cloud density, cloud age which means age of the
+first generation stars, age of the youngest cluster, the number of clusters, and the evolutionary phase of the
+cloud) from the luminosity of 12 optical emission lines, and test our network with synthetic models that are not
+used during training. Our network is a powerful and time-efficient tool that can accurately predict each parameter,
+although degeneracy sometimes remains in the posterior estimates of the number of clusters. We validate the posteriors
+estimated by the network and confirm that they are consistent with the input observations. We also evaluate the influence
+of observational uncertainties on the network performance.</p>
 </section>
 </section>
 
