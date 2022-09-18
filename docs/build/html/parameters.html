@@ -42,7 +42,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="license.html">LICENSE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="running.html">Running WARPFIELD</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Parameter Specifications</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#creating-the-parameter-file">Creating the parameter file</a></li>
@@ -133,7 +133,7 @@
 <h2>Parameters for the density profile of the cloud<a class="headerlink" href="#parameters-for-the-density-profile-of-the-cloud" title="Permalink to this headline"></a></h2>
 <p>This section sets the density profile, <span class="math notranslate nohighlight">\(\rho(r)\)</span>, of the cloud.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">dens_profile</span> <span class="pre">[bE_prof]</span></code>: How does the density scale with radius?</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">dens_profile</span> <span class="pre">[bE_prof]</span></code>: How does the density scale with radius? Available parameters:</p>
 <blockquote>
 <div><ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">bE_prof</span></code>: Bonnor-Ebert sphere profile (see <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1955ZA.....37..217E/abstract">Ebert 1955</a>; <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1956MNRAS.116..351B/abstract">Bonnor 1956</a>).</p>
@@ -176,7 +176,7 @@ Unless necessary, these parameters should be kept at their default values.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">gamma_adia</span> <span class="pre">[1.6666666666666667]</span></code>: The adiabatic index (<span class="math notranslate nohighlight">\(\gamma_{\rm adia} = 5/3\)</span>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gamma_mag</span> <span class="pre">[1.3333333333333333]</span></code>: The effective magnetic adiabatic index (<span class="math notranslate nohighlight">\(\gamma_{\rm mag} = 4/3\)</span>). Setting to <code class="docutils literal notranslate"><span class="pre">0</span></code> implies a constant magnetic field strength throughout the model, whereas <code class="docutils literal notranslate"><span class="pre">4/3</span></code> implies conservation of magnetic flux and is what would be expected in the absence of dynamo action or magnetic reconnection (sphere). See <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2005ApJ...621..328H/abstract">Henney et al 2005</a>, Appendix C.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">alpha_B</span> <span class="pre">[2.59e-13]</span></code>: The case B recombination coefficient (unit: cm<span class="math notranslate nohighlight">\(^{3}\)</span>/s). See <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2006agna.book.....O/abstract">Osterbrock and Ferland 2006</a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kappa_IR</span> <span class="pre">[4]</span></code>: The Rosseland mean dust opacity <span class="math notranslate nohighlight">\(\kappa_{\rm IR}\)</span> (unit: cm<span class="math notranslate nohighlight">\(^{2}\)</span>/g). For simplicity we do not relate <span class="math notranslate nohighlight">\(\kappa_{\rm IR}\)</span> to dust temperature, but adopt a constant value. This parameter relates to the calculation of <span class="math notranslate nohighlight">\(\tau_{\rm IR}\)</span>, the optical depth of the shell in the IR by:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kappa_IR</span> <span class="pre">[4]</span></code>: The Rosseland mean dust opacity <span class="math notranslate nohighlight">\(\kappa_{\rm IR}\)</span> (unit: cm<span class="math notranslate nohighlight">\(^{2}\)</span>/g). For simplicity we do not include the dependency of <span class="math notranslate nohighlight">\(\kappa_{\rm IR}\)</span> wish dust temperature, but adopt a constant value. This parameter relates to the calculation of <span class="math notranslate nohighlight">\(\tau_{\rm IR}\)</span>, the optical depth of the shell in the IR by:</p></li>
 </ul>
 <blockquote>
 <div><div class="math notranslate nohighlight">
