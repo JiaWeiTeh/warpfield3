@@ -171,9 +171,9 @@ data_struc = {'alpha': 0.6, 'beta': 0.8, 'delta': -0.17142857142857143,
               'Eb': 15649519.367987147, 'Lw': 201648867747.70163,
               'vw': 3810.2196532385897, 'dMdt_factor': 1.646, 
               'Qi': 1.6994584609226492e+67, 
-              'mypath': '/Users/jwt/Documents/Code/WARPFIELD_Rewrite/outputs/'}
+              'mypath': '/Users/jwt/Documents/Code/warpfield3/outputs/'}
 
-cool_struc = np.load('/Users/jwt/Documents/Code/WARPFIELD_Rewrite/outputs/cool.npy', allow_pickle = True).item()
+cool_struc = np.load('/Users/jwt/Documents/Code/warpfield3/outputs/cool.npy', allow_pickle = True).item()
 
 warpfield_params = {'model_name': 'example', 
                    'out_dir': 'def_dir', 
@@ -669,7 +669,7 @@ def get_bubbleLuminosity(data_struc,
     return Lb, T_rgoal, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg
 
 
-initialise_bstruc(990000000, 0.01, '/Users/jwt/Documents/Code/WARPFIELD_Rewrite/outputs')
+initialise_bstruc(990000000, 0.01, '/Users/jwt/Documents/Code/warpfield3/outputs')
 
 a = get_bubbleLuminosity(data_struc, cool_struc,
                 warpfield_params)
