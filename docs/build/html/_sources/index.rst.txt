@@ -22,4 +22,3 @@ Contents
    running
    parameters
    publications
-   acknowledgements

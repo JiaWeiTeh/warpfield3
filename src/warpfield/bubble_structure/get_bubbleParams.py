@@ -19,8 +19,206 @@ import astropy.units as u
 import astropy.constants as c
 from astropy.table import Table
 #--
-import src.warpfield.bubble_structure.bubble_ODEs as bubble_ODEs
 import src.warpfield.cooling.get_coolingFunction as get_coolingFunction
+
+# =============================================================================
+# This section contains function which computes the ODEs that dictate the 
+# strucuture (e.g., temperature, velocity) of the bubble. 
+# =============================================================================
+
+def delta2dTdt(t, T, delta):
+    """
+    See Pg 79, Eq A5, https://www.imprs-hd.mpg.de/399417/thesis_Rahner.pdf.
+    
+    Parameters
+    ----------
+    t : float
+        time.
+    T : float
+        Temperature at xi = r/R2.
+
+    Returns
+    -------
+    dTdt : float
+    """
+    dTdt = (T/t) * delta
+
+    return dTdt
+
+
+def dTdt2delta(t, T, dTdt):
+    """
+    See Pg 79, Eq A5, https://www.imprs-hd.mpg.de/399417/thesis_Rahner.pdf.
+    
+    Parameters
+    ----------
+    t : float
+        time.
+    T : float
+        DESCRIPTION.
+
+    Returns
+    -------
+    delta : float
+    """
+    
+    delta = (t/T) * dTdt
+    
+    return delta
+
+
+
+def beta2Edot(bubble_P, bubble_E, 
+              r1, r2, beta,
+              t_now, pwdot, pwdotdot,
+              r2dot,
+              ):
+    """
+    see pg 80, A12 https://www.imprs-hd.mpg.de/399417/thesis_Rahner.pdf 
+
+    Parameters
+    ----------
+    bubble_P : float
+        Bubble pressure.
+    bubble_E : float
+        Bubble energy.
+    r1 : float
+        Inner bubble radius.
+    r2 : float
+        Outer bubble radius.
+    beta : float
+        dbubble_P/dt.
+    t_now : float
+        time.
+    pwdot : float
+        dPw/dt.
+    pwdotdot : float
+        dPw/dt/dt.
+    r2dot : float
+        Outer bubble velocity.
+
+    Returns
+    -------
+    bubble_Edot : float
+        dE/dt.
+
+    """
+    # dp/dt pressure 
+    pdot = - bubble_P * beta / t_now
+    # define terms
+    a = np.sqrt(pwdot/2)
+    b = 1.5 * a**2 * r1
+    d = r2**3 - r1**3
+    adot = 0.25 * pwdotdot / a
+    e = b / ( b + bubble_E )
+    # main equation
+    bubble_Edot = (2 * np.pi * pdot * d**2 + 3 * bubble_E * r2dot * r2**2 * (1 - e) -\
+                    3 * adot / a * r1**3 * bubble_E**2 / (bubble_E + b)) / (d * (1 - e))
+    # return 
+    return bubble_Edot
+    
+
+def Edot2beta(bubble_P, bubble_E, 
+              r1, r2, bubble_Edot,
+              t_now, pwdot, pwdotdot,
+              r2dot,
+              ):
+    """
+    see pg 80, A12 https://www.imprs-hd.mpg.de/399417/thesis_Rahner.pdf 
+    
+    Parameters
+    ----------
+    bubble_P : float
+        Bubble pressure.
+    bubble_E : float
+        Bubble energy.
+    r1 : float
+        Inner bubble radius.
+    r2 : float
+        Outer bubble radius.
+    bubble_Edot : float
+        dE/dt.
+    t_now : float
+        time.
+    pwdot : float
+        dPw/dt.
+    pwdotdot : float
+        dPw/dt/dt.
+    r2dot : float
+        Outer bubble velocity.
+
+    Returns
+    -------
+    beta : float
+        dbubble_P/dt.
+
+    """
+    # define terms
+    a = np.sqrt(pwdot/2)
+    b = 1.5 * a**2 * r1
+    d = r2**3 - r1**3
+    adot = 0.25 * pwdotdot / a
+    e = b / ( b + bubble_E ) 
+    # main equation
+    pdot = 1 / (2 * np.pi * d**2 ) *\
+        ( d * (1 - e) * bubble_Edot - 3 * bubble_E * r2dot * r2**2 * (1 - e) + 3 * adot / a * r1**3 * bubble_E**2 / (bubble_E + b))
+    beta = - pdot * t_now / bubble_P
+    # return
+    return beta
+
+
+def get_bubbleODEs(r, y0, data_struc, metallicity):
+    """
+    system of ODEs for bubble structure (see Weaver+77, eqs. 42 and 43)
+    :param x: velocity v, temperature T, spatial derivate of temperature dT/dr
+    :param r: radius from center
+    :param cons: constants
+    :return: spatial derivatives of v,T,dTdr
+    """
+    
+    # Note:
+    # old code: bubble_struct()
+    
+    # unravel
+    a = data_struc["cons"]["a"]
+    b = data_struc["cons"]["b"]
+    C = data_struc["cons"]["c"]
+    d = data_struc["cons"]["d"]
+    e = data_struc["cons"]["e"]
+    Qi = data_struc["cons"]["Qi"]
+    Cool_Struc = data_struc["Cool_Struc"]
+    v, T, dTdr = y0
+
+    # boltzmann constant in astronomical units 
+    k_B = c.k_B.cgs.value * u.g.to(u.Msun) * u.cm.to(u.pc)**2 / u.s.to(u.Myr)**2
+
+    Qi = Qi / u.Myr.to(u.s)
+    ndens = d / (2. * k_B * T) /(u.pc.to(u.cm)**3)
+    Phi = Qi / (4. * np.pi * (r*u.pc.to(u.cm)) ** 2)
+
+    # interpolation range (currently repeated in calc_Lb --> merge?)
+    log_T_interd = 0.1
+    log_T_noeqmin = Cool_Struc["log_T"]["min"]+1.0001*log_T_interd
+    log_T_noeqmax = Cool_Struc["log_T"]["max"] - 1.0001 * log_T_interd
+    log_T_intermin = log_T_noeqmin - log_T_interd
+    log_T_intermax = log_T_noeqmax + log_T_interd
+
+    #debug (use semi-correct cooling at low T)
+    if T < 10.**3.61:
+        T = 10.**3.61
+
+    # loss (or gain) of internal energy
+    dudt = get_coolingFunction.cool_interp_master({"n":ndens, "T":T, "Phi":Phi}, Cool_Struc, metallicity,
+                                       log_T_noeqmin=log_T_noeqmin, log_T_noeqmax=log_T_noeqmax, 
+                                       log_T_intermin=log_T_intermin, log_T_intermax=log_T_intermax)
+    
+
+    vd = b + (v-a*r)*dTdr/T - 2.*v/r
+    Td = dTdr
+    # negative sign for dudt term (because of definition of dudt)
+    dTdrd = C/(T**2.5) * (e + 2.5*(v-a*r)*dTdr/T - dudt/d) - 2.5*dTdr**2./T - 2.*dTdr/r 
+    # return
+    return [vd,Td,dTdrd]
 
 
 # =============================================================================
@@ -166,98 +364,147 @@ def initialise_bstruc(Mcloud, SFE, path):
 
 # testruns
 
-data_struc = {'alpha': 0.6, 'beta': 0.8, 'delta': -0.17142857142857143, 
-              'R2': 0.4188936946067258, 't_now': 0.00016506818386985737,
-              'Eb': 15649519.367987147, 'Lw': 201648867747.70163,
-              'vw': 3810.2196532385897, 'dMdt_factor': 1.646, 
-              'Qi': 1.6994584609226492e+67, 
-              'mypath': '/Users/jwt/Documents/Code/warpfield3/outputs/'}
+# data_struc = {'alpha': 0.6, 'beta': 0.8, 'delta': -0.17142857142857143, 
+#               'R2': 0.4188936946067258, 't_now': 0.00016506818386985737,
+#               'Eb': 15649519.367987147, 'Lw': 201648867747.70163,
+#               'vw': 3810.2196532385897, 'dMdt_factor': 1.646, 
+#               'Qi': 1.6994584609226492e+67, 
+#               'mypath': '/Users/jwt/Documents/Code/warpfield3/outputs/'}
 
-cool_struc = np.load('/Users/jwt/Documents/Code/warpfield3/outputs/cool.npy', allow_pickle = True).item()
+# cool_struc = np.load('/Users/jwt/Documents/Code/warpfield3/outputs/cool.npy', allow_pickle = True).item()
 
-warpfield_params = {'model_name': 'example', 
-                   'out_dir': 'def_dir', 
-                   'verbose': 1.0, 
-                   'output_format': 'ASCII', 
-                   'rand_input': 0.0, 
-                   'log_mCloud': 6.0, 
-                   'mCloud_beforeSF': 1.0, 
-                   'sfe': 0.01, 
-                   'nCore': 1000.0, 
-                   'rCore': 0.099, 
-                   'metallicity': 1.0, 
-                   'stochastic_sampling': 0.0, 
-                   'n_trials': 1.0, 
-                   'rand_log_mCloud': ['5', ' 7.47'], 
-                   'rand_sfe': ['0.01', ' 0.10'], 
-                   'rand_n_cloud': ['100.', ' 1000.'], 
-                   'rand_metallicity': ['0.15', ' 1'], 
-                   'mult_exp': 0.0, 
-                   'r_coll': 1.0, 
-                   'mult_SF': 1.0, 
-                   'sfe_tff': 0.01, 
-                   'imf': 'kroupa.imf', 
-                   'stellar_tracks': 'geneva', 
-                   'dens_profile': 'bE_prof', 
-                   'dens_g_bE': 14.1, 
-                   'dens_a_pL': -2.0, 
-                   'dens_navg_pL': 170.0, 
-                   'frag_enabled': 0.0, 
-                   'frag_r_min': 0.1, 
-                   'frag_grav': 0.0, 
-                   'frag_grav_coeff': 0.67, 
-                   'frag_RTinstab': 0.0, 
-                   'frag_densInhom': 0.0, 
-                   'frag_cf': 1.0, 
-                   'frag_enable_timescale': 1.0, 
-                   'stop_n_diss': 1.0, 
-                   'stop_t_diss': 1.0, 
-                   'stop_r': 1000.0, 
-                   'stop_t': 15.05, 
-                   'stop_t_unit': 'Myr', 
-                   'write_main': 1.0, 
-                   'write_stellar_prop': 0.0, 
-                   'write_bubble': 0.0, 
-                   'write_bubble_CLOUDY': 0.0, 
-                   'write_shell': 0.0, 
-                   'xi_Tb': 0.9,
-                   'inc_grav': 1.0, 
-                   'f_Mcold_W': 0.0, 
-                   'f_Mcold_SN': 0.0, 
-                   'v_SN': 1000000000.0, 
-                   'sigma0': 1.5e-21, 
-                   'z_nodust': 0.05, 
-                   'mu_n': 2.1287915392418182e-24, 
-                   'mu_p': 1.0181176926808696e-24, 
-                   't_ion': 10000.0, 
-                   't_neu': 100.0, 
-                   'nISM': 0.1, 
-                   'kappa_IR': 4.0, 
-                   'gamma_adia': 1.6666666666666667, 
-                   'thermcoeff_wind': 1.0, 
-                   'thermcoeff_SN': 1.0,
-                   'alpha_B': 2.59e-13,
-                   'gamma_mag': 1.3333333333333333,
-                   'log_BMW': -4.3125,
-                   'log_nMW': 2.065,
-                   'c_therm': 1.2e-6,
-                   }
+# warpfield_params = {'model_name': 'example', 
+#                    'out_dir': 'def_dir', 
+#                    'verbose': 1.0, 
+#                    'output_format': 'ASCII', 
+#                    'rand_input': 0.0, 
+#                    'log_mCloud': 6.0, 
+#                    'mCloud_beforeSF': 1.0, 
+#                    'sfe': 0.01, 
+#                    'nCore': 1000.0, 
+#                    'rCore': 0.099, 
+#                    'metallicity': 1.0, 
+#                    'stochastic_sampling': 0.0, 
+#                    'n_trials': 1.0, 
+#                    'rand_log_mCloud': ['5', ' 7.47'], 
+#                    'rand_sfe': ['0.01', ' 0.10'], 
+#                    'rand_n_cloud': ['100.', ' 1000.'], 
+#                    'rand_metallicity': ['0.15', ' 1'], 
+#                    'mult_exp': 0.0, 
+#                    'r_coll': 1.0, 
+#                    'mult_SF': 1.0, 
+#                    'sfe_tff': 0.01, 
+#                    'imf': 'kroupa.imf', 
+#                    'stellar_tracks': 'geneva', 
+#                    'dens_profile': 'bE_prof', 
+#                    'dens_g_bE': 14.1, 
+#                    'dens_a_pL': -2.0, 
+#                    'dens_navg_pL': 170.0, 
+#                    'frag_enabled': 0.0, 
+#                    'frag_r_min': 0.1, 
+#                    'frag_grav': 0.0, 
+#                    'frag_grav_coeff': 0.67, 
+#                    'frag_RTinstab': 0.0, 
+#                    'frag_densInhom': 0.0, 
+#                    'frag_cf': 1.0, 
+#                    'frag_enable_timescale': 1.0, 
+#                    'stop_n_diss': 1.0, 
+#                    'stop_t_diss': 1.0, 
+#                    'stop_r': 1000.0, 
+#                    'stop_t': 15.05, 
+#                    'stop_t_unit': 'Myr', 
+#                    'write_main': 1.0, 
+#                    'write_stellar_prop': 0.0, 
+#                    'write_bubble': 0.0, 
+#                    'write_bubble_CLOUDY': 0.0, 
+#                    'write_shell': 0.0, 
+#                    'xi_Tb': 0.9,
+#                    'inc_grav': 1.0, 
+#                    'f_Mcold_W': 0.0, 
+#                    'f_Mcold_SN': 0.0, 
+#                    'v_SN': 1000000000.0, 
+#                    'sigma0': 1.5e-21, 
+#                    'z_nodust': 0.05, 
+#                    'mu_n': 2.1287915392418182e-24, 
+#                    'mu_p': 1.0181176926808696e-24, 
+#                    't_ion': 10000.0, 
+#                    't_neu': 100.0, 
+#                    'nISM': 0.1, 
+#                    'kappa_IR': 4.0, 
+#                    'gamma_adia': 1.6666666666666667, 
+#                    'thermcoeff_wind': 1.0, 
+#                    'thermcoeff_SN': 1.0,
+#                    'alpha_B': 2.59e-13,
+#                    'gamma_mag': 1.3333333333333333,
+#                    'log_BMW': -4.3125,
+#                    'log_nMW': 2.065,
+#                    'c_therm': 1.2e-6,
+#                    }
 
 
-class Dict2Class(object):
-    # set object attribute
-    def __init__(self, dictionary):
-        for k, v in dictionary.items():
-            setattr(self, k, v)
+# class Dict2Class(object):
+#     # set object attribute
+#     def __init__(self, dictionary):
+#         for k, v in dictionary.items():
+#             setattr(self, k, v)
             
-# initialise the class
-warpfield_params = Dict2Class(warpfield_params)
+# # initialise the class
+# warpfield_params = Dict2Class(warpfield_params)
+
+# initialise_bstruc(990000000, 0.01, '/Users/jwt/Documents/Code/warpfield3/outputs')
+
+# a = get_bubbleLuminosity(data_struc, cool_struc,
+#                 warpfield_params)
 
 
-def get_bubbleLuminosity(data_struc,
+# =============================================================================
+# Function that computes the bubble luminosity and mass loss dt
+# =============================================================================
+
+def get_bubbleLuminosity(Data_struc,
                 cool_struc,
                 warpfield_params,
         ):
+    """
+    
+
+    Parameters
+    ----------
+    Data_struc : TYPE
+        List of parameters. See delta_new_root(). Includes the following:
+            {'alpha',
+             'beta',
+             'Eb',
+             'R2',
+             't_now',
+             'Lw',
+             'vw',
+             'dMdt_factor',
+             'Qi',
+             'mypath'}
+    cool_struc : TYPE
+        DESCRIPTION.
+    warpfield_params : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    Lb : TYPE
+        DESCRIPTION.
+    T_rgoal : TYPE
+        DESCRIPTION.
+    Lb_b : TYPE
+        DESCRIPTION.
+    Lb_cz : TYPE
+        DESCRIPTION.
+    Lb3 : TYPE
+        DESCRIPTION.
+    dMdt_factor_out : TYPE
+        DESCRIPTION.
+    Tavg : TYPE
+        DESCRIPTION.
+
+    """
     
     # Note
     # old code: calc_Lb()
@@ -267,24 +514,24 @@ def get_bubbleLuminosity(data_struc,
     # Unpack input data
     # cgs units unless otherwise stated!!!
     # parameters for ODEs
-    alpha = data_struc['alpha']
-    beta = data_struc['beta']
-    delta = data_struc['delta']
+    alpha = Data_struc['alpha']
+    beta = Data_struc['beta']
+    delta = Data_struc['delta']
     # Bubble energy
-    Eb = data_struc['Eb']
+    Eb = Data_struc['Eb']
     # shell radius in pc (or outer radius of bubble)
-    R2 = data_struc['R2'] 
+    R2 = Data_struc['R2'] 
     # current time in Myr
-    t_now = data_struc['t_now'] 
+    t_now = Data_struc['t_now'] 
     # mechanical luminosity
-    Lw = data_struc['Lw'] 
+    Lw = Data_struc['Lw'] 
     # wind luminosity (and SNe ejecta)
-    vw = data_struc['vw'] 
+    vw = Data_struc['vw'] 
     # guess for dMdt_factor (classical Weaver is 1.646; this is given as the 
     # constant 'A' in Eq 33, Weaver+77)
-    dMdt_factor = data_struc['dMdt_factor'] 
+    dMdt_factor = Data_struc['dMdt_factor'] 
     # current photon flux of ionizing photons
-    Qi = data_struc['Qi'] 
+    Qi = Data_struc['Qi'] 
     # velocity at r --> 0.
     v0 = 0.0 
 
@@ -412,7 +659,7 @@ def get_bubbleLuminosity(data_struc,
     #     with stdout_redirected():
     #         psoln = scipy.integrate.odeint(bubble_struct, y0, r, args=(Data_Struc,), tfirst=True)
     
-    psoln = scipy.integrate.odeint(bubble_ODEs.get_bubbleODEs, y0, r, args=(data_struc, warpfield_params.metallicity), tfirst=True)
+    psoln = scipy.integrate.odeint(get_bubbleODEs, y0, r, args=(data_struc, warpfield_params.metallicity), tfirst=True)
     v = psoln[:,0]
     T = psoln[:,1]
     dTdr = psoln[:,2]
@@ -424,7 +671,6 @@ def get_bubbleLuminosity(data_struc,
     print('dTdr', dTdr)
     print('n_e', n_e)
     
-    return
 
     # CHECK 2: negative velocities must not happen! (??) [removed]
 
@@ -437,8 +683,8 @@ def get_bubbleLuminosity(data_struc,
     ######################################################################
     # Here, we deal with heating and cooling
     # heating and cooling (log10)
-    onlyCoolfunc = cool_struc['onlyCoolfunc']
-    onlyHeatfunc = cool_struc['onlyHeatfunc']
+    onlyCoolfunc = cool_struc['Cfunc']
+    onlyHeatfunc = cool_struc['Hfunc']
     
     # interpolation range (currently repeated in bubble_struct --> merge?)
     log_T_interd = 0.1
@@ -513,7 +759,7 @@ def get_bubbleLuminosity(data_struc,
 
             # since we are taking very small steps in r, the solver might bitch around --> shut it up
             # with stdout_redirected():
-            psoln = scipy.integrate.odeint(bubble_ODEs.get_bubbleODEs, [v[idx_4],T[idx_4],dTdr[idx_4]], r_cz, 
+            psoln = scipy.integrate.odeint(get_bubbleODEs, [v[idx_4],T[idx_4],dTdr[idx_4]], r_cz, 
                                            args=(data_struc, warpfield_params.metallicity), tfirst=True) # solve ODE again, there should be a better way (event finder!)
 
             T_cz = psoln[:,1]
@@ -528,7 +774,7 @@ def get_bubbleLuminosity(data_struc,
 
         # TO DO: include interpolation
         # electron density (=proton density), assume astro units (Msun, pc, Myr)
-        n_cz = press/( (warpfield_params['mu_n']/warpfield_params['mu_p']) * k_B *T_cz)
+        n_cz = press/( (warpfield_params.mu_n/warpfield_params.mu_p) * k_B *T_cz)
         Phi_cz = (Qi / u.Myr.to(u.s)) / (4. * np.pi * (r_cz * u.pc.to(u.cm)) ** 2)
         # cooling and heating
         mycool = 10. ** onlyCoolfunc(np.transpose(np.log10([n_cz / u.pc.to(u.cm) ** 3, T_cz, Phi_cz])))
@@ -567,7 +813,7 @@ def get_bubbleLuminosity(data_struc,
     r3 = np.linspace(r[idx_4], R2_1e4, num = 1000, endpoint = True)
     T3 = f3(r3)
     # electron density (=proton density), assume astro units (Msun, pc, Myr)
-    n3 = press/( (warpfield_params['mu_n']/warpfield_params['mu_p']) * k_B * T3) 
+    n3 = press/( (warpfield_params.mu_n/warpfield_params.mu_p) * k_B * T3) 
     Phi3 = (Qi/ u.Myr.to(u.s)) / (4. * np.pi * (r3 * u.pc.to(u.cm)) ** 2)
 
     mask = {'loT': T3 < Tborder, 'hiT': T3 >= Tborder}
@@ -596,6 +842,9 @@ def get_bubbleLuminosity(data_struc,
 
     # add up cooling luminosity from the 3 regions
     Lb = Lb_b + Lb_cz + Lb3
+    
+    print("Lb_b + Lb_cz + Lb3", Lb_b, Lb_cz,Lb3)
+    return 
 
     if (idx_4 != idx_6):
         Tavg = 3.* (Tavg_tmp_b/(r_b[0]**3. - r_b[-1]**3.) + Tavg_tmp_cz/(r_cz[0]**3. - r_cz[-1]**3.) + Tavg_tmp_3/(r3[0]**3. - r3[-1]**3.))
@@ -669,15 +918,6 @@ def get_bubbleLuminosity(data_struc,
     return Lb, T_rgoal, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg
 
 
-initialise_bstruc(990000000, 0.01, '/Users/jwt/Documents/Code/warpfield3/outputs')
-
-a = get_bubbleLuminosity(data_struc, cool_struc,
-                warpfield_params)
-
-
-
-
-
 
 def get_r1(r1, params):
     """
@@ -708,8 +948,6 @@ def get_r1(r1, params):
     # return
     return equation
 
-
-    
 def calc_cons(alpha, beta, delta,
               t_now, press, 
               c_therm):
@@ -932,7 +1170,7 @@ def compare_boundaryValues(dMdt, bubble_params, warpfield_params):
     # print('comp values', vR2_prime, TR2_prime, dTdrR2_prime, r, warpfield_params.metallicity)
     # try to solve the ODE (might not have a solution)
     try:
-        psoln = scipy.integrate.odeint(bubble_ODEs.get_bubbleODEs, y0, r, args=(Data_Struc, warpfield_params.metallicity), tfirst=True)
+        psoln = scipy.integrate.odeint(get_bubbleODEs, y0, r, args=(Data_Struc, warpfield_params.metallicity), tfirst=True)
         # get
         v = psoln[:, 0]
         T = psoln[:, 1]
@@ -1040,8 +1278,175 @@ def get_start_bstruc(dMdt, bubble_params, warpfield_params):
     # return
     return R2_prime, y0
 
+# =============================================================================
+# Functions that computes delta
+# =============================================================================
+
+def get_delta_residual(delta_input, params):
+    """
+    This function takes in a predictor and outputs a better estimate of delta
+
+    Parameters
+    ----------
+    delta_input : float
+        delta; (see Weaver+77, eqs. 39-41)
+    params : list
+        list of useful parameters:
+            [Data_struc, Cool_Struc, t_10list, T_10list, fit_len, warpfield_params]
+            See bubble_wrap() for corresponding inputs.
+    """
+    # Notes:
+    # old code: delta_zero(), cdelta()
+    
+    # unravel
+    Data_struc, Cool_Struc, t_10list, T_10list, fit_len, warpfield_params = params
+    # copy to change item to add extra parameter
+    data_struc_temp = dict.copy(Data_struc)
+    data_struc_temp['delta'] = delta_input
+
+    # get structure
+    T_rgoal = get_bubbleLuminosity(data_struc_temp, Cool_Struc, warpfield_params)[1]
+
+    # use temperature of the bubble T_temp which has been calculated with a slightly wrong delta 
+    # (delta_old, the predictor) to calculate a better estimate of delta
+    # Appends value to end of list and removes first element of list if
+    # list would become longer than a given maximum length.
+    T_10list_temp = np.append(T_10list, T_rgoal)
+    while (len(T_10list_temp) > fit_len):
+        T_10list_temp = np.delete(T_10list_temp, 0)
+    log_t = np.log(t_10list)
+    log_T = np.log(T_10list_temp)
+    c_guess = np.round(log_T[0], decimals=2)
+    m_guess = np.round(data_struc_temp['old_delta'], decimals = 2)
+    my_fscale = np.std(log_T)
+    # function for linear regression
+    def f_lin(x,t,y):
+        return x[0] + x[1]*t - y
+    # robust residual
+    res_robust = scipy.optimize.least_squares(f_lin, [c_guess, m_guess], loss='soft_l1', f_scale=my_fscale,
+                                              args=(log_t, log_T))
+    delta_output = res_robust.x[1]
+    # find residual
+    residual = delta_input - delta_output
+    # return
+    return residual
+    
 
 
+# param1 = {'alpha': alpha, 'beta': beta, 'Eb': E0, 'R2': r0, 't_now': t0, 'Lw': Lw, 'vw': vterminal, 'dMdt_factor': dMdt_factor, 'Qi': fQi_evo(thalf) * c.Myr, 'mypath': mypath}
+# param0 = {'alpha': alpha, 'beta': beta, 'Eb': E0m1, 'R2': r0m1, 't_now': t0m1, 'Lw': Lw, 'vw': vterminal, 'dMdt_factor': dMdt_factor, 'Qi': fQi_evo(thalf) * c.Myr, 'mypath': mypath}
+# dzero_params = [param0, param1, Cool_Struc]
+ 
+    
+ 
+def get_delta_new(delta_old, params):
+
+    
+    # Notes:
+    # old code: delta_new_root()
+        
+
+    def get_delta_residual_new(delta_in, params):
+        
+        # Notes:
+        # old code: new_zero_delta()
+        
+        Cool_Struc = params[2]
+        data_struc0 = dict.copy(params[0])
+        data_struc1 = dict.copy(params[1])
+        t0 = data_struc0['t_now']
+        t1 = data_struc1['t_now']
+        data_struc0['delta'] = delta_in
+        data_struc1['delta'] = delta_in
+        Lb_temp0, T_rgoal0, _, _, _, dMdt_factor_out0, _ = get_bubbleLuminosity(data_struc0, Cool_Struc)
+        Lb_temp1, T_rgoal1, _, _, _, dMdt_factor_out1, _ = get_bubbleLuminosity(data_struc1, Cool_Struc)
+        # get output
+        delta_out = (T_rgoal1 - T_rgoal0)/(t1-t0) * t1/T_rgoal1
+        # calculate residual
+        residual = delta_out - delta_in
+        # return
+        return residual
+
+    bubbleFailed = False
+    
+    # try once with some boundary values and hope there is a zero point in between
+    try:
+        # this might fail if no fixpoint exists in the given range. 
+        # If so, try with a larger range
+        delta = scipy.optimize.brentq(get_delta_residual_new, delta_old - 0.1 , delta_old + 0.1,
+                                      args = (params), xtol = 1e-9, rtol = 1e-8) 
+    except:
+        # it seems either the boundary values were too far off (and bubble_structure crashed) or there was no zero point in between the boundary values
+        # try to figure out what limits in delta are allowed
+
+        worked_last_time_lo = True
+        worked_last_time_hi = True
+
+        iic = 0
+        n_trymax = 30 # maximum number of tries before we give up
+        sgn_vec = np.zeros(2*n_trymax+1) # list containing the signs of the residual (if there is a sign flip between two values, there must be a zero point in between!)
+        delta_in_vec = np.zeros(2*n_trymax+1) # list containing all tried input deltas
+        ii_lo = np.nan
+        ii_hi = np.nan
+        # list which contains the number 2.0 where a sign flip ocurred
+        diff_sgn_vec = abs(sgn_vec[1:]-sgn_vec[:-1]) 
+
+        # stay in loop as long as sign has not flipped
+        while all(diff_sgn_vec < 2.):
+
+            res_0 = get_delta_residual_new(delta_old, params)
+             # is probably not 0 (because of small numerical noise) but ensure it is not 0 further down
+            sgn_vec[n_trymax] = np.sign(res_0)
+            delta_in_vec[n_trymax] = delta_old
+
+            if worked_last_time_lo:
+                try:
+                    delta_in_lo = delta_old - 0.02 - float(iic) * 0.05
+                    res_lo = get_delta_residual_new(delta_in_lo, params)
+                    ii_lo = n_trymax-iic-1
+                    sgn_vec[ii_lo] = np.sign(res_lo)
+                    delta_in_vec[ii_lo] = delta_in_lo
+                    if (sgn_vec[n_trymax] == 0.): sgn_vec[n_trymax]= sgn_vec[n_trymax-1] # make sure 0 does not ocurr
+                except:
+                    worked_last_time_lo = False
+
+            if worked_last_time_hi:
+                try:
+                    delta_in_hi = delta_old + 0.02 + float(iic) * 0.05
+                    res_hi = get_delta_residual_new(delta_in_hi, params)
+                    ii_hi = n_trymax+iic+1
+                    sgn_vec[ii_hi] = np.sign(res_hi)
+                    delta_in_vec[ii_hi] = delta_in_hi
+                    if (sgn_vec[n_trymax] == 0.): sgn_vec[n_trymax] = sgn_vec[n_trymax + 1] # make sure 0 does not ocurr
+                except:
+                    worked_last_time_hi = False
+
+            if iic > n_trymax / 2:
+                print("I am having a hard time finding delta...")
+                if iic >= n_trymax - 1:
+                    sys.exit("Could not find delta.")
+                    
+            # this list contains a 2.0 where the sign flip ocurred (take abs, so that -2.0 becomes +2.0)
+            diff_sgn_vec = abs(sgn_vec[1:] - sgn_vec[:-1]) 
+
+            iic += 1
+
+        # find the index where the sign flip ocurred (where the diff list has the element 2.0)
+        idx_zero0 = np.argmax(diff_sgn_vec) # we could also look for number 2.0 but because there are no higher number, finding the maximum is equivalent
+        delta_in_lo = delta_in_vec[idx_zero0]
+        delta_in_hi = delta_in_vec[idx_zero0+1]
+        
+        
+    #########################################
+        try:
+            # this might fail if no fixpoint exists in the given range
+            delta = scipy.optimize.brentq(get_delta_residual, delta_in_lo , delta_in_hi, args=(params),
+                                          xtol=0.1 * 1e-9, rtol=1e-9) 
+        except:
+            delta = delta_old
+            bubbleFailed = True # something went wrong
+
+    return delta, bubbleFailed
 
 
 
