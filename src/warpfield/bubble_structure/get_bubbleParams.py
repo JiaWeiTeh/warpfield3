@@ -553,7 +553,7 @@ def get_bubbleLuminosity(Data_struc,
     cons = calc_cons(alpha, beta, delta, t_now, press, c_therm)
     cons["Qi"] = Qi
     
-    print("cons", cons)
+    # print("cons", cons)
     
     # See eq. 33, Weaver+77
     # get guess value
@@ -574,7 +574,7 @@ def get_bubbleLuminosity(Data_struc,
     R1R2, R2pR2 = np.loadtxt(path2bubble, skiprows=1, delimiter='\t', usecols=(0,1), unpack=True)
     # what xi = r/R2 should we measure the bubble temperature?
     xi_goal = get_xi_Tb(R1R2, R2pR2, warpfield_params)
-    print('xi_goal', xi_goal, R2)
+    # print('xi_goal', xi_goal, R2)
     r_goal = xi_goal * R2
     # update 
     R1R2 = np.append(R1R2, R1/R2)
@@ -599,7 +599,7 @@ def get_bubbleLuminosity(Data_struc,
     bubble_params["dMdtx0"] = dMdt_guess
     bubble_params["dMdty0"] = compare_boundaryValues(dMdt_guess, bubble_params, warpfield_params)
 
-    print("bubble_params[\"dMdty0\"]", bubble_params["dMdty0"])
+    # print("bubble_params[\"dMdty0\"]", bubble_params["dMdty0"])
     # print(bubble_params)
     
     # 1. < factor_fsolve < 100.; if factor_fsolve is chose large, the rootfinder usually finds the solution faster
@@ -616,7 +616,7 @@ def get_bubbleLuminosity(Data_struc,
     # from shell into the shocked region.
     dMdt = get_dMdt(dMdt_guess, bubble_params, warpfield_params, factor_fsolve = factor_fsolve, xtol = 1e-3)
     
-    print("dMdt", dMdt_guess, dMdt)
+    # print("dMdt", dMdt_guess, dMdt)
         
     # if output is an array, make it a float (this is here because some
     # scipy.integrate solver returns float and some an array).
@@ -638,7 +638,7 @@ def get_bubbleLuminosity(Data_struc,
     R2_prime, y0 = get_start_bstruc(dMdt, bubble_params, warpfield_params)
     [vR2_prime, TR2_prime, dTdrR2_prime] = y0
     
-    print("R2_prime, y0", R2_prime, y0)
+    # print("R2_prime, y0", R2_prime, y0)
 
     # now we know the correct dMdt, but since we did not store the solution for T(r), calculate the solution once again (IMPROVE?)
     # figure out at which positions to calculate solution
@@ -666,10 +666,10 @@ def get_bubbleLuminosity(Data_struc,
     # electron density ( = proton density), assume astro units (Msun, pc, Myr)
     n_e = press/((warpfield_params.mu_n/warpfield_params.mu_p) * k_B * T) 
     
-    print('v', v)
-    print('T', T)
-    print('dTdr', dTdr)
-    print('n_e', n_e)
+    # print('v', v)
+    # print('T', T)
+    # print('dTdr', dTdr)
+    # print('n_e', n_e)
     
 
     # CHECK 2: negative velocities must not happen! (??) [removed]
@@ -843,8 +843,9 @@ def get_bubbleLuminosity(Data_struc,
     # add up cooling luminosity from the 3 regions
     Lb = Lb_b + Lb_cz + Lb3
     
-    print("Lb_b + Lb_cz + Lb3", Lb_b, Lb_cz,Lb3)
-    return 
+    # print("Lb_b + Lb_cz + Lb3", Lb_b, Lb_cz,Lb3)
+    # old check 
+    # return 
 
     if (idx_4 != idx_6):
         Tavg = 3.* (Tavg_tmp_b/(r_b[0]**3. - r_b[-1]**3.) + Tavg_tmp_cz/(r_cz[0]**3. - r_cz[-1]**3.) + Tavg_tmp_3/(r3[0]**3. - r3[-1]**3.))
@@ -862,6 +863,38 @@ def get_bubbleLuminosity(Data_struc,
         idx = get_coolingFunction.find_nearest(r_b, r_goal)
         T_rgoal = T_b[idx] + dTdr_b[idx]*(r_goal - r_b[idx])
 
+    # TODO: These should not be constants?
+    # r_Phi = np.array([r[0]])
+    # Phi_grav_r0b = np.array([5.0])
+    # f_grav = np.array([5.0])
+    # Mbubble = 10.
+    
+    # get graviational potential (in cgs units)
+    # first we need to flip the r and n vectors (otherwise the cumulative mass will be wrong)
+    # now r is monotonically increasing
+    r_Phi_tmp = np.flip(r,0) * u.pc.to(u.cm) 
+    # mass density (monotonically increasing)
+    rho_tmp =  (np.flip(n_e,0)/(u.pc.to(u.cm)**3)) * c.m_p.cgs.value
+    dx = np.flip(dxlist,0)
+    # mass per bin (number density n was in 1/pc**3)
+    m_r_tmp = rho_tmp * 4.*np.pi*r_Phi_tmp**2 * dx * u.pc.to(u.cm)  
+    # cumulative mass
+    Mcum_tmp = np.cumsum(m_r_tmp) 
+    Phi_grav_r0b = -4.*np.pi* c.G.cgs.value * scipy.integrate.simps(r_Phi_tmp*rho_tmp,x=r_Phi_tmp)
+    # gravitational force per unit mass
+    f_grav_tmp = c.G.cgs.value * Mcum_tmp/r_Phi_tmp**2. 
+
+    # skip some entries, so that length becomes 100, then concatenate the last 10 entries (potential varies a lot there)
+    potentialFile_internalLength = 10000
+    len_r = len(r_Phi_tmp)
+    skip = max(int(float(len_r) / float(potentialFile_internalLength)),1)
+    r_Phi = np.concatenate([r_Phi_tmp[0:-10:skip], r_Phi_tmp[-10:]]) # flip lists (r was monotonically decreasing)
+    #Phi_grav = np.concatenate([Phi_grav_tmp[0:-10:skip], Phi_grav_tmp[-10:]])
+    f_grav = np.concatenate([f_grav_tmp[0:-10:skip], f_grav_tmp[-10:]])
+
+    # mass of material inside bubble (in solar masses)
+    Mbubble = Mcum_tmp[-1] / c.M_sun.cgs.value
+        
     # save bubble structure as .txt file (radius, density, temperature)?
     if warpfield_params.write_bubble == True:
         # only save Ndat entries (equally spaced in index, skip others)
@@ -884,7 +917,7 @@ def get_bubbleLuminosity(Data_struc,
             rsave = np.append(rsave,r_cz[0])
             nsave = np.append(nsave, n_cz[0])
             Tsave = np.append(Tsave, T_cz[0])
-
+            
         # convert units to cgs for CLOUDY
         rsave *= c.pc.cgs.value
         nsave *= c.pc.cgs.value**(-3.)
@@ -915,7 +948,7 @@ def get_bubbleLuminosity(Data_struc,
             # (but looks like most valeus are useless.)
         # return Lb, T_rgoal, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav
         
-    return Lb, T_rgoal, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg
+    return Lb, T_rgoal, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav
 
 
 
@@ -1358,8 +1391,8 @@ def get_delta_new(delta_old, params):
         t1 = data_struc1['t_now']
         data_struc0['delta'] = delta_in
         data_struc1['delta'] = delta_in
-        Lb_temp0, T_rgoal0, _, _, _, dMdt_factor_out0, _ = get_bubbleLuminosity(data_struc0, Cool_Struc)
-        Lb_temp1, T_rgoal1, _, _, _, dMdt_factor_out1, _ = get_bubbleLuminosity(data_struc1, Cool_Struc)
+        Lb_temp0, T_rgoal0, _, _, _, dMdt_factor_out0, _, _, _, _, _ = get_bubbleLuminosity(data_struc0, Cool_Struc)
+        Lb_temp1, T_rgoal1, _, _, _, dMdt_factor_out1, _, _, _, _, _ = get_bubbleLuminosity(data_struc1, Cool_Struc)
         # get output
         delta_out = (T_rgoal1 - T_rgoal0)/(t1-t0) * t1/T_rgoal1
         # calculate residual
@@ -1447,6 +1480,57 @@ def get_delta_new(delta_old, params):
             bubbleFailed = True # something went wrong
 
     return delta, bubbleFailed
+
+
+def get_fitSlope(x, y, old_guess = np.nan, c_guess=0.):
+        """
+        calculate slope of linear fit
+        neglect outliers for the fits
+        :param x: e.g. time list (np array)
+        :param y: e.g. temperature list (np array)
+        :param loss: correction function for increasing robustness: 'linear' gives you normal least_squares (not robust), 'soft_l1' and 'huber' have medium robustness, 'cauchy' and 'arctan' have high robustness
+                    (for more info, see http://scipy-cookbook.readthedocs.io/items/robust_regression.html)
+        :return: slope m
+        """
+        
+        # old code: calc_linfit()
+
+        # IT SEEMS SAFER NOT TO USE GUESSED VALUES PROVIDED BY THE USER. 
+        # WE ARE JUST USING OUR OWN ONES (but keep in mind that this means, 
+        # this routine only works to calculate alpha and beta)
+        my_c_guess = c_guess
+        my_m_guess = 0.7
+        
+        # we need to guess what the soft threshold between inliners and outliers is
+        # very rough order of magnitude approximation: use standard deviation
+        # (better: use standard deviation from fit curve, but for that we would need to know the fit beforehand)
+        my_fscale = np.std(y) # my_fscale = 0.1
+        
+        # linear regression
+        def f_lin(x,t,y):
+            return x[0] + x[1]*t - y
+        # get residual
+        res_robust = scipy.optimize.least_squares(f_lin, [my_c_guess, my_m_guess], loss='soft_l1', f_scale=my_fscale, args=(x, y))
+        m_temp1 = res_robust.x[1]
+
+        # maybe we picked the wrong guess for m?
+        if ((not np.isnan(old_guess)) and abs(m_temp1-old_guess) > 0.05):
+            my_m_guess = 0.0
+            res_robust = scipy.optimize.least_squares(f_lin, [my_c_guess, my_m_guess], loss='soft_l1', f_scale=my_fscale, args=(x, y))
+            m_temp2 = res_robust.x[1]
+
+            my_m_guess = 2.0
+            res_robust = scipy.optimize.least_squares(f_lin, [my_c_guess, my_m_guess], loss='soft_l1', f_scale=my_fscale, args=(x, y))
+            m_temp3 = res_robust.x[1]
+
+            m_temp_list = np.array([m_temp1, m_temp2, m_temp3])
+            idx = np.argmin(abs(m_temp_list-old_guess))
+            m = m_temp_list[idx]
+        else:
+            m = m_temp1
+
+        return m
+
 
 
 

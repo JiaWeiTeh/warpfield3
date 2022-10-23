@@ -53,7 +53,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="publications.html">Publications</a></li>
-<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
 </ul>
 
         </div>
@@ -128,6 +127,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">nCore</span> <span class="pre">[1000]</span></code>: Number density of cloud core (unit: <span class="math notranslate nohighlight">\(Z_\odot\)</span>). This parameter is ignored if <code class="docutils literal notranslate"><span class="pre">rand_input</span></code> is set to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">metallicity</span> <span class="pre">[1]</span></code>: Cloud metallicity (unit: <span class="math notranslate nohighlight">\(Z_\odot\)</span>). Currently available values are 1 <span class="math notranslate nohighlight">\(Z_\odot\)</span> and 0.15 <span class="math notranslate nohighlight">\(Z_\odot\)</span>. This parameter is ignored if <code class="docutils literal notranslate"><span class="pre">rand_input</span></code> is set to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">stochastic_sampling</span> <span class="pre">[0]</span></code>: Include stochastic sampling of IMF in the creation of initial cluster? If set to <code class="docutils literal notranslate"><span class="pre">1</span></code>, apply scaling relations when computing cluster properties assuming that the IMF is fully sampled. This parameter is ignored if <code class="docutils literal notranslate"><span class="pre">rand_input</span></code> is set to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_trials</span></code>: How many iterations / how many SLUG cluster do you want to create? This parameter is ignored if <code class="docutils literal notranslate"><span class="pre">stochastic_sampling</span></code> is set to <code class="docutils literal notranslate"><span class="pre">0</span></code>. As a rule of thumb we suggest n_trails = 1e6/mCluster = 1e6/(mCloud*sfe). In other words, for high mass clusters where we expect fully sampled IMF, there is no need for a lot of iterations; conversely, for low mass clusters where stochasticity is important, we require more iterations for better understanding of the distribution of outputs (such as the ionising luminosity).</p></li>
 </ul>
 </section>
 <section id="parameters-for-the-density-profile-of-the-cloud">

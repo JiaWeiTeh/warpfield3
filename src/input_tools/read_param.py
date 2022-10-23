@@ -188,7 +188,8 @@ def read_param(path2file, write_summary = True):
     if params_dict['out_dir'] == 'def_dir':
         # If user did not specify, the directory will be set as ./outputs/ 
         # check if directory exists; if not, create one.
-        path2output = r'./outputs/'
+        # TODO: Add smart system that adds 1, 2, 3 if repeated default to avoid overwrite.
+        path2output = r'./outputs/default/'
         Path(path2output).mkdir(parents=True, exist_ok = True)
         params_dict['out_dir'] = path2output
     else:

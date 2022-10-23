@@ -34,7 +34,7 @@ model_name    example
 # Directory for output files?
 # WARNING: MUST provide absolute path. Do not include ',' character in path.
 # type: string
-# DEFAULT: def_dir: directory in which WARPFIELD is being ran, i.e., path/to/warpfield/output/
+# DEFAULT: def_dir: directory in which WARPFIELD is being ran, i.e., path/to/warpfield/output/default/
 out_dir    def_dir
 
 # Output intensity level in terminal?
@@ -369,6 +369,19 @@ stop_t    15.05
 stop_t_unit    Myr
 
 
+# ==============================================================================
+# parameters dictating phase I (energy-driven phase)
+# ==============================================================================
+
+# Adiabatic phase only in core? If True, consider energy driven phase
+# until rCore at max; if False, rCloud at max.
+# DETAULT: False
+adiabaticOnlyInCore    False
+
+
+
+
+
 # =============================================================================
 # parameters for WARPFIELD outputs
 # =============================================================================
@@ -424,7 +437,7 @@ write_shell    0
 # Note: This section includes parameters dictating the computation of bubble structure.
 
 # What is the relative radius xi = r/R2, at which to measure the bubble temperature?
-# See Weaver+77, Equation 23.  
+# See Weaver+77, Equation 23. old code: r_Tb
 # Available values:
 # 0 < xi_Tb < 1
 # DEFAULT: 0.99

@@ -6,8 +6,8 @@ Created on Thu Aug 18 13:36:10 2022
 @author: Jia Wei Teh
 
 """
-
-
+# libraries
+import sys
 import numpy as np
 #--
 import src.warpfield.bubble_structure.get_bubbleParams as get_bubbleParams
@@ -16,7 +16,8 @@ import scipy.optimize
 def get_bubbleStructure(Data_Struc,
                         Cool_Struc,
                         warpfield_params,
-                        fit_len=5, fit_len_short = 5,
+                        fit_len, 
+                        fit_len_short,
         ):
     
     
@@ -51,7 +52,7 @@ def get_bubbleStructure(Data_Struc,
     dt_L = Data_Struc['dt_L']
     temp_counter = Data_Struc['temp_counter']
     # by default assume everything went right      
-    bubbleFailed = 0 
+    bubbleFailed = False
        
     # make sure: fit_len_short <= fit_len
     if (fit_len_short > fit_len):
@@ -66,7 +67,7 @@ def get_bubbleStructure(Data_Struc,
                           'dMdt_factor': dMdt_factor, 'Qi':Data_Struc['Qi'], 
                           'mypath': Data_Struc['mypath']}
             np.seterr(all='warn')
-            Lb, T_rgoal, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg = get_bubbleParams.get_bubbleLuminosity(data_struc_temp, Cool_Struc, warpfield_params)
+            Lb, T0, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav = get_bubbleParams.get_bubbleLuminosity(data_struc_temp, Cool_Struc, warpfield_params)
         else:
             # time step (allow certain relative change in (in-out)-luminosity)
             my_x = np.log(t_10list[-fit_len_short:]) - np.log(t_10list[-fit_len_short])
@@ -74,8 +75,8 @@ def get_bubbleStructure(Data_Struc,
             my_y2 = -1.0 * np.log(P_10list[-fit_len_short:])
             # at early times (when far out of equilibrium), use input alpha and beta as start values for lin fit
             if temp_counter < 2*fit_len:
-                alpha = calc_linfit(my_x, my_y, loss=i.myloss, old_guess=np.round(alpha, decimals=2), c_guess=np.round(my_y[0], decimals=2))
-                beta = calc_linfit(my_x, my_y2, loss=i.myloss, old_guess=np.round(beta, decimals=2), c_guess=np.round(my_y2[0], decimals=2))
+                alpha = get_bubbleParams.get_fitSlope(my_x, my_y, old_guess=np.round(alpha, decimals=2), c_guess=np.round(my_y[0], decimals=2))
+                beta = get_bubbleParams.get_fitSlope(my_x, my_y2, old_guess=np.round(beta, decimals=2), c_guess=np.round(my_y2[0], decimals=2))
             # at later times use directly the input alpha and beta
             delta0 = delta
             data_struc_temp = {'alpha': alpha, 'beta': beta, 'old_delta': delta0,
@@ -119,7 +120,7 @@ def get_bubbleStructure(Data_Struc,
                 # stay in loop as long as sign has not flipped
                 while all(diff_sgn_vec < 2.):
 
-                    res_0 = delta_zero(delta0, params)
+                    res_0 = get_bubbleParams.get_delta_residual(delta0, params)
                     sgn_vec[n_trymax] = np.sign(res_0) # is probably not 0 (because of small numerical noise) but ensure it is not 0 further down
                     delta_in_vec[n_trymax] = delta0
 
@@ -168,7 +169,7 @@ def get_bubbleStructure(Data_Struc,
                     bubbleFailed = True # something went wrong
 
             data_struc_temp['delta'] = delta
-            Lb, T_rgoal, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg = get_bubbleParams.get_bubbleLuminosity(Data_Struc, Cool_Struc, warpfield_params)
+            Lb, T0, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav = get_bubbleParams.get_bubbleLuminosity(Data_Struc, Cool_Struc, warpfield_params)
 
             # calculate next time step
             Lres = Lw - Lb
@@ -196,5 +197,125 @@ def get_bubbleStructure(Data_Struc,
 
 
 
+
+# testruns
+
+# Data_Struc = {'structure_switch': True, 'alpha': 0.6, 'beta': 0.8, 'delta': -0.17142857142857143,
+#               'Lres0': 1.0, 't_10list': np.array([6.50681839e-05]), 'r_10list': np.array([0.23790232]),
+#               'P_10list': np.array([1.9699816e+08]), 'T_10list': np.array([]), 'Lw': 201648867747.70163,
+#               'vterminal': 3810.2196532385897, 'r0': 0.23790232199299727, 't0': 6.506818386985495e-05,
+#               'E0': 5722974.028981317, 'T0': 67741779.55773313, 'dt_L': 0.0001, 'temp_counter': 0,
+#               'dMdt_factor': 1.646, 'Qi': 1.6994584609226492e+67,
+#               'mypath': '/Users/jwt/Documents/Code/warpfield3/outputs/'}
+
+
+# [0, 14687837971.138248, 77031671.96839908, 0.6, 0.8, -0.17142857142857143, 9.999999999999999e-05, 
+# 3257072175.589282, 0.0, 11430765795.548965, 4.2666125287527645, 68383152.81415418, 10.0, 
+# array([0.41889359]), array([5.]), array([5.])]
+
+
+Data_Struc = {'structure_switch': True, 'alpha': 0.6, 'beta': 0.8,
+              'delta': -0.17142857142857143, 'Lres0': 201648867747.70163,
+              't_10list': np.array([6.50681839e-05, 1.65068184e-04]),
+              'r_10list': np.array([0.23790232, 0.41889369]),
+              'P_10list': np.array([1.96998160e+08, 7.28499874e+07]),
+              'T_10list': np.array([67741779.55773313]), 'Lw': 201648867747.70163,
+              'vterminal': 3810.2196532385897, 'r0': 0.4188936946067258,
+              't0': 0.00016506818386985737, 'E0': 15649519.367987147,
+              'T0': 67741779.55773313, 'dt_L': 9.999999999999999e-05,
+              'temp_counter': 1, 'dMdt_factor': 1.646, 'Qi': 1.6994584609226492e+67,
+              'mypath': '/Users/jwt/Documents/Code/warpfield3/outputs/'}
+
+
+Cool_Struc = np.load('/Users/jwt/Documents/Code/warpfield3/outputs/cool.npy', allow_pickle = True).item()
+
+warpfield_params = {'model_name': 'example', 
+                    'out_dir': 'def_dir', 
+                    'verbose': 1.0, 
+                    'output_format': 'ASCII', 
+                    'rand_input': 0.0, 
+                    'log_mCloud': 6.0, 
+                    'mCloud_beforeSF': 1.0, 
+                    'sfe': 0.01, 
+                    'nCore': 1000.0, 
+                    'rCore': 0.099, 
+                    'metallicity': 1.0, 
+                    'stochastic_sampling': 0.0, 
+                    'n_trials': 1.0, 
+                    'rand_log_mCloud': ['5', ' 7.47'], 
+                    'rand_sfe': ['0.01', ' 0.10'], 
+                    'rand_n_cloud': ['100.', ' 1000.'], 
+                    'rand_metallicity': ['0.15', ' 1'], 
+                    'mult_exp': 0.0, 
+                    'r_coll': 1.0, 
+                    'mult_SF': 1.0, 
+                    'sfe_tff': 0.01, 
+                    'imf': 'kroupa.imf', 
+                    'stellar_tracks': 'geneva', 
+                    'dens_profile': 'bE_prof', 
+                    'dens_g_bE': 14.1, 
+                    'dens_a_pL': -2.0, 
+                    'dens_navg_pL': 170.0, 
+                    'frag_enabled': 0.0, 
+                    'frag_r_min': 0.1, 
+                    'frag_grav': 0.0, 
+                    'frag_grav_coeff': 0.67, 
+                    'frag_RTinstab': 0.0, 
+                    'frag_densInhom': 0.0, 
+                    'frag_cf': 1.0, 
+                    'frag_enable_timescale': 1.0, 
+                    'stop_n_diss': 1.0, 
+                    'stop_t_diss': 1.0, 
+                    'stop_r': 1000.0, 
+                    'stop_t': 15.05, 
+                    'stop_t_unit': 'Myr', 
+                    'write_main': 1.0, 
+                    'write_stellar_prop': 0.0, 
+                    'write_bubble': 0.0, 
+                    'write_bubble_CLOUDY': 0.0, 
+                    'write_shell': 0.0, 
+                    'xi_Tb': 0.9,
+                    'inc_grav': 1.0, 
+                    'f_Mcold_W': 0.0, 
+                    'f_Mcold_SN': 0.0, 
+                    'v_SN': 1000000000.0, 
+                    'sigma0': 1.5e-21, 
+                    'z_nodust': 0.05, 
+                    'mu_n': 2.1287915392418182e-24, 
+                    'mu_p': 1.0181176926808696e-24, 
+                    't_ion': 10000.0, 
+                    't_neu': 100.0, 
+                    'nISM': 0.1, 
+                    'kappa_IR': 4.0, 
+                    'gamma_adia': 1.6666666666666667, 
+                    'thermcoeff_wind': 1.0, 
+                    'thermcoeff_SN': 1.0,
+                    'alpha_B': 2.59e-13,
+                    'gamma_mag': 1.3333333333333333,
+                    'log_BMW': -4.3125,
+                    'log_nMW': 2.065,
+                    'c_therm': 1.2e-6,
+                    }
+
+
+class Dict2Class(object):
+    # set object attribute
+    def __init__(self, dictionary):
+        for k, v in dictionary.items():
+            setattr(self, k, v)
+            
+# initialise the class
+warpfield_params = Dict2Class(warpfield_params)
+
+get_bubbleParams.initialise_bstruc(990000000, 0.01, '/Users/jwt/Documents/Code/warpfield3/outputs')
+
+a = get_bubbleStructure(Data_Struc,
+                        Cool_Struc,
+                        warpfield_params,
+                        fit_len=5, fit_len_short = 5,
+        )
+
+
+print(a)
 
 

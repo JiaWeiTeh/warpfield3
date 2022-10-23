@@ -7,12 +7,16 @@ Created on Thu Aug 11 20:53:03 2022
 
 This script contains a function that evaluates the shell structure.
 """
-
-
+# libraries
 import numpy as np
 import astropy.constants as c
-from src.warpfield.shell_structure import get_shellODE, get_shellParams
 import scipy.integrate 
+import astropy.units as u
+import os
+from astropy.table import Table
+#--
+from src.warpfield.shell_structure import get_shellODE, get_shellParams
+
 
 def shell_structure(rShell0, 
                     pBubble,
@@ -54,37 +58,37 @@ def shell_structure(rShell0,
 
     Returns
     -------
-    shell : Object
-        This object contains the following shell attributes:
-            "f_absorbed_ion": float
-                Fraction of absorbed ionising radiations.
-            "f_absorbed_neu": float
-                Fraction of absorbed non-ionising radiations.
-            "f_absorbed": float
-                Total absorption fraction, defined as luminosity weighted average of 
-                f_absorbed_ion and f_absorbed_neu.
-            "f_ionised_dust": float
-                How much ionising radiation is absorbed by dust?
-            "is_fullyIonised": boolean
-                Is the shell fully ionised?
-            "shellThickness": float
-                The thickness of the shell.
-            "nShell0": float
-                The density of shell at inner edge/radius
-            "nShell0_cloud": float
-                The density of shell at inner edge/radius, but including B-field, as
-                this will be passed to CLOUDY.
-            "nShell_max": float
-                The maximum density across the shell.
-            "tau_kappa_IR": float
-                The ratio between optical depth and dust opacity, tau_IR/kappa_IR  = \int rho dr
-            "grav_r": array
-                The array containing radius at which the gravitational potential is evaluated.
-            "grav_phi": float
-                Gravitational potential 
-            "grav_force_m": array
-                The array containing gravitational force per unit mass evaluated at grav_r.
+    "f_absorbed_ion": float
+        Fraction of absorbed ionising radiations.
+    "f_absorbed_neu": float
+        Fraction of absorbed non-ionising radiations.
+    "f_absorbed": float
+        Total absorption fraction, defined as luminosity weighted average of 
+        f_absorbed_ion and f_absorbed_neu.
+    "f_ionised_dust": float
+        How much ionising radiation is absorbed by dust?
+    "is_fullyIonised": boolean
+        Is the shell fully ionised?
+    "shellThickness": float
+        The thickness of the shell.
+    "nShell0": float
+        The density of shell at inner edge/radius
+    "nShell0_cloud": float
+        The density of shell at inner edge/radius, but including B-field, as
+        this will be passed to CLOUDY.
+    "nShell_max": float
+        The maximum density across the shell.
+    "tau_kappa_IR": float
+        The ratio between optical depth and dust opacity, tau_IR/kappa_IR  = \int rho dr
+    "grav_r": array
+        The array containing radius at which the gravitational potential is evaluated.
+    "grav_phi": float
+        Gravitational potential 
+    "grav_force_m": array
+        The array containing gravitational force per unit mass evaluated at grav_r.
     """
+    # Notes: 
+    # old code: shell_structure2()
     
     # cgs units!!
     # TODO: Add also f_cover.
@@ -446,9 +450,9 @@ def shell_structure(rShell0,
             grav_force_m = np.concatenate([grav_force_m, grav_neu_force_m])
             grav_r = np.concatenate([grav_r, grav_neu_r])
             
-            
-        # FIXME: What is the purpose of this line in the old code?
-        # os.environ["ShTh"] = str(dRs)
+        #thickness of shell
+        dRs = rShell_arr_neu[-1]/u.pc.to(u.cm) - rShell0
+        os.environ["ShTh"] = str(dRs)
         
         # =============================================================================
         # Shell is fully evaluated. Compute shell properties now.
@@ -482,6 +486,35 @@ def shell_structure(rShell0,
         # f_absorbed_ion and f_absorbed_neu.
         # See https://www.imprs-hd.mpg.de/399417/thesis_Rahner.pdf page 47 Eq 22, 23, 24.
         f_absorbed = (f_absorbed_ion * Li + f_absorbed_neu * Ln)/(Li + Ln)
+        
+        if params.write_shell:
+
+            # save shell structure as .txt file (radius, density, temperature)
+            # only save Ndat entries (equally spaced in index, skip others)
+            Ndat = 500
+            Nskip_ion = int(max(1, len(rShell_arr_ion) / Ndat))
+            Nskip_noion = int(max(1, len(rShell_arr_ion) / Ndat))
+            TShell_arr_ion = params.t_ion * np.ones(len(rShell_arr_ion)) 
+            TShell_arr_neu = params.t_neu * np.ones(len(rShell_arr_neu))
+
+            if is_fullyIonised:
+                r_save = np.append(rShell_arr_ion[0:-1:Nskip_ion], rShell_arr_ion[-1])
+                n_save = np.append(nShell_arr_ion[0:-1:Nskip_ion], nShell_arr_ion[-1])
+                T_save = np.append(TShell_arr_ion[0:-1:Nskip_ion], TShell_arr_ion[-1])
+
+            else:
+                r_save = np.append(np.append(rShell_arr_ion[0:-1:Nskip_ion], rShell_arr_ion[-1]), np.append(rShell_arr_neu[0:-1:Nskip_noion], rShell_arr_neu[-1]))
+                n_save = np.append(np.append(nShell_arr_ion[0:-1:Nskip_ion], nShell_arr_ion[-1]), np.append(nShell_arr_neu[0:-1:Nskip_noion], nShell_arr_neu[-1]))
+                T_save = np.append(np.append(TShell_arr_ion[0:-1:Nskip_ion], TShell_arr_ion[-1]), np.append(TShell_arr_neu[0:-1:Nskip_noion], TShell_arr_neu[-1]))
+
+            sh_savedata = {"r (cm)": r_save, "n (cm-3)": n_save,
+                            "T (K)": T_save}
+            name_list = ["r (cm)", "n (cm-3)", "T (K)"]
+            tab = Table(sh_savedata, names=name_list)
+            outname = params.out_dir + "shell/shell_structure.txt"
+            formats = {'r (cm)': '%1.6e', 'n (cm-3)': '%1.4e', 'T (K)': '%1.4e'}
+            tab.write(outname, format='ascii', formats=formats, delimiter="\t", overwrite=True)
+            
             
     elif is_shellDissolved:
         f_absorbed_ion = 1.0
@@ -496,36 +529,8 @@ def shell_structure(rShell0,
         grav_phi = np.nan
         grav_force_m = np.nan
         
-    # write dictionary
-    shell_dict = { 
-        "f_absorbed_ion": f_absorbed_ion,
-        "f_absorbed_neu": f_absorbed_neu,
-        "f_absorbed": f_absorbed,
-        "f_ionised_dust": f_ionised_dust,
-        "is_fullyIonised": is_fullyIonised,
-        "shellThickness": shellThickness,
-        "nShell0": nShellInner, # Note the change of variable name, for consistency.
-        "nShell0_cloud": nShell0_cloud,
-        "nShell_max": nShell_max,
-        "tau_kappa_IR": tau_kappa_IR,
-        "grav_r": grav_r,
-        "grav_phi": grav_phi,
-        "grav_force_m": grav_force_m,
-        }
+    return f_absorbed_ion, f_absorbed_neu, f_absorbed, f_ionised_dust, is_fullyIonised, shellThickness, nShell_max, tau_kappa_IR, grav_r, grav_phi, grav_force_m
     
-    # =============================================================================
-    # Define a class for parameters as the dictionary is rather large
-    # =============================================================================
-    class Dict2Class(object):
-        # set object attribute
-        def __init__(self, dictionary):
-            for k, v in dictionary.items():
-                setattr(self, k, v)
-    # Initialise object 
-    shell = Dict2Class(shell_dict)
-    # return object
-    return shell
-
 #%%
 
 # Uncomment to check
