@@ -13,9 +13,15 @@ import astropy.constants as c
 import scipy.integrate 
 import astropy.units as u
 import os
+import sys
 from astropy.table import Table
 #--
 from src.warpfield.shell_structure import get_shellODE, get_shellParams
+
+
+
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
 
 
 def shell_structure(rShell0, 
@@ -23,9 +29,7 @@ def shell_structure(rShell0,
                     mBubble, 
                     Ln, Li, Qi,
                     mShell_end,
-                    sigma_dust,
                     f_cover,
-                    params,
                     ):
     """
     This function evaluates the shell structure. Includes the ability to 
@@ -39,7 +43,7 @@ def shell_structure(rShell0,
         Radius of inner shell.
     pBubble : float
         Bubble pressure.
-    mBubble : float
+    mBubble : float  (Minterior in old code)
         Bubble mass.
     Ln : float
         Non-ionising luminosity.
@@ -53,7 +57,7 @@ def shell_structure(rShell0,
         Dust cross section after scaling with metallicity.
     f_cover : float
         DESCRIPTION.
-    params : Object
+    warpfield_params : Object
         Object containing WARPFIELD parameters.
 
     Returns
@@ -101,13 +105,13 @@ def shell_structure(rShell0,
     tau0_ion = 0
     mShell0 = 0
     # Obtain density at the inner edge of shell
-    nShell0, nShell0_cloud = get_shellParams.get_nShell0(pBubble, params.t_ion,
-                                    params.mu_p, params.mu_n,
-                                    10**(params.log_BMW), 10**(params.log_nMW),
-                                    params.gamma_mag,
-                                    )
+    nShell0, nShell0_cloud = get_shellParams.get_nShell0(pBubble, warpfield_params.t_ion, warpfield_params)
     # define for future use, as nShell0 constantly changes in the loop.
     nShellInner = nShell0
+    
+    print('we are now in shell_structure because the shell_structure is incorrect. ')
+    print('this is the initial density')
+    print(nShell0, nShell0_cloud)
     
     # =============================================================================
     # Before beginning the integration, initialise some logic gates.
@@ -122,7 +126,6 @@ def shell_structure(rShell0,
     is_shellDissolved = False
     # 4. Is the shell fully ionised at r = R?
     is_fullyIonised = False
-    
     # Create arrays to store values
     # shell mass at r (ionised region)
     mShell_arr_ion = np.array([])
@@ -140,6 +143,28 @@ def shell_structure(rShell0,
     # r array of ionised region
     rShell_arr_ion = np.array([])
     
+    # First, set the end of integration, rShell_stop:
+    # The integration range should not be larger than 1pc. However,
+    # if the shell is lesser than 1pc, we will obviously use that instead.
+    # Assuming constant density, what is the maximum possible shell thickness?
+    # Old version:
+    max_shellThickness = (3 * Qi / (4 * np.pi * warpfield_params.alpha_B * nShell0**2) + rShell_start**3)**(1/3) 
+    # print(Qi, rShell_start, nShell0)
+    # 5.395106225151267e+53 0.23790232199299727 44225070.224065416
+    # New version(?):
+    # max_shellThickness = r_stromgren - rShell0
+    # max_shellThickness = (3 * Qi / (4 * np.pi * alpha_B * nShell0**2))**(1/3) - rShell_start
+    mydr = np.min([1.0 * u.pc.to(u.cm), np.abs(max_shellThickness - rShell_start)])
+
+    # Then, set the step size. This will just be a very small number
+    # i.e., 5e-4pc, unless the thickness itself is not sufficient to support 
+    # at least 2000 steps cross the shell
+    rShell_step = np.max([
+        np.min([ 5e-4 * c.pc.cgs.value, mydr/1e3]),
+        mydr/1e6
+        ])
+    
+
     while not is_allMassSwept and not is_phiZero:
         
         # =============================================================================
@@ -148,38 +173,21 @@ def shell_structure(rShell0,
         # requires small steps of r. 
         # =============================================================================
         
-        # First, set the end of integration, rShell_stop:
-        # The integration range should not be larger than 1pc. However,
-        # if the shell is lesser than 1pc, we will obviously use that instead.
-        # Assuming constant density, what is the maximum possible shell thickness?
-        # Old version:
-        max_shellThickness = (3 * Qi / (4 * np.pi * params.alpha_B * nShell0**2) + rShell_start**3)**(1/3) - rShell_start 
-        # New version(?):
-        # max_shellThickness = r_stromgren - rShell0
-        # max_shellThickness = (3 * Qi / (4 * np.pi * alpha_B * nShell0**2))**(1/3) - rShell_start
         # Therefore the end of integration is just rThickness + rStart
         rShell_stop = np.min([max_shellThickness, 1 * c.pc.cgs.value]) + rShell_start
-        
-        # Then, set the step size. This will just be a very small number
-        # i.e., 5e-4pc, unless the thickness itself is not sufficient to support 
-        # at least 2000 steps cross the shell
-        rShell_step = np.max([
-            np.min([ 5e-4 * c.pc.cgs.value, max_shellThickness/1e3]),
-            max_shellThickness/1e6
-            ])
-        
         # We now have the array at which we integrate
         rShell_arr = np.arange(rShell_start, rShell_stop, rShell_step)
         # Get arguments and parameters for integration:
-        # ionised region
+        # ionised region    
+        
         is_ionised = True
         # initial values
         y0 = [nShell0, phi0, tau0_ion]
         # constants
         cons = [Ln, Li, Qi,
-                sigma_dust, params.mu_n, params.mu_p, 
-                params.t_ion,
-                params.alpha_B]
+                warpfield_params.sigma_d, warpfield_params.mu_n, warpfield_params.mu_p, 
+                warpfield_params.t_ion,
+                warpfield_params.alpha_B]
         # Run integration
         sol_ODE = scipy.integrate.odeint(get_shellODE.get_shellODE, y0, rShell_arr,
                               args=(cons, f_cover, is_ionised),
@@ -191,9 +199,20 @@ def shell_structure(rShell0,
         # mass of spherical shell. Volume given by V = 4 pi r**2 * thickness
         mShell_arr = np.empty_like(rShell_arr)
         mShell_arr[0] = mShell0
-        mShell_arr[1:] = nShell_arr[1:] * params.mu_n * 4 * np.pi * rShell_arr[1:]**2 * rShell_step
+        mShell_arr[1:] = nShell_arr[1:] * warpfield_params.mu_n * 4 * np.pi * rShell_arr[1:]**2 * rShell_step
         mShell_arr_cum = np.cumsum(mShell_arr)
-        
+# nShell_arr [4.42250702e+07 4.48739683e+07 4.55259049e+07 ... 1.23540924e+08
+#  1.23540927e+08 1.23540929e+08]
+# phiShell_arr [ 1.          0.98853846  0.97701703 ... -1.07120256 -1.0712028
+#  -1.07120305]
+# tauShell_arr [0.00000000e+00 1.05073666e-02 2.11681071e-02 ... 1.29782279e+05
+#  1.29782308e+05 1.29782337e+05]
+# Msh array [0.00000000e+00 1.01718033e+32 1.03195853e+32 ... 1.12038397e+33
+#  1.12038423e+33 1.12038449e+33]
+# Msh [0.00000000e+00 1.01718033e+32 2.04913886e+32 ... 2.94421394e+39
+#  2.94421506e+39 2.94421618e+39]
+        sys.exit()
+
         # =============================================================================
         # Now, find the index at which M(r = R) = Mshell, or phi(r = R) = 0 
         # If exists, then terminate the loop. Otherwise, repeat the loop
@@ -234,8 +253,8 @@ def shell_structure(rShell0,
         # 1. The density of shell is far lower than the density of ISm.
         # 2. The shell has expanded too far.
         # TODO: output message to tertminal depending on verbosity
-        if nShellInner < (0.001 * params.nISM) or\
-            rShell_stop == (1.2 * params.stop_r * c.pc.cgs.value) or\
+        if nShellInner < (0.001 * warpfield_params.nISM) or\
+            rShell_stop == (1.2 * warpfield_params.stop_r * c.pc.cgs.value) or\
                 (rShell_start - rShell_stop) > (10 * rShell_start):
                     is_shellDissolved = True
                     break
@@ -260,7 +279,7 @@ def shell_structure(rShell0,
         # =============================================================================
         # First, compute the gravitational potential for the ionised part of shell
         # =============================================================================
-        grav_ion_rho = nShell_arr_ion * params.mu_n
+        grav_ion_rho = nShell_arr_ion * warpfield_params.mu_n
         grav_ion_r = rShell_arr_ion
         # mass of the thin spherical shell
         grav_ion_m = grav_ion_rho * 4 * np.pi * grav_ion_r**2 * rShell_step
@@ -295,11 +314,11 @@ def shell_structure(rShell0,
         # We do so by integrating using left Riemann sums 
         # dust term in dphi/dr
         phi_dust = np.sum(
-                        - nShell_arr_ion[:-1] * sigma_dust * phiShell_arr_ion[:-1] * dr_ion_arr
+                        - nShell_arr_ion[:-1] * warpfield_params.sigma_d * phiShell_arr_ion[:-1] * dr_ion_arr
                         )
         # recombination term in dphi/dr
         phi_hydrogen = np.sum(
-                        - 4 * np.pi * rShell_arr_ion[:-1]**2 / Qi * params.alpha_B * nShell_arr_ion[:-1]**2 * dr_ion_arr
+                        - 4 * np.pi * rShell_arr_ion[:-1]**2 / Qi * warpfield_params.alpha_B * nShell_arr_ion[:-1]**2 * dr_ion_arr
                         )
         
         # If there is no ionised shell (e.g., because the ionising radiation is too weak)
@@ -333,7 +352,7 @@ def shell_structure(rShell0,
             
             # Pressure equilibrium dictates that there will be a temperature and density
             # discontinuity at boundary between ionised and neutral region.
-            nShell0 = nShell0 * params.mu_n / params.mu_p * params.t_ion / params.t_neu
+            nShell0 = nShell0 * warpfield_params.mu_n / warpfield_params.mu_p * warpfield_params.t_ion / warpfield_params.t_neu
             # tau(r) at neutral shell region
             tau0_neu = tau0_ion
             
@@ -347,7 +366,7 @@ def shell_structure(rShell0,
                 # if tau is already 100, there is no point in integrating more.
                 tau_max = 100
                 # the maximum width of the neutral shell, assuming constant density.
-                max_shellThickness = np.abs((tau_max - tau0_ion)/(nShell0 * sigma_dust))
+                max_shellThickness = np.abs((tau_max - tau0_ion)/(nShell0 * warpfield_params.sigma_d))
                 # the end range of integration 
                 rShell_stop = np.min([ 1 * c.pc.cgs.value, max_shellThickness ]) + rShell_start
                 # Step size
@@ -364,9 +383,9 @@ def shell_structure(rShell0,
                 y0 = [nShell0, tau0_neu]
                 # constants
                 cons = [Ln, Qi,
-                        sigma_dust, 
-                        params.t_neu, 
-                        params.alpha_B]
+                        warpfield_params.sigma_d, 
+                        warpfield_params.t_neu, 
+                        warpfield_params.alpha_B]
                 # Run integration
                 sol_ODE = scipy.integrate.odeint(get_shellODE.get_shellODE, y0, rShell_arr,
                                       args=(cons, f_cover, is_ionised),
@@ -379,7 +398,7 @@ def shell_structure(rShell0,
                 mShell_arr = np.empty_like(rShell_arr)
                 mShell_arr[0] = mShell0
                 # FIXME: Shouldnt we use mu_p?
-                mShell_arr[1:] = nShell_arr[1:] * params.mu_n * 4 * np.pi * rShell_arr[1:]**2 * rShell_step
+                mShell_arr[1:] = nShell_arr[1:] * warpfield_params.mu_n * 4 * np.pi * rShell_arr[1:]**2 * rShell_step
                 mShell_arr_cum = np.cumsum(mShell_arr)
                 
                 # =============================================================================
@@ -422,7 +441,7 @@ def shell_structure(rShell0,
             # Now, compute the gravitational potential for the neutral part of shell
             # =============================================================================
             # FIXME: Shouldnt we use mu_p?
-            grav_neu_rho = nShell_arr_neu * params.mu_n
+            grav_neu_rho = nShell_arr_neu * warpfield_params.mu_n
             grav_neu_r = rShell_arr_neu
             # mass of the thin spherical shell
             grav_neu_m = grav_neu_rho * 4 * np.pi * grav_neu_r**2 * rShell_step
@@ -451,7 +470,10 @@ def shell_structure(rShell0,
             grav_r = np.concatenate([grav_r, grav_neu_r])
             
         #thickness of shell
-        dRs = rShell_arr_neu[-1]/u.pc.to(u.cm) - rShell0
+        try:
+            dRs = rShell_arr_neu[-1]/u.pc.to(u.cm) - rShell0
+        except:
+            dRs = rShell_arr_neu/u.pc.to(u.cm) - rShell0
         os.environ["ShTh"] = str(dRs)
         
         # =============================================================================
@@ -468,7 +490,7 @@ def shell_structure(rShell0,
             # The ratio tau_IR/kappa_IR  = \int rho dr
             # Integrating using left Riemann sums.
             # See https://www.imprs-hd.mpg.de/399417/thesis_Rahner.pdf page 45 Eq 9
-            tau_kappa_IR = params.mu_n * np.sum(nShell_arr_ion[:-1] * dr_ion_arr) 
+            tau_kappa_IR = warpfield_params.mu_n * np.sum(nShell_arr_ion[:-1] * dr_ion_arr) 
             
         else:
             shellThickness = rShell_arr_neu[-1] - rShell0
@@ -477,7 +499,7 @@ def shell_structure(rShell0,
             nShell_max = np.max(nShell_arr_ion)
             dr_neu_arr = rShell_arr_neu[1:] - rShell_arr_neu[:-1]
             # FIXME: Shouldnt we use mu_p?
-            tau_kappa_IR = params.mu_n * (np.sum(nShell_arr_neu[:-1] * dr_neu_arr) + np.sum(nShell_arr_ion[:-1] * dr_ion_arr))
+            tau_kappa_IR = warpfield_params.mu_n * (np.sum(nShell_arr_neu[:-1] * dr_neu_arr) + np.sum(nShell_arr_ion[:-1] * dr_ion_arr))
             
         # fraction of absorbed ionizing and non-ionizing radiations:
         f_absorbed_ion = 1 - phi_rEnd
@@ -487,15 +509,15 @@ def shell_structure(rShell0,
         # See https://www.imprs-hd.mpg.de/399417/thesis_Rahner.pdf page 47 Eq 22, 23, 24.
         f_absorbed = (f_absorbed_ion * Li + f_absorbed_neu * Ln)/(Li + Ln)
         
-        if params.write_shell:
+        if warpfield_params.write_shell:
 
             # save shell structure as .txt file (radius, density, temperature)
             # only save Ndat entries (equally spaced in index, skip others)
             Ndat = 500
             Nskip_ion = int(max(1, len(rShell_arr_ion) / Ndat))
             Nskip_noion = int(max(1, len(rShell_arr_ion) / Ndat))
-            TShell_arr_ion = params.t_ion * np.ones(len(rShell_arr_ion)) 
-            TShell_arr_neu = params.t_neu * np.ones(len(rShell_arr_neu))
+            TShell_arr_ion = warpfield_params.t_ion * np.ones(len(rShell_arr_ion)) 
+            TShell_arr_neu = warpfield_params.t_neu * np.ones(len(rShell_arr_neu))
 
             if is_fullyIonised:
                 r_save = np.append(rShell_arr_ion[0:-1:Nskip_ion], rShell_arr_ion[-1])
@@ -511,7 +533,7 @@ def shell_structure(rShell0,
                             "T (K)": T_save}
             name_list = ["r (cm)", "n (cm-3)", "T (K)"]
             tab = Table(sh_savedata, names=name_list)
-            outname = params.out_dir + "shell/shell_structure.txt"
+            outname = warpfield_params.out_dir + "shell/shell_structure.txt"
             formats = {'r (cm)': '%1.6e', 'n (cm-3)': '%1.4e', 'T (K)': '%1.4e'}
             tab.write(outname, format='ascii', formats=formats, delimiter="\t", overwrite=True)
             
@@ -523,7 +545,7 @@ def shell_structure(rShell0,
         f_ionised_dust = np.nan
         is_fullyIonised = True
         shellThickness = np.nan
-        nShell_max = params.nISM
+        nShell_max = warpfield_params.nISM
         tau_kappa_IR = 0
         grav_r = np.nan
         grav_phi = np.nan
@@ -608,7 +630,7 @@ def shell_structure(rShell0,
 #             }
 
 # # initialise the class
-# params = Dict2Class(params_dict)
+# warpfield_params = Dict2Class(params_dict)
 
 
 # rShell0 = 0.4188936946067258 * 3.085677581491367e+18
@@ -630,7 +652,7 @@ def shell_structure(rShell0,
 #         mShell_end, # at r0 0.23790232199299727?
 #         sigma_dust,
 #         f_cover,
-#         params,
+#         warpfield_params,
 #         # TBD these are just filler keywords
 #         )
 

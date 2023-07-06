@@ -1,0 +1,25 @@
+
+
+
+We are now in run_energy.py and in run_energy(). Here are the values for                  the r, rdot and edot after solving energy_phase_ODEs.get_ODE_Edot. This                      might be helpful for checking why we are getting errors for Msh in line 497                          with increasing values.
+
+
+length is1002
+
+
+psol[0.23790232 0.23826696 0.23862966 ... 0.27667098 0.2764169  0.27616144]
+[ 3656.20043229  3636.65378673  3617.30961637 ... -2534.04436677
+ -2547.72633375 -2561.50834351]
+[ 5722974.02898132  5760847.04440095  5798714.80544579 ...
+ 25486638.76028702 25460053.71407677 25433221.26992675]
+
+
+print(r, density_specific_param, rCloud, mCloud, warpfield_params)
+
+
+[0.23790232 0.23826696 0.23862966 ... 0.27667098 0.2764169  0.27616144]
+451690.2638133162
+355.8658723191992
+990000000.0
+
+

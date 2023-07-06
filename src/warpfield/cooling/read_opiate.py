@@ -7,56 +7,23 @@ Created on Tue Sep 13 17:25:54 2022
 """
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%
-
-
 import numpy as np
 import sys
-import myconfig as mc
 import os
 from astropy.io import ascii
+from scipy.interpolate import LinearNDInterpolator
 import warnings
-import interpolation as interp
-import cool
-import constants as myc
-import interpolation
-import auxiliary_functions as aux
-import init as i
+#--
+import src.warpfield.functions.operations as operations
+# Old file: coolnoeq.py
+
+# # get parameter
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
 
 
-
-def get_Cool_dat_timedep(Zism, age, basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables", indiv_CH=False):
+def get_Cool_dat_timedep(Zism, age, 
+                         basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables", indiv_CH=False):
     """
     gets time dependent cooling by interpolating cooling structures at different times
     :param t: in years
@@ -68,27 +35,30 @@ def get_Cool_dat_timedep(Zism, age, basename="opiate_cooling", extension=".dat",
     :return:
     """
 
-    #Cool_dat1 = get_Cool_dat(Zism, age, basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
 
-    age_lo, age_hi = get_NN_ages(Zism, age, basename=basename, extension=extension, cool_folder=cool_folder)
+    age_lo, age_hi = get_NN_ages(Zism, age, 
+                                 basename=basename, extension=extension, cool_folder=cool_folder)
 
     # if there exists a file for the requested age, we can just load that file and be done
     if age in [age_lo, age_hi]:
-        Cool_dat = get_Cool_dat(Zism, age, basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
+        Cool_dat = get_Cool_dat(Zism, age, 
+                                basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
         return Cool_dat
     # if there is no file with a lower (or higher) age, do not interpolate (because: not possible) but use only that file instead
     elif age_lo == age_hi:
-        Cool_dat = get_Cool_dat(Zism, age_lo, basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
+        Cool_dat = get_Cool_dat(Zism, age_lo, 
+                                basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
     # if the indices are different, we need to interpolate
     else:
         # this is the data at the closest lower age: (use as template for final data structure)
-        Cool_dat = get_Cool_dat(Zism, age_lo, basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
+        Cool_dat = get_Cool_dat(Zism, age_lo, 
+                                basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
         # this is the data at the closest higher age:
-        Cool_dat1 = get_Cool_dat(Zism, age_hi, basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
+        Cool_dat1 = get_Cool_dat(Zism, age_hi, 
+                                 basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
 
         t0 = age_lo
         t1 = age_hi
-        dt = t1 - t0 # time difference between the closest lower and higher ages
         # now: interpolate (linearly)
         Cool_dat["Netcool"] = Interp_lin(age, [t0, t1], [Cool_dat["Netcool"], Cool_dat1["Netcool"]])
         if indiv_CH:
@@ -101,7 +71,8 @@ def get_Cool_dat_timedep(Zism, age, basename="opiate_cooling", extension=".dat",
 
 
 
-def get_NN_ages(Zism, age, basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables", rotation=i.rotation):
+def get_NN_ages(Zism, age, 
+                basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables"):
     """
     get closest ages (lower and higher) for which cooling files exist
     :param Zism:
@@ -112,7 +83,8 @@ def get_NN_ages(Zism, age, basename="opiate_cooling", extension=".dat", cool_fol
     :param indiv_CH:
     :return:
     """
-
+    
+    rotation = warpfield_params.SB99_rotation
     # string in filenames which stores information about stellar rotation
     if rotation is True: rot_str = "_rot"
     else: rot_str = "_norot"
@@ -129,15 +101,16 @@ def get_NN_ages(Zism, age, basename="opiate_cooling", extension=".dat", cool_fol
             age_list.append(extract_keyvalue(file, key="age"))
 
     if len(file_list) == 0:
-        sys.exist("No cooling tables! E.g., I am expecting: "+make_cooling_filename(Zism, age, basename=basename, extension=extension, cool_folder=cool_folder))
+        sys.exist("No cooling tables! E.g., I am expecting: "+make_cooling_filename(Zism, age, 
+                                                                                    basename=basename, extension=extension, cool_folder=cool_folder))
 
     # sort according to age
     pairs = list(zip(age_list, file_list))
     pairs.sort()
     age_list = [ x[0] for x in pairs ]
     # find files with the closest lower and higher age
-    idx0 = aux.find_nearest_lower(age_list,age)
-    idx1 = aux.find_nearest_higher(age_list, age)
+    idx0 = operations.find_nearest_lower(age_list,age)
+    idx1 = operations.find_nearest_higher(age_list, age)
     age_lower = age_list[idx0]
     age_higher = age_list[idx1]
 
@@ -145,8 +118,10 @@ def get_NN_ages(Zism, age, basename="opiate_cooling", extension=".dat", cool_fol
 
 
 def get_cooltable_dir(cool_folder):
-
-    cooltable_dir = mc.path_to_code + "/" + cool_folder + "/"
+    
+    # old code:
+    # cooltable_dir = mc.path_to_code + "/" + cool_folder + "/"
+    cooltable_dir = "./" + "/" + cool_folder + "/"
 
     return cooltable_dir
 
@@ -176,8 +151,10 @@ def extract_keyvalue(string, key="age"):
 
     return value
 
-def make_cooling_filename(Zism, age, basename="opiate_cooling", extension = ".dat", cool_folder = "cooling_tables", rotation=i.rotation):
+def make_cooling_filename(Zism, age, 
+                          basename="opiate_cooling", extension = ".dat", cool_folder = "cooling_tables"):
 
+    rotation = warpfield_params.SB99_rotation
     if rotation is True: rot_str = "rot"
     else: rot_str = "norot"
 
@@ -189,7 +166,9 @@ def make_cooling_filename(Zism, age, basename="opiate_cooling", extension = ".da
     return cooltable_file
 
 
-def get_Cool_dat(Zism, age, basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables", indiv_CH=False):
+def get_Cool_dat(Zism, age, 
+                 warpfield_params,
+                 basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables", indiv_CH=False):
     """
     get cooling data
     this is the main routine that provides the data which can be interpolated
@@ -213,37 +192,47 @@ def get_Cool_dat(Zism, age, basename="opiate_cooling", extension=".dat", cool_fo
     # if a numpy-readable version of the cooling table exists, use it
     # if not, create such a file
 
-    np_coolfilename = make_cooling_filename(Zism, age, basename=basename, extension = ".npy", cool_folder = cool_folder)
+    np_coolfilename = make_cooling_filename(Zism, age, 
+                                            basename=basename, extension = ".npy", cool_folder = cool_folder)
 
     if not indiv_CH:
         if os.path.isfile(np_coolfilename):
-            ln_dat, lT_dat, lP_dat = get_opiate_gridstruc(Zism, age, basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables")
+            ln_dat, lT_dat, lP_dat = get_opiate_gridstruc(Zism, age, 
+                                                          basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables")
             NetCool = np.load(np_coolfilename)
             Cool_dat = {"Netcool": NetCool, "log_n": ln_dat, "log_T": lT_dat, "log_Phi": lP_dat}
         else:
-            Cool_dat = prep_coolingtable(Zism, age, basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
+            Cool_dat = prep_coolingtable(Zism, age, 
+                                         basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
 
     elif indiv_CH:
-        np_onlycoolfilename = make_cooling_filename(Zism, age, basename=basename + "C", extension = ".npy", cool_folder = cool_folder)
-        np_onlyheatfilename = make_cooling_filename(Zism, age, basename=basename + "H", extension=".npy", cool_folder=cool_folder)
+        np_onlycoolfilename = make_cooling_filename(Zism, age, 
+                                                    basename=basename + "C", extension = ".npy", cool_folder = cool_folder)
+        np_onlyheatfilename = make_cooling_filename(Zism, age, 
+                                                    basename=basename + "H", extension=".npy", cool_folder=cool_folder)
         # do the numpy readable-files already exist?
         if (os.path.isfile(np_coolfilename) and os.path.isfile(np_onlycoolfilename)) and os.path.isfile(np_onlyheatfilename):
-            ln_dat, lT_dat, lP_dat = get_opiate_gridstruc(Zism, age, basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables")
+            ln_dat, lT_dat, lP_dat = get_opiate_gridstruc(Zism, age, 
+                                                          basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables")
             NetCool = np.load(np_coolfilename)
             Cool_dat = {"Netcool": NetCool, "log_n": ln_dat, "log_T": lT_dat, "log_Phi": lP_dat}
-            Cool = np.load(make_cooling_filename(Zism, age, basename=basename + "C", extension=".npy", cool_folder=cool_folder))
+            Cool = np.load(make_cooling_filename(Zism, age, 
+                                                 basename=basename + "C", extension=".npy", cool_folder=cool_folder))
             Cool_dat["Cool"] = Cool
-            Heat = np.load(make_cooling_filename(Zism, age, basename=basename + "H", extension=".npy", cool_folder=cool_folder))
+            Heat = np.load(make_cooling_filename(Zism, age, 
+                                                 basename=basename + "H", extension=".npy", cool_folder=cool_folder))
             Cool_dat["Heat"] = Heat
         else:
-            Cool_dat = prep_coolingtable(Zism, age, basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
+            Cool_dat = prep_coolingtable(Zism, age, 
+                                         basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
 
     return Cool_dat
 
 
 
 
-def read_opiatetable(Zism, age, basename="opiate_cooling", extension = ".dat", cool_folder = "cooling_tables"):
+def read_opiatetable(Zism, age, 
+                     basename="opiate_cooling", extension = ".dat", cool_folder = "cooling_tables"):
     """
     load the external cooling table
     (IMPORTANT: assumes file name contains metallicity with 2 digits after point)
@@ -256,7 +245,8 @@ def read_opiatetable(Zism, age, basename="opiate_cooling", extension = ".dat", c
     """
 
     # construct name of cooling table
-    cooltable_file = make_cooling_filename(Zism, age, basename=basename, extension = extension, cool_folder = cool_folder)
+    cooltable_file = make_cooling_filename(Zism, age, 
+                                           basename=basename, extension = extension, cool_folder = cool_folder)
 
     # check whether cooling table exists, exit if it does not
     if not os.path.isfile(cooltable_file):
@@ -287,7 +277,8 @@ def read_opiatetable(Zism, age, basename="opiate_cooling", extension = ".dat", c
     return ndens, temp, Phi, cool, heat, netcool
 
 
-def get_opiate_gridstruc(Zism, age, basename="opiate_cooling", extension = ".dat", cool_folder = "cooling_tables"):
+def get_opiate_gridstruc(Zism, age, 
+                         basename="opiate_cooling", extension = ".dat", cool_folder = "cooling_tables"):
     """
     analyze the structure of the opiate cooling grid
     :param Zism: metallicity in solar units (1.0 corresponds to solar metallicity)
@@ -304,7 +295,8 @@ def get_opiate_gridstruc(Zism, age, basename="opiate_cooling", extension = ".dat
             log_Phi: Ionizing Photons number flux, data structure like log_n and log_T
     """
 
-    ndens, temp, Phi, cool, heat, netcool = read_opiatetable(Zism, age, basename=basename, extension=extension,
+    ndens, temp, Phi, cool, heat, netcool = read_opiatetable(Zism, age, 
+                                                             basename=basename, extension=extension,
                                                              cool_folder=cool_folder)
 
     ldens = np.log10(ndens)
@@ -343,51 +335,73 @@ def get_opiate_gridstruc(Zism, age, basename="opiate_cooling", extension = ".dat
     return ln_dat, lT_dat, lP_dat
 
 
-def read_opiatetable_NEDENS(Zism, age, basename="opiate_cooling", extension = ".dat", cool_folder = "cooling_tables"):
+
+def create_onlycoolheat(Zism, age, 
+                        basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables"):
     """
-    copy of read_opiatetable with the addition that also the electron density is read out
-    :param Zism: metallicity in solar units (1.0 corresponds to solar metallicity)
+    :param Zism: metallicity in solar units (1.0 = solar)
     :param age: age of cluster in years
-    :param basename: (optional) name of cooling table without metallicity identifier and extension
-    :param extension: (optional) extension of cooling table file
-    :param cool_folder: folder name where cooling table is stored
-    :return: number density, electron density, temperature, photon number flux, (only) cooling, (only) heating, net cooling
+    :return: interpolation functions which return the log10 of heating and cooling [erg/ccm/s] (i.e. n^2 is already incoorporated)
     """
 
-    # construct name of cooling table
-    cooltable_file = make_cooling_filename(Zism, age, basename=basename, extension = extension, cool_folder = cool_folder)
+    age_lo, age_hi = get_NN_ages(Zism, age, 
+                                 basename=basename, extension=extension, cool_folder=cool_folder)
 
-    # check whether cooling table exists, exit if it does not
-    if not os.path.isfile(cooltable_file):
-        sys.exit("cooling table does not exist: {}".format(cooltable_file))
+    # determine which file to read in and whether to interpolate (time)
+    if age in [age_lo, age_hi]:
+        #ndens, temp, Phi, cool, heat, netcool = read_opiatetable(Zism, age)
+
+        np_file_full = make_cooling_filename(Zism, age, 
+                                             basename=basename + "_full", extension="", cool_folder=cool_folder)
+        Bmatrix = np.load(np_file_full+'.npy')
+        cool = Bmatrix[3,:]
+        heat = Bmatrix[4,:]
+
+    elif age_lo == age_hi:
+        #ndens, temp, Phi, cool, heat, netcool = read_opiatetable(Zism, age_lo)
+
+        np_file_full = make_cooling_filename(Zism, age_lo, 
+                                             basename=basename + "_full", extension="", cool_folder=cool_folder)
+        Bmatrix = np.load(np_file_full+'.npy')
+        cool = Bmatrix[3,:]
+        heat = Bmatrix[4,:]
+
+    else:
+        #ndens, temp, Phi, cool0, heat0, netcool = read_opiatetable(Zism, age_lo)
+        #ndens, temp, Phi, cool1, heat1, netcool = read_opiatetable(Zism, age_hi)
+
+        np_file_full0 = make_cooling_filename(Zism, age_lo, 
+                                              basename=basename + "_full", extension="", cool_folder=cool_folder)
+        np_file_full1 = make_cooling_filename(Zism, age_hi, 
+                                              basename=basename + "_full", extension="", cool_folder=cool_folder)
+        Bmatrix = np.load(np_file_full0+'.npy')
+        cool0 = Bmatrix[3,:]
+        heat0 = Bmatrix[4,:]
+        Bmatrix = np.load(np_file_full1+'.npy')
+        cool1 = Bmatrix[3,:]
+        heat1 = Bmatrix[4,:]
+
+        cool = Interp_lin(age, [age_lo, age_hi], [cool0, cool1])
+        heat = Interp_lin(age, [age_lo, age_hi], [heat0, heat1])
+
+    ndens = Bmatrix[0, :]
+    temp = Bmatrix[1, :]
+    Phi = Bmatrix[2, :]
+
+    # stack density, temperature and photon flux together
+    phase_points = np.transpose(np.vstack([ndens, temp, Phi]))  # seems I need to transpose
+
+    # interpolate cooling rate
+    onlycoolfunc = LinearNDInterpolator(np.log10(phase_points), np.log10(cool)) # TAKE LOG, OTHERWISE INTERPOLATION CRASHES
+    onlyheatfunc = LinearNDInterpolator(np.log10(phase_points), np.log10(heat)) # TAKE LOG, OTHERWISE INTERPOLATION CRASHES
+
+    # return the function object
+    return onlycoolfunc, onlyheatfunc
 
 
-    # read in cooling table
-    datatable = ascii.read(cooltable_file)
 
-    ndens = datatable["ndens"]
-    nedens = datatable["nedens"]
-    temp = datatable["temp"]
-    Phi = datatable["phi"]
-
-    cool = datatable["cool"]
-    heat = datatable["heat"]
-
-    # IMPORTANT: CHECK WHETHER SIGNS IN HEATING IN COOLING COLUMN ARE DIFFERENT
-    # I WANT POSITIVE SIGNS FOR BOTH
-    if np.sign(heat[0]) == -1.:
-        warnings.warn("Heating column has negative signs in {}. I will change the signs to positive.".format(cooltable_file))
-        heat = -1.0 * heat  # now they have the same signs
-    if np.sign(cool[0]) == -1.:
-        warnings.warn("Cooling column has negative signs in {}. I will change the signs to positive.".format(cooltable_file))
-        cool = -1.0 * cool  # now they have the same signs
-
-    netcool = cool - heat
-
-    return ndens, nedens, temp, Phi, cool, heat, netcool
-
-
-def prep_coolingtable(Zism, age, basename="opiate_cooling", extension = ".dat", cool_folder = "cooling_tables", indiv_CH=False):
+def prep_coolingtable(Zism, age, 
+                      basename="opiate_cooling", extension = ".dat", cool_folder = "cooling_tables", indiv_CH=False):
     """
     prepare an ordered, fast-to-access run-time version of the cooling table
     :param Zism: metallicity in solar units (1.0 corresponds to solar metallicity)
@@ -407,10 +421,12 @@ def prep_coolingtable(Zism, age, basename="opiate_cooling", extension = ".dat", 
                             1D: n, 2D: T, 3rd D: Phi
     """
 
-    ndens, temp, Phi, cool, heat, netcool = read_opiatetable(Zism, age, basename=basename, extension=extension, cool_folder=cool_folder)
+    ndens, temp, Phi, cool, heat, netcool = read_opiatetable(Zism, age, 
+                                                             basename=basename, extension=extension, cool_folder=cool_folder)
 
     # save data in a numpy readable way
-    np_file_full = make_cooling_filename(Zism, age, basename=basename+"_full", extension="", cool_folder=cool_folder)  # no extension because the extension .npy is added automatically
+    np_file_full = make_cooling_filename(Zism, age, 
+                                         basename=basename+"_full", extension="", cool_folder=cool_folder)  # no extension because the extension .npy is added automatically
     if not os.path.isfile(np_file_full):
         np.save(np_file_full, [ndens, temp, Phi, cool, heat])
 
@@ -486,16 +502,19 @@ def prep_coolingtable(Zism, age, basename="opiate_cooling", extension = ".dat", 
 
     # save array cube to file
     print("saving numpy-readable version of net cooling table for future uses...")
-    file1 = make_cooling_filename(Zism, age, basename=basename, extension = "", cool_folder = cool_folder) # no extension because the extension .npy is added automatically
+    file1 = make_cooling_filename(Zism, age, 
+                                  basename=basename, extension = "", cool_folder = cool_folder) # no extension because the extension .npy is added automatically
     np.save(file1, NetCool)
 
     # save individual Cooling and Heating tables
     if indiv_CH:
         print("saving numpy-readable version of cooling and heating tables for future uses...")
-        fileC = make_cooling_filename(Zism, age, basename=basename+"C", extension="",
+        fileC = make_cooling_filename(Zism, age, 
+                                      basename=basename+"C", extension="",
                                      cool_folder=cool_folder)  # no extension because the extension .npy is added automatically
         np.save(fileC, Cool)
-        fileH = make_cooling_filename(Zism, age, basename=basename+"H", extension="",
+        fileH = make_cooling_filename(Zism, age, 
+                                      basename=basename+"H", extension="",
                                      cool_folder=cool_folder)  # no extension because the extension .npy is added automatically
         np.save(fileH, Heat)
 

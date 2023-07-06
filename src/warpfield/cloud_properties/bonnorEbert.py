@@ -15,6 +15,7 @@ import astropy.constants as c
 import astropy.units as u
 import scipy.optimize
 import scipy.integrate
+import sys
 
 def laneEmden(y,xi):
     """
@@ -55,6 +56,9 @@ def massIntegral(xi, rhoCore, c_s):
     The expression for integral of M(r). (Units: kg)
 
     """
+    # Note:
+        # old code: MassIntegrate3()
+        
     # An array for the range of xi for solving
     xi_arr = np.linspace(1e-12, xi, 200)
     # initial condition (set to a value that is very close to zero)
@@ -121,6 +125,10 @@ def get_bE_rCloud_nEdge(nCore, bE_T, mCloud, mu_n, gamma):
         Density at edge of cloud. (Units: 1/cm3)
 
     """
+    # Note:
+        # old code:
+            # FindRCBE()
+            
     # sound speed 
     c_s = get_bE_soundspeed(bE_T, mu_n, gamma)
     # convert to SI units
@@ -135,6 +143,7 @@ def get_bE_rCloud_nEdge(nCore, bE_T, mCloud, mu_n, gamma):
                                      args=(rhoCore, c_s, mCloud),
                                      bracket=[8.530955303346797e-07, 170619106.06693593],
                                      method='brentq')
+    print('here')
     # get xi(r)
     xiCloud = sol.root
     # get r 
@@ -178,19 +187,39 @@ def get_bE_T(mCloud, nCore, g, mu_n, gamma):
         The temperature of the bE sphere.
 
     """
+    
+    # Note:
+        # old code:
+            # AutoT()
+    
     # nEdge obtained from g = nCore/nEdge
     nEdge_g = nCore/g
     # balance between nEdge = nCore/g and nEdge obtained from get_bE_rCloud.
     def solve_T(T, mCloud, nCore, mu_n, gamma, nEdge_g):
+        # old code:
+            # Root()
         _, nEdge = get_bE_rCloud_nEdge(nCore, T, mCloud, mu_n, gamma)
         return nEdge - nEdge_g  # nEdge1 = nEdge2
-    # Solve for T
-    sol = scipy.optimize.root_scalar(solve_T,
-                                     args=(mCloud, nCore, mu_n, gamma, nEdge_g),
-                                     bracket=[1e+5, 1e+7], 
-                                     method='brentq')
+    try:
+        sol = scipy.optimize.root_scalar(solve_T,
+                                         args=(mCloud, nCore, mu_n, gamma, nEdge_g),
+                                         bracket=[2e+02, 2e+10], 
+                                         method='brentq')
+    except: 
+        sys.exit("Solver could not find solution for the temperature of BE sphere.")
     # temperature of the bE sphere
     bE_T = sol.root
     # return
     return bE_T
+
+#%%
+
+# temperature = get_bE_T(1000000.0, 1000.0, 14.1, 2.1287915392418182e-24, 1.6666666666666667)
+# print(temperature)
+
+
+
+
+
+
 

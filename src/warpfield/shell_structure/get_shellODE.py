@@ -11,6 +11,7 @@ optical depth (tau) of the shell.
 """
 
 import numpy as np
+import sys
 import astropy.constants as c
 
 def get_shellODE(y, 
@@ -66,8 +67,23 @@ def get_shellODE(y,
     dtaudr : ODE
 
     """
-    
+    # print('these are the entries for get_shellODE')
+    # print('y, r, cons, f_cover, is_ionised')
+    # print(y, r, cons, f_cover, is_ionised)
     # TODO: Add f_cover
+    
+    # [4.42250702e+07 1.00000000e+00 0.00000000e+00] 
+    # 7.340898615585324e+17 
+    # [array(1.51501543e+43), array(1.93642196e+43), array(5.39510623e+53), 
+    #  1.5e-21, 2.1287915392418182e-24, 1.0181176926808696e-24, 
+    #  10000.0, 2.59e-13] 1 True
+    
+    
+    # [4.43513726e+07 1.00000000e+00 0.00000000e+00] 
+    # 7.340898615585322e+17 
+    # [array(1.51501543e+43), array(1.93642196e+43), array(5.39510623e+53), 
+    # 1.5e-21  1.0169528260869563e-24 2.125362090909091e-24 
+    # 10000.0, 2.59e-13] 1
     
     # Is this region of the shell ionised?
     # If yes:
@@ -93,6 +109,8 @@ def get_shellODE(y,
         # optical depth
         dtaudr = nShell * sigma_dust * f_cover
         # return
+        # print(dndr, dphidr, dtaudr)
+        print(dndr)
         return dndr, dphidr, dtaudr
     # If not, omit ionised paramters such as Li and phi.
     else:

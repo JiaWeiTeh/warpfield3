@@ -12,6 +12,7 @@ import numpy as np
 import src.warpfield.cloud_properties.bonnorEbert as bE
 import astropy.units as u
 import astropy.constants as c
+import sys
 import scipy.integrate
     
 def get_density_profile(r_arr,
@@ -52,9 +53,15 @@ def get_density_profile(r_arr,
         is selected.
 
     """
+    
+    # Note:
+        # old code: f_dens and f_densBE().
 
     # array for easier operation
-    r_arr  = np.array(r_arr)
+    if hasattr(r_arr, '__len__'):
+        r_arr  = np.array(r_arr)
+    else:
+        r_arr  = np.array([r_arr])
         
     # =============================================================================
     # For a power-law profile
@@ -89,9 +96,10 @@ def get_density_profile(r_arr,
         # dimensionless radius array
         xi_arr = np.sqrt(4 * np.pi * c.G.value * rhoCore / c_s**2) * r_arr
         # initial values (boundary conditions)
-        # effectively 0.
+        # effectively 0.s
         y0 = [1e-12, 1e-12]
         # solve Lane-Emden equation
+        # print(xi_arr)
         psi, omega = zip(*scipy.integrate.odeint(bE.laneEmden, y0, xi_arr))
         # store into array
         psi = np.array(psi)
@@ -99,12 +107,16 @@ def get_density_profile(r_arr,
         # density outside sphere
         dens_arr[r_arr > rCloud] = warpfield_params.nISM
         # return in n(r) cgs
+        # print("here is dens_arr, xi_arr")
+        # print(dens_arr, xi_arr)
+        # sys.exit()
         return dens_arr, xi_arr
 
 
-# # Uncomment to check out plot
-# #%%
+# Uncomment to check out plot
+#%%
 # import matplotlib.pyplot as plt
+
 
 # rCloud = 355
 # rCore = 10
@@ -117,11 +129,11 @@ def get_density_profile(r_arr,
 
 
 # dens_arr, xi_arr = get_density_profile(r_arr,
-#                          rCore, 
-#                          rCloud, 
-#                          mCloud,
-#                          params
-#                          )
+#                           rCore, 
+#                           rCloud, 
+#                           mCloud,
+#                           warpfield_params
+#                           )
 
 # fig = plt.subplots(1, 1, figsize = (7, 5), dpi = 200)
 # plt.plot(xi_arr, dens_arr, 
@@ -129,6 +141,7 @@ def get_density_profile(r_arr,
 #           )
 # plt.xlabel('$\\xi(pc)$')
 # plt.ylabel('density')
+# plt.yscale('log')
 # plt.legend()
 # print(dens_arr[-5:])
 # print(xi_arr[-5:])

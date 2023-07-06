@@ -11,8 +11,10 @@ In the main directory, type (as an example):
    python3 ./run.py param/example.param
 """
 
+import os
 import argparse
-from src.input_tools import read_param
+import yaml
+from src.input_tools import read_param, get_param
 from src.warpfield import main
 
 # =============================================================================
@@ -26,8 +28,9 @@ parser.add_argument('path2param')
 args = parser.parse_args()
 # Get class and write summary file
 params = read_param.read_param(args.path2param, write_summary = True)
-# print(params.sfe, params.imf)
 # With this dictionary, run the simulation.
-# main.expansion(params)
+main.start_expansion()
 # Done!
 print("Done!")
+
+

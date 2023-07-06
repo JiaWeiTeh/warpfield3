@@ -14,8 +14,11 @@ The function will also create a summary.txt file in the output directory.
 from datetime import datetime
 from pathlib import Path
 import random # for random numbers
+import sys
 import numpy as np
-import src.input_tools.input_warnings as input_warnings 
+import os
+import yaml
+# from src.input_tools import input_warnings 
 
 def read_param(path2file, write_summary = True):    
     """
@@ -45,6 +48,9 @@ def read_param(path2file, write_summary = True):
         params_input_list = [line.strip() for line in f\
                         if line.strip() and not line.strip().startswith("#")]
 
+    # TODO: double check all these parameters with terminal.
+    # do not trust what is in parameter.py, as some of them may
+    # be overwritten.
     # =============================================================================
     # Record inputs
     # =============================================================================
@@ -56,7 +62,7 @@ def read_param(path2file, write_summary = True):
                    'output_format': 'ASCII', 
                    'rand_input': 0.0, 
                    'log_mCloud': 6.0, 
-                   'mCloud_beforeSF': 1.0, 
+                   'is_mCloud_beforeSF': 1.0, 
                    'sfe': 0.01, 
                    'nCore': 1000.0, 
                    'rCore': 0.099, 
@@ -73,6 +79,11 @@ def read_param(path2file, write_summary = True):
                    'sfe_tff': 0.01, 
                    'imf': 'kroupa.imf', 
                    'stellar_tracks': 'geneva', 
+                   'SB99_mass': 1e6,
+                   'SB99_rotation': 1.0,
+                   'SB99_BHCUT': 120.0,
+                   'SB99_forcefile': 0.0,
+                   'SB99_age_min': 500000.0,
                    'dens_profile': 'bE_prof', 
                    'dens_g_bE': 14.1, 
                    'dens_a_pL': -2.0, 
@@ -87,14 +98,18 @@ def read_param(path2file, write_summary = True):
                    'frag_enable_timescale': 1.0, 
                    'stop_n_diss': 1.0, 
                    'stop_t_diss': 1.0, 
-                   'stop_r': 1000.0, 
+                   'stop_r': 5050.0, 
+                   'stop_v': -10000.0,
                    'stop_t': 15.05, 
                    'stop_t_unit': 'Myr', 
+                   'adiabaticOnlyInCore': False,
+                   'immediate_leak': True,
                    'write_main': 1.0, 
                    'write_stellar_prop': 0.0, 
                    'write_bubble': 0.0, 
                    'write_bubble_CLOUDY': 0.0, 
                    'write_shell': 0.0, 
+                   'write_potential': 0.0,
                    'xi_Tb': 0.99,
                    'inc_grav': 1.0, 
                    'f_Mcold_W': 0.0, 
@@ -106,7 +121,7 @@ def read_param(path2file, write_summary = True):
                    'mu_p': 1.0181176926808696e-24, 
                    't_ion': 10000.0, 
                    't_neu': 100.0, 
-                   'nISM': 0.1, 
+                   'nISM': 10, 
                    'kappa_IR': 4.0, 
                    'gamma_adia': 1.6666666666666667, 
                    'thermcoeff_wind': 1.0, 
@@ -123,27 +138,46 @@ def read_param(path2file, write_summary = True):
     # =============================================================================
     # First, for parameters specified in .param file, update dictionary and use the
     # specified values instead of the default.
-    for pairs in params_input_list:
-        param, value = pairs.split(maxsplit = 1)
-        value = value.split(',')
-        if len(value) == 1:
-            # Convert to float if possible
-            try:
-                val = float(value[0])
-                # However, if output is integer, write them as
-                # integer instead (for OCD purposes)
-                if int(val) == val:
-                    params_dict[param] = int(val)
-                    params_dict[param] = val
-            # otherwise remain as string
-            except:
-                params_dict[param] = value[0]
-        else:
-            params_dict[param] = value 
+    try:
+        for pairs in params_input_list:
+            param, value = pairs.split(maxsplit = 1)
+            # if there are weird behaviours in the file:
+            if param not in params_dict:
+                sys.exit(f'{param} is not a parameter.')
+            value = value.split(',')
+            if len(value) == 1:
+                # Convert to float if possible
+                try:
+                    val = float(value[0])
+                    # However, if output is integer, write them as
+                    # integer instead (because I have OCD)
+                    if int(val) == val:
+                        params_dict[param] = int(val)
+                        params_dict[param] = val
+                # otherwise remain as string
+                except:
+                    params_dict[param] = value[0]
+            else:
+                params_dict[param] = value 
+    except Exception:
+        sys.exit("Error detected. Make sure to adhere to the rules when creating the .param file. There appears to be a formatting issue.") 
     
+    # TODO
     # give warning if parameter does not make sense
-    input_warnings.input_warnings(params_dict)
+    # input_warnings.input_warnings(params_dict)
             
+
+    # =============================================================================
+    # Here we deal with additional parameters that will be recorded in summary.txt.
+    # For those that are not recorded, scroll down to the final section of this 
+    # script.
+    # =============================================================================
+    # We have assumed the dust cross section scales linearly with metallicity. However,
+    # below a certain metallicity, there is no dust
+    if params_dict['metallicity'] >= params_dict['sigma0']:
+        params_dict['sigma_d'] = params_dict['sigma0'] * params_dict['metallicity']
+    else:
+        params_dict['sigma_d'] = 0
 
     # =============================================================================
     # Here we deal with randomised parameters.
@@ -180,6 +214,31 @@ def read_param(path2file, write_summary = True):
         params_dict.pop('rand_sfe')
         params_dict.pop('rand_n_cloud')
         params_dict.pop('rand_metallicity')
+        
+        # TODO:
+            
+        # warnings.warn("Forcing WARPFIELD to use the following SB99 file: %s" % (force_file))
+        # warnings.warn("WARNING: Make sure you still provided the correct metallicity and mass scaling")
+        
+        # # figure out the SB99 file for use in cloudy (cloudy will not interpolate between files, just pick the one that comes closest)
+        # if force_SB99file == 0: # no specific cloudy file is forced, determine which file to use from BHcutoff, metallicity, ...
+        #     if rotation is True: rot_string = "_rot_"
+        #     else: rot_string = "_norot_"
+        #     BH_string = "_BH" + str(int(BHcutoff))
+        #     if abs(Zism-1.0) < abs(Zism-0.15): Z_string = "Z0014"
+        #     else: Z_string = "Z0002"
+        #     SB99cloudy_file = '1e6cluster'+rot_string+Z_string+BH_string
+        # else:
+        #     # if a specific file is forced, remove extension for cloudy
+        #     print(("forcing specific starburst99 file: " + force_SB99file))
+        #     idx = [pos for pos, char in enumerate(force_SB99file) if char == '.'] # find position of last '.' (beginning of file extension)
+        #     SB99cloudy_file = force_SB99file[:idx[-1]] # remove extension
+
+        # if SB99file != SB99cloudy_file + '.txt':
+        #     sys.exit("SB99file != SB99cloudy_file in read_SB99.py!")
+        #     print(("SB99file: " + SB99file))
+        #     print(("SB99cloudy_file +.txt: " + SB99cloudy_file))
+
         
     # =============================================================================
     # Store only useful parameters into the summary.txt file
@@ -242,18 +301,58 @@ def read_param(path2file, write_summary = True):
    
     print(f"Summary file created and saved at {path2output}{params_dict['model_name']}{'_summary.txt'}")
         
+        
     # =============================================================================
-    # Define a class for parameters as the dictionary is rather large
+    # This section contains information which you do not want to appear in the 
+    # final summary.txt file, but want it included. Mostly mini-conversions.
     # =============================================================================
-    class Dict2Class(object):
-        # set object attribute
-        def __init__(self, dictionary):
-            for k, v in dictionary.items():
-                setattr(self, k, v)
-                
-    # initialise the class
-    params = Dict2Class(params_dict)
-    # return
-    return params
+            
+    # Here we deal with tStop based on units. If the unit is Myr, then
+    # tStop is tStop. If it is in free-frall time, then we need to change
+    # to a proper unit of time.
+    if params_dict['stop_t_unit'] == 'tff':
+        tff = params_dict['dens_navg_pL']
+        params_dict['stop_t'] = params_dict['stop_t'] * tff
+    
+    # Here we include calculations for mCloud, for future ease.
+    params_dict['mCloud'] = 10**params_dict['log_mCloud']
+    
+    # Here for the magnatic field related stuffs
+    params_dict['BMW'] = 10**params_dict['log_BMW']
+    params_dict['nMW'] = 10**params_dict['log_nMW']
+    
+    # =============================================================================
+    # Save output
+    # =============================================================================
+    # relative path to yaml
+    path2yaml = r'./param/'
+    # Write this into a file
+    filename =  path2yaml + params_dict['model_name'] + '_config.yaml'
+    with open(filename, 'w',) as file :
+        # header
+        file.writelines('\
+# =============================================================================\n\
+# Summary of parameters in the \'%s\' run.\n\
+# Created at %s.\n\
+# =============================================================================\n\n\
+'%(params_dict['model_name'], dt_string))
+        yaml.dump(params_dict, file, sort_keys=False) 
+    print(f'Parameters successfully saved to {filename}')
+    
+    # save path to object
+    # TODO: delete this after warpfield is finished.
+    # save file
+    os.environ['PATH_TO_CONFIG'] = filename
+    
+    return params_dict
+
+
+
+
+
+
+
+
+
 
 

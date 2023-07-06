@@ -83,7 +83,7 @@ log_mCloud    9.0
 # -- 0 mCloud represents cloud mass AFTER star formation
 # -- 1 mCloud represents cloud mass BEFORE star formation
 # DEFAULT: 1
-mCloud_beforeSF    1
+is_mCloud_beforeSF    1
 
 # Star formation effeciency (SFE). 
 # This sets the fraction of cloud mass that will be converted into the mass 
@@ -220,6 +220,50 @@ imf    kroupa.imf
 stellar_tracks    geneva
 
 
+
+
+# ==============================================================================
+# parameters for Starburst99 (if used)
+# ==============================================================================
+# Note: Remember to check that these are indeed what is in the user's SB99 file.
+# This does not automatically create a Starburst99 file; the purpose of this
+# section is to tell WARPFIELD which SB99 file you are using, should you have
+# many in the library. For more information, see
+# https://www.stsci.edu/science/starburst99/docs/run.html.
+
+# What is the default star cluster mass in SB99? This will be used if scaling
+# relation is considered.
+# type: float
+# DEFAULT: 1e6
+SB99_mass    1e6
+
+
+# Are we using rotating or non-rotating stars in SB99?
+# Available values:
+# -- 1 with rotation
+# -- 0 without rotation
+SB99_rotation    1
+
+# What is the black-hole cutoff mass (unit: Msol)?
+# Stars with ZAMS masses below this parameter form supernovae. For instance, 
+# SB99_BHCUT = 40 results in SNe only from the mass range 40 to 8 M. 
+# type: float
+# DEFAULT: 120
+SB99_BHCUT    120
+
+# Would you instead like to use a specific SB99 file? If so, please
+# input the full path to (and including) the filename.
+# e.g., "/local/data/SB99_39_7b.txt"
+# DEFAULT: 0
+SB99_forcefile    0
+
+# Minimum age to take when reading in SB99 cluster spectrum for CLOUDY (in years).
+# This prevents a model age from requesting a cluster spectrum out of the bounds of the SB99 calculation
+SB99_age_min    500000
+
+
+
+
 # =============================================================================
 # parameters for density of cloud
 # =============================================================================
@@ -324,6 +368,10 @@ frag_densInhom    0
 # DEFAULT: 1
 frag_cf    1
 
+# If frag_cf is enabled, what is the final cover fraction at the end
+# of the fragmentation process?
+frag_cf_end    0.1
+
 # Take into account timescale for fragmentation?
 # Available values:
 # -- 0 no, approximate as instantaneous fragmentation
@@ -342,20 +390,25 @@ frag_enable_timescale    1
 # Ideally, this should be the same value as nISM.
 # type: float
 # DEFAULT: 1
-stop_n_diss    1
+stop_n_diss    11
 
 # How long after n_shell < n_diss is satistied (continually) that the 
 # shell is considered dissolved? (unit: Myr)
 # See also the stop_n_diss parameter.
 # type: float
-# DEFAULT: 1
-stop_t_diss    1.0
+# DEFAULT: 2
+stop_t_diss    2.0
 
 # Maximum radius of shell expansion? (unit: pc)
 # If shell radius exceeds this threshold, consider the shell destroyed and halt the simulation.
 # Set to an arbritrary high value (> 1e3) if stopping is not desired.
-# DEFAULT: 1e3 (at this point the galactic shear will have disrupted the cloud).
-stop_r    1e3
+# DEFAULT: 5e3 (at this point the galactic shear will have disrupted the cloud).
+stop_r    5e3
+
+# The calculation will become unstable if the collapse is too fast. This parameter
+# sets the velocity threshold (unit: km/s)
+# type: float
+stop_v    -10000.0
 
 # What is the maximum simulation running time?
 # After this period of time, the simulation will stop running.
@@ -378,7 +431,13 @@ stop_t_unit    Myr
 # DETAULT: False
 adiabaticOnlyInCore    False
 
+# Go to momentum-driving phase (Phase II) immediately after bubble bursts?
+# It is advised that this is set to True. If it is False, the code might crash
+immediate_leak    True 
 
+# What is the minimum energy at the end of the transition phase, afterwhich
+# momentum-driving phase begins?
+phase_Emin    1e-4
 
 
 
@@ -423,6 +482,12 @@ write_bubble_CLOUDY    0
 # DEFAULT: 0
 write_shell    0
 
+# Write table with gravitational potential?
+# Available values:
+# -- 0 Do not save output
+# -- 1 Save output
+# DEFAULT: 0
+write_potential    0
 
 # =============================================================================
 # parameters for integrators

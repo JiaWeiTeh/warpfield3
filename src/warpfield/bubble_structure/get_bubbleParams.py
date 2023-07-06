@@ -20,10 +20,11 @@ import astropy.constants as c
 from astropy.table import Table
 #--
 import src.warpfield.cooling.get_coolingFunction as get_coolingFunction
+import src.warpfield.functions.operations as operations
 
 # =============================================================================
 # This section contains function which computes the ODEs that dictate the 
-# strucuture (e.g., temperature, velocity) of the bubble. 
+# structure (e.g., temperature, velocity) of the bubble. 
 # =============================================================================
 
 def delta2dTdt(t, T, delta):
@@ -225,7 +226,7 @@ def get_bubbleODEs(r, y0, data_struc, metallicity):
 # Section: conversion between bubble energy and pressure. Calculation of ram pressure.
 # =============================================================================
 
-def bubble_E2P(Eb, r1, r2, gamma):
+def bubble_E2P(Eb, r2, r1, gamma):
     """
     This function relates bubble energy to buble pressure (all in cgs)
 
@@ -247,6 +248,8 @@ def bubble_E2P(Eb, r1, r2, gamma):
 
     """
     # TODO: Check if it is in cgs
+    # Note:
+        # old code: PfromE()
     
     # Avoid division by zero
     r2 = r2 + (1e-10)
@@ -256,7 +259,7 @@ def bubble_E2P(Eb, r1, r2, gamma):
     # return
     return Pb
     
-def bubble_P2E(Pb, r1, r2, gamma):
+def bubble_P2E(Pb, r2, r1, gamma):
     """
     This function relates bubble pressure to buble energy (all in cgs)
 
@@ -277,6 +280,8 @@ def bubble_P2E(Pb, r1, r2, gamma):
         Bubble energy.
 
     """
+    # Note:
+        # old code: EfromP()
     # see bubble_E2P()
     return 4 * np.pi / 3 / (gamma - 1) * (r2**3 - r1**3)
 
@@ -297,6 +302,8 @@ def pRam(r, Lwind, vWind):
     -------
     Ram pressure
     """
+    # Note:
+        # old code: Pram()
     return Lwind / (2 * np.pi * r**2 * vWind)
 
 
@@ -304,61 +311,6 @@ def pRam(r, Lwind, vWind):
 # Section: helper functions to compute starting values for bubble
 # =============================================================================
 
-
-def initialise_bstruc(Mcloud, SFE, path):
-    """
-    This function initialises environmental variables to help calculate
-    bubble structures.
-
-    Parameters
-    ----------
-    Mcloud : TYPE
-        DESCRIPTION.
-    SFE : TYPE
-        DESCRIPTION.
-    path : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-
-    """
-    # Notes
-    # old code: optimalbstrux in aux_func()
-    
-    # Initialise this
-    R1R2 = R2pR2 = np.array([0])
-    # check if directory exists
-    dirstring = os.path.join(path, "BubDetails")
-    if not os.path.isdir(dirstring):
-        os.makedirs(dirstring)
-    # path to bubble details
-    pstr = path +"/BubDetails/Bstrux.txt"
-    # save to path
-    np.savetxt(pstr, np.c_[R1R2,R2pR2],delimiter='\t',header='R1/R2'+'\t'+'R2p/R2')
-    
-    # initialise some environment variables. 
-    # path
-    os.environ["Bstrpath"] = pstr
-    # dMdt
-    os.environ["DMDT"] = str(0)
-    # count
-    os.environ["COUNT"] = str(0)
-    # Lcool/gain
-    os.environ["Lcool_event"] = str(0)
-    os.environ["Lgain_event"] = str(0)
-    # If coverfraction
-    os.environ["Coverfrac?"] = str(0)
-    # ??
-    os.environ["BD_res_count"] = str(0)
-    # ??
-    os.environ["Mcl_aux"] = str(Mcloud)
-    os.environ["SF_aux"]= str(SFE)
-    # ??
-    dic_res={'Lb': 0, 'Trgoal': 0, 'dMdt_factor': 0, 'Tavg': 0, 'beta': 0, 'delta': 0, 'residual': 0}
-    os.environ["BD_res"]=str(dic_res)
-    # return
-    return 0
 
 
 
@@ -542,7 +494,7 @@ def get_bubbleLuminosity(Data_struc,
                                xtol=1e-18) # can go to high precision because computationally cheap (2e-5 s)
     
     # get bubble pressure
-    press = bubble_E2P(Eb, R1, R2, warpfield_params.gamma_adia)
+    press = bubble_E2P(Eb, R2, R1, warpfield_params.gamma_adia)
     
     # thermal coefficient in astronomical units
     c_therm = warpfield_params.c_therm * u.cm.to(u.pc) * u.g.to(u.Msun) / (u.s.to(u.Myr))**3
@@ -697,10 +649,10 @@ def get_bubbleLuminosity(Data_struc,
     Tborder = 10 ** log_T_noeqmax
 
     # find index of radius at which T is closest (and higher) to Tborder
-    idx_6 = get_coolingFunction.find_nearest_higher(T, Tborder)
+    idx_6 = operations.find_nearest_higher(T, Tborder)
 
     # find index of radius at which T is closest (and higher) to 1e4K (no cooling below!), needed later
-    idx_4 = get_coolingFunction.find_nearest_higher(T, 1e4)
+    idx_4 = operations.find_nearest_higher(T, 1e4)
 
     # interpolate and insert, so that we do have an entry with exactly Tborder
     if (idx_4 != idx_6):
@@ -857,10 +809,10 @@ def get_bubbleLuminosity(Data_struc,
     if r_goal > r[idx_4]: # assumes that r_cz runs from high to low values (so in fact I am looking for the highest element in r_cz)
         T_rgoal = f3(r_goal)
     elif r_goal > r[idx_6]: # assumes that r_cz runs from high to low values (so in fact I am looking for the smallest element in r_cz)
-        idx = get_coolingFunction.find_nearest(r_cz, r_goal)
+        idx = operations.find_nearest(r_cz, r_goal)
         T_rgoal = T_cz[idx] + dTdr_cz[idx]*(r_goal - r_cz[idx])
     else:
-        idx = get_coolingFunction.find_nearest(r_b, r_goal)
+        idx = operations.find_nearest(r_b, r_goal)
         T_rgoal = T_b[idx] + dTdr_b[idx]*(r_goal - r_b[idx])
 
     # TODO: These should not be constants?

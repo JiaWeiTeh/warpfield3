@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['src/warpfield/bubble_structure/bubble_structure.py', 'src/warpfield/bubble_structure/get_bubbleParams.py', 'src/warpfield/phase1_energy/run_energy_phase.py', 'TODO.txt', 'src/warpfield/cooling/get_coolingFunction.py']
+recent_files = ['run.py', 'src/warpfield/phase1b_energy_implicit/run_energy_implicit.py', 'param/explanation.txt', 'param/example.param', 'src/warpfield/phase_general/phase_events.py', 'src/warpfield/phase_general/phase_ODEs.py', 'src/input_tools/read_param.py', 'src/warpfield/main.py']
 

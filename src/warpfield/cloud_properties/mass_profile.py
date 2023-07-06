@@ -11,16 +11,26 @@ This script contains function which computes the mass profile of cloud.
 import astropy.units as u
 import scipy.integrate
 import numpy as np
+import sys 
+
 import src.warpfield.cloud_properties.bonnorEbert as bE
 import src.warpfield.cloud_properties.density_profile as density_profile
 
-    
+
+
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
+
+
+
+
+# TODO: return_Mdot, not rdot. This is a misnomer. 
+
 def get_mass_profile(r_arr,
                          density_specific_param, 
                          rCloud, 
                          mCloud,
-                         warpfield_params,
-                         rdot_arr = [],
+                         rdot_arr = np.array([]),
                          return_rdot = False,
                          ):
     """
@@ -61,12 +71,22 @@ def get_mass_profile(r_arr,
 
     """
     
+    # convert to np.array
+    # array for easier operation
+    if hasattr(r_arr, '__len__'):
+        r_arr  = np.array(r_arr)
+    else:
+        r_arr  = np.array([r_arr])
+        
+    if hasattr(rdot_arr, '__len__'):
+        rdot_arr  = np.array(rdot_arr)
+    else:
+        rdot_arr  = np.array([rdot_arr])
+    
     # initialise
     mGas = r_arr * np.nan
     mGasdot = r_arr * np.nan
-    # convert to np.array
-    r_arr = np.array(r_arr)
-    
+
     # Setting up values
     rhoCore = warpfield_params.nCore * warpfield_params.mu_n
     rhoISM = warpfield_params.nISM * warpfield_params.mu_n
@@ -85,7 +105,7 @@ def get_mass_profile(r_arr,
         # input values into mass array
         # inner sphere
         mGas[r_arr <= rCore] = 4 / 3 * np.pi * r_arr[r_arr <= rCore]**3 * rhoCore
-        # composite region, see Eq25 in WARPFIELD 2.0 (Rahner et al 2018)
+        # composite region, see Eq25 in WARPFIELD 2.0 (Rahååner et al 2018)
         # assume rho_cl \propto rho (r/rCore)**alpha
         mGas[r_arr > rCore] = 4. * np.pi * rhoCore * (
                        rCore**3/3. +\
@@ -118,21 +138,28 @@ def get_mass_profile(r_arr,
         T = density_specific_param
         # Get density profile before altering units
         dens_arr, xi_arr = density_profile.get_density_profile(r_arr,
-                         density_specific_param,  rCloud,  mCloud, warpfield_params)
+                         density_specific_param,  rCloud, mCloud, warpfield_params)
         # sound speed
+        # print('values that are fed into the c_s calculation\n', T)
         c_s = bE.get_bE_soundspeed(T, warpfield_params.mu_n, warpfield_params.gamma_adia)
+        # print('sound speed and T',c_s, T)
         # Convert density profile 
-        dens_arr = dens_arr * (1/u.cm**3).to(1/u.m**3).value
+        # TODO: This is not included?
+        dens_arr = dens_arr  * warpfield_params.mu_n * (u.g/u.cm**3).to(u.kg/u.m**3)
         # Then convert all to SI units
         rCloud = rCloud * u.pc.to(u.m)
         r_arr = r_arr * u.pc.to(u.m)
-        rdot_arr = rdot_arr * u.pc.to(u.m)
-        rCore = rCore * u.pc.to(u.m)
         rhoCore = rhoCore * (u.g/u.cm**3).to(u.kg/u.m**3)
+        # print('rhoISM before', rhoISM)
         rhoISM = rhoISM * (u.g/u.cm**3).to(u.kg/u.m**3)
         mCloud = mCloud * (u.M_sun).to(u.kg)
         # initial values (boundary conditions)
         # effectively 0.
+        # print("we are now in calc_mass_BE")
+        # print('rhoCore, rhoISM, r, rCloud, mCloud, c_s, xi')
+        # print(rhoCore, rhoISM, r_arr, rCloud, mCloud, c_s, xi_arr)
+        
+        
         for ii, xi in enumerate(xi_arr):
             # For radius within cloud
             if r_arr[ii] <= rCloud:
@@ -145,7 +172,7 @@ def get_mass_profile(r_arr,
             # is array given?
             if len(rdot_arr) == len(r_arr): 
                 # array-ise
-                rdot_arr = np.array(rdot_arr)   
+                rdot_arr = np.array(rdot_arr) * u.pc.to(u.m)
                 
                 # # # initial condition (set to a value that is very close to zero)
                 # y0 = [1e-12, 1e-12]
@@ -153,7 +180,6 @@ def get_mass_profile(r_arr,
                 # psi, omega = zip(*scipy.integrate.odeint(bE.laneEmden, y0, xi_arr))
                 # psi = np.array(psi)
                 # dens_arr = rhoCore * np.exp(-psi)
-                
                 mGasdot[r_arr <= rCloud] = 4 * np.pi * r_arr[r_arr <= rCloud]**2 * rdot_arr[r_arr <= rCloud] * dens_arr[r_arr <= rCloud] 
                 mGasdot[r_arr > rCloud]  = 4 * np.pi * r_arr[r_arr > rCloud]**2 * rdot_arr[r_arr > rCloud] * rhoISM 
             else:
@@ -162,13 +188,17 @@ def get_mass_profile(r_arr,
         mGas = mGas * u.kg.to(u.Msun) #return to solar masses
         mGasdot = mGasdot * u.kg.to(u.Msun) #return to solar masses
 
+        # print("Here is the calculation of mGas, mGasdot")
+        # print(mGas, mGasdot)
+        # sys.exit()
+        
         return mGas, mGasdot
         
     
     
-# #%%
+#%%
 
-# # Uncomment to check out plot
+# # Uncomment to debug
     
 # import matplotlib.pyplot as plt
 
@@ -187,18 +217,40 @@ def get_mass_profile(r_arr,
 # profile_type = "bE_prof"
 # return_rdot = True
 
-# mGas, mGasdot = get_mass_profile(r_arr,
-#                          rCore, rCloud, 
-#                          nCore, nISM,
-#                          mCloud,
-#                          mu_n, gamma,
-#                          rdot_arr,
-#                          return_rdot = True,
-#                          profile_type = "bE_prof", 
-#                          # profile_type = "pL_prof", 
-#                          alpha = -2, g = 14.1,
-#                          T = 451690.2638133162,
-#                          )
+# mGas = get_mass_profile(0.23790232199299727, 451690.2638133162, 355.8658723191992, 990000000.0, warpfield_params)
+
+#%%
+
+# params_wfld4  = [201648867747.70163, 105846321.7868845, 1.6666666666666667, 990000000.0, 31.394226159698523, 451690.2638133162, -2, 10000000.0, 0.0, 0.0, 0.0, 355.8658723191992, 1.0, 0.0, 1e+99, 1e+99, 1394.801812664602, 0.01]
+# y0_wfld4 = [0.23790232199299727, 3656.200432285518, 5722974.028981317]
+# r, v, E = y0_wfld4  # unpack current values of y (r, rdot, E)
+
+# # [LW, PWDOT, GAM, Mcloud_au, RHOA, RCORE, A_EXP, MSTAR, LB, FRAD, fabs_i, rcloud_au, phase0, tcoll[coll_counter], t_frag, tscr, CS, SFE]
+# [LW, PWDOT, GAM, Mcloud_au, RHOA, RCORE, A_EXP, MSTAR, LB, FRAD, fabs_i, rcloud_au,\
+#   phase0, tcoll, t_frag, tscr, CS, SFE] = params_wfld4
+    
+# # LW, PWDOT, GAM, MCLOUD, RHOA, RCORE, A_EXP, MSTAR, LB, FRAD, FABSi,\
+# #         RCLOUD, density_specific_param, warpfield_params,\
+# #             tSF, tFRAG, tSCR, CS, SFE  = params  # unpack parameters
+            
+# VW = 2.*LW/PWDOT
+
+# Msh, Msh_dot = get_mass_profile(r,  451690.2638133162,\
+#                                 rcloud_au, Mcloud_au, warpfield_params,\
+#                                     rdot_arr = v, return_rdot = True)
+
+
+
+# print('\n\nHere are the values that are fed into mass_profile')
+# print(r,  451690.2638133162,\
+#                                 rcloud_au, Mcloud_au,\
+#                                     v)
+
+
+
+
+#%%
+
 
 
 # fig = plt.subplots(1, 1, figsize = (7, 5), dpi = 200)
@@ -207,7 +259,7 @@ def get_mass_profile(r_arr,
 # plt.xlabel('$r(pc)$')
 # plt.ylabel('M (Msol)')
 # plt.vlines(rCloud, 0, 9e9, linestyles = '--', color = 'k', 
-#            label = 'rCloud')
+#             label = 'rCloud')
 # plt.ylim(1e-1, 1e10)
 # plt.yscale('log')
 # plt.legend()
