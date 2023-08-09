@@ -18,6 +18,11 @@ import scipy
 #--
 from src.warpfield.functions import operations
 
+# get parameter
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
+
+
 # assume this is the structure of the ods-file:
 # time(yr), log10(Qi), log10(Li/Lbol), log10(Lbol), log10(Lw w/ SNe), log10(pw_dot), log10(Lw w/o SNe)
 
@@ -42,8 +47,8 @@ from src.warpfield.functions import operations
 # TODO1: create getSB99 data and interp functions
 #  TODO: also check all functions are included by going meticulously through the original function.
 
-def read_SB99(warpfield_params,
-              f_mass = 1e6, return_format = "array"):
+def read_SB99(metallicity = warpfield_params.metallicity, rotation = warpfield_params.SB99_rotation,
+        f_mass = 1e6, BHcutoff=120., return_format = "array"):
     
     # Note:
         # old code: getSB99_main() and load_stellar_tracks()
@@ -57,7 +62,6 @@ def read_SB99(warpfield_params,
     :param BHcutoff: cut off mass for direct collapse black holes in solar masses (stars above this mass, will not inject energy via supernova explosions)
     :return: array (of SB99 data), dictionary (containing interpolation functions)
     """
-    metallicity = warpfield_params.metallicity 
     
     # SB99_data = load_stellar_tracks(Zism, rotation=rotation, f_mass=f_mass, BHcutoff=BHcutoff)    
     # force_file = i.force_SB99file, test_plot = False, log_t = False, tmax=30., return_format="array"):
@@ -71,28 +75,26 @@ def read_SB99(warpfield_params,
     SB99_file_Z0014 = get_SB99_filename(1.0, warpfield_params.SB99_rotation, 
                                         warpfield_params.SB99_BHCUT, 
                                         warpfield_params.SB99_mass) 
-
+    
     # case: specific file is forced
     if warpfield_params.SB99_forcefile != 0 and isinstance(warpfield_params.SB99_forcefile, str):  
         SB99file = warpfield_params.SB99_forcefile
-        [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo] = getSB99_data(SB99file, warpfield_params, f_mass)
+        [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo] = getSB99_data(SB99file, f_mass)
     # if file is not forced, then check metallicity and get ready to interpolate. 
     else:
         # if metallicity is between, interpolate
         if (metallicity >= 0.14 and metallicity < 1.0):
             [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo] = getSB99_data_interp(metallicity,
                                                                                             SB99_file_Z0002, 0.15,
-                                                                                            SB99_file_Z0014, 1.0,
-                                                                                            warpfield_params,
-                                                                                            f_mass)
+                                                                                            SB99_file_Z0014, 1.0, f_mass = f_mass)
         elif metallicity == 1.0:
             SB99file = SB99_file_Z0014
-            [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo] = getSB99_data(SB99file, warpfield_params, f_mass)
+            [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo] = getSB99_data(SB99file, f_mass)
 
 
         elif (metallicity >= 0.14 and metallicity <= 0.15 ):
             SB99file = SB99_file_Z0002
-            [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo] = getSB99_data(SB99file, warpfield_params, f_mass)
+            [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo] = getSB99_data(SB99file, f_mass)
 
         else:
             warnings.warn("Your metallicity is either too high or too low - there are no stellar tracks! WARPFIELD will choose the closest track and scale the winds linearly; however, please be cautious of the output.")
@@ -103,21 +105,26 @@ def read_SB99(warpfield_params,
                 SB99file = SB99_file_Z0014
                 metallicity_rel = 1.0
             print(("Using the following SB99 file: "+SB99file))
-            [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo] = getSB99_data(SB99file, warpfield_params, f_mass, 
+            [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo] = getSB99_data(SB99file, f_mass, 
                                                                                                      f_met=metallicity/metallicity_rel)
 
     Data = [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo]
+    
+    SB99f = make_interpfunc(Data)
+
+    if return_format == "dict": Data = arr2dict(Data)
+    elif return_format == "array": Data = dict2arr(Data)
 
     if return_format == 'dict':
         Data_out = arr2dict(Data)
     elif return_format == 'array':
         Data_out = dict2arr(Data)
 
-    return Data_out
+    return Data_out, SB99f
 
 
 
-def getSB99_data(file, warpfield_params, 
+def getSB99_data(file, 
                  f_mass=1.0, f_met=1.0):
     """
     subroutine for load_stellar_tracks.py
@@ -211,7 +218,7 @@ def getSB99_data(file, warpfield_params,
 
 
 
-def getSB99_data_interp(Zism, file1, Zfile1, file2, Zfile2, warpfield_params, f_mass = 1.0):
+def getSB99_data_interp(Zism, file1, Zfile1, file2, Zfile2, f_mass = 1.0):
     """
     interpolate metallicities from SB99 data
     :param Zism: metallicity you want (between metallicity 1 and metallicity 2)
@@ -224,8 +231,8 @@ def getSB99_data_interp(Zism, file1, Zfile1, file2, Zfile2, warpfield_params, f_
 
     # let's ensure that index 1 belongs to the lower metallicity
     if Zfile1 < Zfile2:
-        [t1, Qi1, Li1, Ln1, Lbol1, Lw1, pdot1, pdot_SNe1] = getSB99_data(file1, warpfield_params, f_mass = f_mass)
-        [t2, Qi2, Li2, Ln2, Lbol2, Lw2, pdot2, pdot_SNe2] = getSB99_data(file2, warpfield_params, f_mass = f_mass)
+        [t1, Qi1, Li1, Ln1, Lbol1, Lw1, pdot1, pdot_SNe1] = getSB99_data(file1, f_mass = f_mass)
+        [t2, Qi2, Li2, Ln2, Lbol2, Lw2, pdot2, pdot_SNe2] = getSB99_data(file2, f_mass = f_mass)
         Z1 = Zfile1
         Z2 = Zfile2
     elif Zfile1 > Zfile2:
@@ -308,7 +315,7 @@ def get_SB99_filename(metallicity, rotation, BHcutoff, SB99_mass = 1e6, Mmax = 1
     log_SB99_mass = np.log10(SB99_mass)
     SB99_mass_str = str(int(SB99_mass/10.**np.floor(log_SB99_mass))) + "e" + str(int(log_SB99_mass))
     # String for rotation
-    if rotation is True:
+    if rotation == True:
         rot_str = "rot"
     else:
         rot_str = "norot"
@@ -325,11 +332,10 @@ def get_SB99_filename(metallicity, rotation, BHcutoff, SB99_mass = 1e6, Mmax = 1
     if Mmax != 120:
         SB99_file += "_Mmax" + str(Mmax)
     # filetype?
-    if txt is True:
+    if txt == True:
         SB99_file = SB99_file + ".txt"
     # return
     return SB99_file
-
 
 def get_SB99_file(filename):
     # if it is a filename directly
@@ -358,7 +364,7 @@ def dict2arr(SB99_data):
     Turns an array into a dictionary
     """
     # Note:
-        # old code: dict2arr()
+        # old code: return_as_array()
     # check whether SB99_data is a dictionary
     if isinstance(SB99_data, collections.Mapping):
         t_Myr = SB99_data['t_Myr']
@@ -378,7 +384,7 @@ def arr2dict(SB99_data):
     Turns an array into a dictionary
     """
     # Note:
-        # old code: arr2dict()
+        # old code: return_as_dict()
     if not isinstance(SB99_data, collections.Mapping):
         [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo] = SB99_data
         SB99_data = {'t_Myr': t_evo, 'Qi_cgs': Qi_evo, 'Li_cgs': Li_evo, 'Ln_cgs': Ln_evo, 'Lbol_cgs': Lbol_evo, 'Lw_cgs': Lw_evo, 'pdot_cgs': pdot_evo, 'pdot_SNe_cgs': pdot_SNe_evo}
@@ -410,18 +416,18 @@ def make_interpfunc(SB99_data_IN):
     return SB99f
 
 
-def combineSFB_data(warpfield_params, file1, file2, f_mass1=1.0, f_mass2=1.0, interfile1 = ' ', interfile2 = ' ', Zfile1 = 0.15, Zfile2 = 1.0, Zism = 0.5):
+def combineSFB_data(file1, file2, f_mass1=1.0, f_mass2=1.0, interfile1 = ' ', interfile2 = ' ', Zfile1 = 0.15, Zfile2 = 1.0, Zism = 0.5):
     """
     adds up feedback from two cluster populations
     """
     # if file1 is "inter" or "interpolate" then an interpolation between 2 metallicities is performed
 
     if (file1 == 'interpolate' or file1 == 'inter'):
-        [t1, Qi1, Li1, Ln1, Lbol1, Lw1, pdot1, pdot_SNe1] = getSB99_data_interp(Zism, interfile1, Zfile1, interfile2, Zfile2, warpfield_params, f_mass = f_mass1)
-        [t2, Qi2, Li2, Ln2, Lbol2, Lw2, pdot2, pdot_SNe2] = getSB99_data(file2, warpfield_params, f_mass = f_mass2)
+        [t1, Qi1, Li1, Ln1, Lbol1, Lw1, pdot1, pdot_SNe1] = getSB99_data_interp(Zism, interfile1, Zfile1, interfile2, Zfile2, f_mass = f_mass1)
+        [t2, Qi2, Li2, Ln2, Lbol2, Lw2, pdot2, pdot_SNe2] = getSB99_data(file2, f_mass = f_mass2)
     else:
-        [t1, Qi1, Li1, Ln1, Lbol1, Lw1, pdot1, pdot_SNe1] = getSB99_data(file1, warpfield_params, f_mass = f_mass1)
-        [t2, Qi2, Li2, Ln2, Lbol2, Lw2, pdot2, pdot_SNe2] = getSB99_data(file2, warpfield_params, f_mass = f_mass2)
+        [t1, Qi1, Li1, Ln1, Lbol1, Lw1, pdot1, pdot_SNe1] = getSB99_data(file1, f_mass = f_mass1)
+        [t2, Qi2, Li2, Ln2, Lbol2, Lw2, pdot2, pdot_SNe2] = getSB99_data(file2, f_mass = f_mass2)
 
     tend1 = t1[-1]
     tend2 = t2[-2]
@@ -534,7 +540,6 @@ def SB99_conc(SB1, SB2):
     return [t, Qi, Li, Ln, Lbol, Lw, pdot, pdot_SNe]
 
 def full_sum(t_list, Mcluster_list, Zism, 
-             warpfield_params,
              rotation=True, BHcutoff=120., return_format='array'):
     
     # this fnction is not properly implremented yet,

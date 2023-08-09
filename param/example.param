@@ -468,13 +468,6 @@ write_stellar_prop    0
 # DEFAULT: 0
 write_bubble    0
 
-# Create bubble.in file for CLOUDY?
-# Available values:
-# -- 0 Do not save output
-# -- 1 Save output
-# DEFAULT: 0
-write_bubble_CLOUDY    0
-
 # Save structure of the shell? 
 # Available values:
 # -- 0 Do not save output
@@ -488,6 +481,13 @@ write_shell    0
 # -- 1 Save output
 # DEFAULT: 0
 write_potential    0
+
+# Save figures?
+# Available values:
+# -- 0 Do not save figures
+# -- 1 Save figures
+# DEFAULT: 0
+write_figures   0
 
 # =============================================================================
 # parameters for integrators

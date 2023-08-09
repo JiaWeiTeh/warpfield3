@@ -21,6 +21,9 @@ from astropy.table import Table
 #--
 import src.warpfield.cooling.get_coolingFunction as get_coolingFunction
 import src.warpfield.functions.operations as operations
+# get parameter
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
 
 # =============================================================================
 # This section contains function which computes the ODEs that dictate the 
@@ -69,14 +72,14 @@ def dTdt2delta(t, T, dTdt):
 
 
 
-def beta2Edot(bubble_P, bubble_E, 
-              r1, r2, beta,
-              t_now, pwdot, pwdotdot,
-              r2dot,
-              ):
+def beta2Edot(bubble_P, r1, beta, my_params):
+    # old code: beta_to_Edot()
     """
     see pg 80, A12 https://www.imprs-hd.mpg.de/399417/thesis_Rahner.pdf 
 
+
+    my_params:: contains
+        
     Parameters
     ----------
     bubble_P : float
@@ -104,6 +107,12 @@ def beta2Edot(bubble_P, bubble_E,
         dE/dt.
 
     """
+    t_now = my_params["t_now"]
+    pwdot = my_params["pwdot"]
+    pwdotdot = my_params["pwdotdot"]
+    r2 = my_params["R2"]
+    r2dot = my_params["v2"]
+    bubble_E = my_params["Eb"]
     # dp/dt pressure 
     pdot = - bubble_P * beta / t_now
     # define terms
@@ -119,11 +128,9 @@ def beta2Edot(bubble_P, bubble_E,
     return bubble_Edot
     
 
-def Edot2beta(bubble_P, bubble_E, 
-              r1, r2, bubble_Edot,
-              t_now, pwdot, pwdotdot,
-              r2dot,
+def Edot2beta(bubble_P, r1, bubble_Edot, my_params
               ):
+    # old code: beta_to_Edot()
     """
     see pg 80, A12 https://www.imprs-hd.mpg.de/399417/thesis_Rahner.pdf 
     
@@ -154,6 +161,12 @@ def Edot2beta(bubble_P, bubble_E,
         dbubble_P/dt.
 
     """
+    t_now = my_params["t_now"]
+    pwdot = my_params["pwdot"]
+    pwdotdot = my_params["pwdotdot"]
+    r2 = my_params["R2"]
+    r2dot = my_params["v2"]
+    bubble_E = my_params["Eb"]
     # define terms
     a = np.sqrt(pwdot/2)
     b = 1.5 * a**2 * r1
@@ -226,7 +239,7 @@ def get_bubbleODEs(r, y0, data_struc, metallicity):
 # Section: conversion between bubble energy and pressure. Calculation of ram pressure.
 # =============================================================================
 
-def bubble_E2P(Eb, r2, r1, gamma):
+def bubble_E2P(Eb, r2, r1, gamma = warpfield_params.gamma_adia):
     """
     This function relates bubble energy to buble pressure (all in cgs)
 
@@ -238,8 +251,6 @@ def bubble_E2P(Eb, r2, r1, gamma):
         Inner radius of bubble (outer radius of wind cavity).
     r2 : float
         Outer radius of bubble (inner radius of ionised shell).
-    gamma : float
-        Adiabatic index.
 
     Returns
     -------
@@ -259,7 +270,7 @@ def bubble_E2P(Eb, r2, r1, gamma):
     # return
     return Pb
     
-def bubble_P2E(Pb, r2, r1, gamma):
+def bubble_P2E(Pb, r2, r1, gamma = warpfield_params.gamma_adia):
     """
     This function relates bubble pressure to buble energy (all in cgs)
 
@@ -271,8 +282,6 @@ def bubble_P2E(Pb, r2, r1, gamma):
         Inner radius of bubble (outer radius of wind cavity).
     r2 : float
         Outer radius of bubble (inner radius of ionised shell).
-    gamma : float
-        Adiabatic index.
 
     Returns
     -------
@@ -405,8 +414,7 @@ def pRam(r, Lwind, vWind):
 
 # initialise_bstruc(990000000, 0.01, '/Users/jwt/Documents/Code/warpfield3/outputs')
 
-# a = get_bubbleLuminosity(data_struc, cool_struc,
-#                 warpfield_params)
+# a = get_bubbleLuminosity(data_struc, cool_struc)
 
 
 # =============================================================================
@@ -415,10 +423,18 @@ def pRam(r, Lwind, vWind):
 
 def get_bubbleLuminosity(Data_struc,
                 cool_struc,
-                warpfield_params,
+                counter = 999, 
+                xtol = 1e-6
         ):
-    """
     
+    #  note: rgoal_f, verbose, plot, no_calc, error_exit was removed here. 
+    #  xtol=1e-6 by default in old code.
+    """
+    calculate luminosity lost to cooling, and bubble temperature at radius rgoal_f*R2
+    whole routine assumes units are Myr, Msun, pc and also returns result (Lb) in those units
+    :param data_struc: for alpha, beta, delta, see definitions in Weaver+77, eq. 39, 40, 41
+    :param rgoal_f: optional, sets location where temperature of bubble is reported: r = rgoal_f * R2; R1/R2 < rgoal_f < 1.
+    :return: cooling luminity Lb, temperature at certain radius T_rgoal
 
     Parameters
     ----------
@@ -525,6 +541,7 @@ def get_bubbleLuminosity(Data_struc,
     # load r1/r2, r2prime/r2
     R1R2, R2pR2 = np.loadtxt(path2bubble, skiprows=1, delimiter='\t', usecols=(0,1), unpack=True)
     # what xi = r/R2 should we measure the bubble temperature?
+    # old code: rgoal_f. This was the previous variable.
     xi_goal = get_xi_Tb(R1R2, R2pR2, warpfield_params)
     # print('xi_goal', xi_goal, R2)
     r_goal = xi_goal * R2
@@ -924,7 +941,7 @@ def get_r1(r1, params):
     # Note
     # old code: R1_zero()
     
-    Lw, vw, Ebubble, r2 = params
+    Lw, Ebubble, vw, r2 = params
     # set minimum energy to avoid zero
     if Ebubble < 1e-4:
         Ebubble = 1e-4
@@ -1290,7 +1307,7 @@ def get_delta_residual(delta_input, params):
     data_struc_temp['delta'] = delta_input
 
     # get structure
-    T_rgoal = get_bubbleLuminosity(data_struc_temp, Cool_Struc, warpfield_params)[1]
+    T_rgoal = get_bubbleLuminosity(data_struc_temp, Cool_Struc, 999)[1]
 
     # use temperature of the bubble T_temp which has been calculated with a slightly wrong delta 
     # (delta_old, the predictor) to calculate a better estimate of delta
@@ -1343,9 +1360,8 @@ def get_delta_new(delta_old, params):
         t1 = data_struc1['t_now']
         data_struc0['delta'] = delta_in
         data_struc1['delta'] = delta_in
-        Lb_temp0, T_rgoal0, _, _, _, dMdt_factor_out0, _, _, _, _, _ = get_bubbleLuminosity(data_struc0, Cool_Struc)
-        Lb_temp1, T_rgoal1, _, _, _, dMdt_factor_out1, _, _, _, _, _ = get_bubbleLuminosity(data_struc1, Cool_Struc)
-        # get output
+        Lb_temp0, T_rgoal0, dMdt_factor_out0 = bstrux([data_struc0, Cool_Struc])        # get output
+        Lb_temp1, T_rgoal1, dMdt_factor_out1 = bstrux([data_struc1, Cool_Struc])
         delta_out = (T_rgoal1 - T_rgoal0)/(t1-t0) * t1/T_rgoal1
         # calculate residual
         residual = delta_out - delta_in
@@ -1484,6 +1500,21 @@ def get_fitSlope(x, y, old_guess = np.nan, c_guess=0.):
         return m
 
 
+def bstrux(full_params):
+    # A more simplified version of get_bubbleLuminosity()
+    Cool_Struc = full_params[1]
+    my_params = dict.copy(full_params[0])
+    counter = 789
 
+    # call calc_Lb with or without set xtol?
+    if 'xtolbstrux' in my_params:
+        xtol = my_params['xtolbstrux']
+        [Lb, Trgoal, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav] = get_bubbleLuminosity(my_params, Cool_Struc, counter, xtol=xtol)
+    else:
+        [Lb, Trgoal, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav] = get_bubbleLuminosity(my_params, Cool_Struc, counter)
+
+    bstrux_result = {'Lb':Lb, 'Trgoal':Trgoal, 'dMdt_factor': dMdt_factor_out, 'Tavg': Tavg}
+
+    return bstrux_result
 
 

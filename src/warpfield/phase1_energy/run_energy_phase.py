@@ -21,6 +21,8 @@ import src.warpfield.cloud_properties.mass_profile as mass_profile
 import src.warpfield.phase1_energy.energy_phase_ODEs as energy_phase_ODEs
 from src.warpfield.functions.operations import find_nearest_lower, find_nearest_higher
 
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
 
 def run_energy(t0, y0, #r0, v0, E0, T0
         rCloud, 
@@ -31,7 +33,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         sigma_dust,
         tcoll, coll_counter,
         density_specific_param, # this can be nalpha or T, depending on density profile.
-        warpfield_params,
         Cool_Struc,
         shell_dissolved,
         stellar_outputs, # old code: SB99_data
@@ -154,7 +155,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     
     # calculate swept mass depending on density profile.
     # watch out units
-    Msh0, _ = mass_profile.get_mass_profile(r0, density_specific_param, rCloud, mCloud, warpfield_params)
+    Msh0, _ = mass_profile.get_mass_profile(r0, density_specific_param, rCloud, mCloud)
         
     # print("\n\n\nfirst Msh calculation params\n\n\n", r0, density_specific_param, rCloud, mCloud)
     # print('\n\n\n, Msh0, \n\n\n')
@@ -358,7 +359,8 @@ def run_energy(t0, y0, #r0, v0, E0, T0
 
             # convert cgs to astro units (Myr, Msun, pc)
             Lw = fLw_evo(thalf)  *(u.g.to(u.Msun) * u.cm.to(u.pc)**2/u.s.to(u.Myr)**3)
-            Lw_temp = fLw_evo(tStop_i)  *(u.g.to(u.Msun) * u.cm.to(u.pc)**2/u.s.to(u.Myr)**3)
+            Lw_temp = fLw_evo(tStop_i)  *(u.g.to(u.Msun) * u.cm.to(u.pc)**2/u
+                                          .s.to(u.Myr)**3)
             Lbol = fLbol_evo(thalf)  *(u.g.to(u.Msun) * u.cm.to(u.pc)**2/u.s.to(u.Myr)**3)
             pdot= fpdot_evo(thalf) * (u.g.to(u.Msun) * u.cm.to(u.km) / u.s.to(u.Myr))
             vterminal = 2. * Lw / pdot
@@ -392,7 +394,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
                     bubbleFailed, Lb, T0, alpha, beta,\
                         delta, dt_L, Lb_b, Lb_cz, Lb3, dMdt_factor,\
                             Tavg, Mbubble, r_Phi_b, Phi_grav_r0b,\
-                                f_grav_b = bubble_structure.get_bubbleStructure(bubble_wrap_struc, Cool_Struc, warpfield_params, fit_len=fit_len, fit_len_short=fit_len)
+                                f_grav_b = bubble_structure.get_bubbleStructure(bubble_wrap_struc, Cool_Struc, fit_len=fit_len, fit_len_short=fit_len)
                 else:
                     print("entering delta_new_root...")
                     alpha = alpha_temp
@@ -581,7 +583,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         # print('\n\n\n')
         
         # get mass
-        Msh, _ = mass_profile.get_mass_profile(r, density_specific_param, rCloud, mCloud, warpfield_params)
+        Msh, _ = mass_profile.get_mass_profile(r, density_specific_param, rCloud, mCloud)
 
         """
         ################ CLOUDY #############################################################################################

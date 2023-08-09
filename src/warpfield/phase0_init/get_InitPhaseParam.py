@@ -12,8 +12,11 @@ energy-driven phase (from a short free-streaming phase).
 import numpy as np
 import astropy.units as u
 import astropy.constants as c
+#--
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
 
-def get_y0(tSF, SB99f, warpfield_params):
+def get_y0(tSF, SB99f):
     """
     get start values for initial energy-driven phase (from a short free-streaming phase)
     :param tSF: time of last star formation event (or - if no SF ocurred - time of last recollapse)

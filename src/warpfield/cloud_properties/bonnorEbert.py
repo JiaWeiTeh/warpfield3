@@ -97,7 +97,7 @@ def get_bE_soundspeed(T, mu_n, gamma):
     # return
     mu_n = mu_n * u.g.to(u.kg)
     return np.sqrt(gamma * c.k_B.value * T / mu_n )
-    
+
 
 def get_bE_rCloud_nEdge(nCore, bE_T, mCloud, mu_n, gamma):
     """
@@ -143,7 +143,6 @@ def get_bE_rCloud_nEdge(nCore, bE_T, mCloud, mu_n, gamma):
                                      args=(rhoCore, c_s, mCloud),
                                      bracket=[8.530955303346797e-07, 170619106.06693593],
                                      method='brentq')
-    print('here')
     # get xi(r)
     xiCloud = sol.root
     # get r 

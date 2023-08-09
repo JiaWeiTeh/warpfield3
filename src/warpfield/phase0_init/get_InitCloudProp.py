@@ -11,9 +11,11 @@ import numpy as np
 import src.warpfield.cloud_properties.bonnorEbert as bE
 import astropy.units as u
 import sys
+#--
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
 
-
-def get_InitCloudProp(warpfield_params):
+def get_InitCloudProp():
     """
     This function computes the initial properties of the cloud, including (but not all):
         - cloud radius (Units: pc)
@@ -85,9 +87,6 @@ def get_InitCloudProp(warpfield_params):
     nCore = warpfield_params.nCore
     mu_n = warpfield_params.mu_n
     gamma = warpfield_params.gamma_adia
-    # Initialise value if not selected.
-    rCore = np.nan
-    bE_T = np.nan
     
     # mass of cloud
     if warpfield_params.is_mCloud_beforeSF == 1:
@@ -99,10 +98,13 @@ def get_InitCloudProp(warpfield_params):
     # cloud mass after SF
     mCloud_afterSF = mCloud - mCluster
     
+    # Here is get_cloud_Rn().
     # =============================================================================
     # For power-law density profile    
     # =============================================================================
     if warpfield_params.dens_profile == "pL_prof":
+        # initialise value if not selected.
+        bE_T = np.nan
         alpha = warpfield_params.dens_a_pL
         # converting to cgs
         mCloud = mCloud * u.M_sun.to(u.g)
@@ -128,6 +130,8 @@ def get_InitCloudProp(warpfield_params):
     # For Bonnor-Ebert density profile
     # =============================================================================
     elif warpfield_params.dens_profile == "bE_prof":
+        # initialise value if not selected.
+        rCore = np.nan
         g = warpfield_params.dens_g_bE
         # Remember that rCore is a property of power-law. it is bE_T for bE spheres.
         # print(mCloud, nCore, g, mu_n, gamma)

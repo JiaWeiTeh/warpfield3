@@ -7,19 +7,19 @@ Created on Tue May 23 15:12:37 2023
 """
 
 import scipy.optimize
-import constants as c
-import time
 import numpy as np
+import astropy.units as u
 import sys
 #--
 import src.warpfield.phase_general.phase_events as phase_events
 import src.warpfield.phase_general.phase_ODEs as phase_ODEs
 import src.warpfield.cooling.read_opiate as read_opiate
+import src.warpfield.phase1b_energy_implicit.find_root_betadelta as find_root_betadelta
 
 
 # get parameter
 from src.input_tools import get_param
-# warpfield_params = get_param.get_param()
+warpfield_params = get_param.get_param()
 
 #relative tolerance of stiffest ODE solver (energy phase),decrease to 1e-4 if you have crashes --> slower but more stable
 rtol=1e-3 
@@ -129,7 +129,7 @@ def fE_tot(t, y, params, ODEpar, SB99f):
         # get time-dependent cooling structure
         print("Updating cooling curve ...")
         Cool_Struc = read_opiate.get_Cool_dat_timedep(warpfield_params.metallicity, t * 1e6, indiv_CH=True)
-        onlycoolfunc, onlyheatfunc = coolnoeq.create_onlycoolheat(i.Zism, t * 1e6)
+        onlycoolfunc, onlyheatfunc = read_opiate.create_onlycoolheat(warpfield_params.metallicity, t * 1e6)
         Cool_Struc['Cfunc'] = onlycoolfunc
         Cool_Struc['Hfunc'] = onlyheatfunc
         params['t_last_coolupdate'] = t
@@ -160,11 +160,40 @@ def fE_tot(t, y, params, ODEpar, SB99f):
     params['L_leak'] = 0. # legacy (remove when certain that not needed)
     params['temp_counter'] += 1
     
+    def trunc_auto(f, n):
+        
+        # Automatically truncates/pads a float f to n decimal places without rounding
+        def truncate(f, n):
+            s = '{}'.format(f)
+            if 'e' in s or 'E' in s:
+                return '{0:.{1}f}'.format(f, n)
+            i, p, d = s.partition('.')
+            return '.'.join([i, (d+'0'*n)[:n]])
+        try:
+            if f < 0:
+                f*=-1
+                m=True
+                log=int(np.log10(f))-1
+            else:
+                log=int(np.log10(f))
+                m=False
+            f=f*10**(-log)
+            trunc=float(truncate(f, n))
+            
+            if m==True:
+                res=float(str(-1*trunc)+'e'+str(log))
+            else:
+                res=float(str(trunc)+'e'+str(log))
+        except:
+            res=f
+        return res   
+
+
     for ii in params:
-        params[ii] = aux.trunc_auto(params[ii], 4)
+        params[ii] = trunc_auto(params[ii], 4)
 
     ########################## ODEs: acceleration and velocity ###############################
-    part1_dict = ODE_tot_aux.fE_tot_part1(t, y, ODEpar, SB99f)
+    part1_dict = phase_ODEs.fE_tot_part1(t, y, ODEpar, SB99f)
     vd = part1_dict['vd'] # acceleration
     rd = v # velocity
     ##########################################################################################
@@ -172,23 +201,50 @@ def fE_tot(t, y, params, ODEpar, SB99f):
     beta_guess = params["beta_guess"]
     delta_guess = params["delta_guess"]
 
-    aux.printl(("params:", {ii:params[ii] for ii in params if ii!='Cool_Struc'}, "ODEpar['Rsh_max']:", ODEpar['Rsh_max']),verbose=1)
-    aux.printl(("elapsed real time (s):", time.time() - i.start_time), verbose=0)
+    # TODO: add verbosity
+    print("params:", {ii:params[ii] for ii in params if ii!='Cool_Struc'}, "ODEpar['Rsh_max']:", ODEpar['Rsh_max'])
+    # print("elapsed real time (s):", time.time() - i.start_time)
 
-    rootf_bd_res = rootbd.rootfinder_bd_wrap(beta_guess, delta_guess, params, Cool_Struc,
+    rootf_bd_res = find_root_betadelta.rootfinder_bd_wrap(beta_guess, delta_guess, params, Cool_Struc,
                                                               xtol=1e-5, verbose=0)  # xtol=1e-5
     beta = rootf_bd_res['beta']
     delta = rootf_bd_res['delta']
     residual = rootf_bd_res['residual']
     dMdt_factor = rootf_bd_res['dMdt_factor']
     Tavg = rootf_bd_res['Tavg']
-    cs_avg = aux.sound_speed(Tavg)
+    
+    def get_soundspeed(T):
+        # old code: aux.sound_speed()
+        """
+        This function computes the isothermal soundspeed, c_s, given temperature
+        T and mean molecular weight mu.
+    
+        Parameters
+        ----------
+        T : float (Units: K)
+            Temperature of the gas.
+        mu_n : float (Units: g) 
+            Mean molecular weight of the gas. Watch out for the units.
+        gamma: float 
+            Adiabatic index of gas. 
+    
+        Returns
+        -------
+        The isothermal soundspeed c_s (Units: m/s)
+    
+        """
+        # return
+        mu_n = warpfield_params.mu_n * u.g.to(u.kg)
+        return np.sqrt(warpfield_params.gamma_adia * c.k_B.value * T / mu_n )
 
-    aux.printl(("time:", t, " rootfinder result (beta, delta):", beta, delta, "residual:", residual, 'Tavg', Tavg, 'cs', cs_avg), verbose=1)
+    cs_avg = get_soundspeed(Tavg)
+
+    # TODO: add verbosity
+    print("time:", t, " rootfinder result (beta, delta):", beta, delta, "residual:", residual, 'Tavg', Tavg, 'cs', cs_avg)
 
     ############################## ODEs: energy and temperature ##############################
     # convert beta and delta to energy and temperature
-    Ed, Td = rootbd.Edot_Tdot(beta, delta, params, verbose=0)
+    Ed, Td = find_root_betadelta.Edot_Tdot(beta, delta, params, verbose=0)
     ##########################################################################################
 
     params["delta"] = delta  # Do I need this?

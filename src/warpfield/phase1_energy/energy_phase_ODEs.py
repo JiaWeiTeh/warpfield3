@@ -49,7 +49,7 @@ def get_ODE_Edot(y, t, params):
     #                                 RCLOUD, MCLOUD,\
     #                                     v)
 
-    Msh, Msh_dot = mass_profile.get_mass_profile(r, density_specific_param, RCLOUD, MCLOUD, warpfield_params, rdot_arr = v, return_rdot = True)
+    Msh, Msh_dot = mass_profile.get_mass_profile(r, density_specific_param, RCLOUD, MCLOUD, rdot_arr = v, return_rdot = True)
     # sys.exit()
     # print("We are now in energy_phase_ODEs.get_ODE_Edot() to check for the values of Msh")
     # print('Msh',Msh)

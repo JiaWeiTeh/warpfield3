@@ -38,7 +38,7 @@ def get_momentum_ODEs(y, t, params):
     M0, _, LBOL_ABS, TAU_IR, PW, MSTAR, density_specific_param, A_EXP, RCLOUD, MCLOUD, SFE, warpfield_params = params  # unpack parameters
 
     # swept mass
-    Msh, Msh_dot = mass_profile.get_mass_profile(r, density_specific_param, RCLOUD, MCLOUD, warpfield_params,
+    Msh, Msh_dot = mass_profile.get_mass_profile(r, density_specific_param, RCLOUD, MCLOUD,
                                                  rdot_arr = rd)
     
     # if shell collapsed a bit before but is now expanding again, it is expanding into emptiness

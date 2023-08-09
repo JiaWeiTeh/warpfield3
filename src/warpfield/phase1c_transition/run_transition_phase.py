@@ -6,11 +6,15 @@ Created on Tue May 23 15:13:28 2023
 @author: Jia Wei Teh
 """
 
-import init as i
 import scipy.optimize
 #--
 import src.warpfield.phase_general.phase_events as phase_events
 import src.warpfield.phase_general.phase_ODEs as phase_ODEs
+
+# get parameter
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
+
 
 #t0 = 2.19152965 # 1.34556241
 #Rsh0 = 6.19831886e+01 # 4.72084451e+01
@@ -87,7 +91,7 @@ def fE_trans(t, y, ODEpar, SB99f, Eb0):
     #print "Rsh_max:", ODEpar['Rsh_max']
 
     ########################## ODEs: acceleration and velocity ###############################
-    if i.frag_cover == False:
+    if warpfield_params.frag_enabled == False:
         part1_dict = phase_ODEs.fE_tot_part1(t, y, ODEpar, SB99f)
     else: 
         part1_dict = phase_ODEs.fE_tot_part1(t, y, ODEpar, SB99f,Eb0,cfs=True)

@@ -17,7 +17,6 @@ import src.warpfield.cloud_properties.bonnorEbert as bE
 import src.warpfield.cloud_properties.density_profile as density_profile
 
 
-
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()
 
@@ -31,7 +30,7 @@ def get_mass_profile(r_arr,
                          rCloud, 
                          mCloud,
                          rdot_arr = np.array([]),
-                         return_rdot = False,
+                         return_mdot = False,
                          ):
     """
     This function takes in basic properties of cloud and calculates the 
@@ -114,7 +113,7 @@ def get_mass_profile(r_arr,
         # outer sphere
         mGas[r_arr > rCloud] = mCloud + 4. / 3. * np.pi * rhoISM * (r_arr[r_arr > rCloud]**3 - rCloud**3)
         
-        if return_rdot: # compute dM/dt?
+        if return_mdot: # compute dM/dt?
             # is array given?
             if len(rdot_arr) == len(r_arr): 
                 rdot_arr = np.array(rdot_arr)
@@ -168,7 +167,7 @@ def get_mass_profile(r_arr,
             else:
                 mGas[ii] = mCloud + 4 / 3 * np.pi * rhoISM * (r_arr[ii]**3 - rCloud**3)
         
-        if return_rdot: # compute dM/dt?
+        if return_mdot: # compute dM/dt?
             # is array given?
             if len(rdot_arr) == len(r_arr): 
                 # array-ise

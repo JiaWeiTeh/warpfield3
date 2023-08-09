@@ -15,7 +15,6 @@ import scipy.optimize
 
 def get_bubbleStructure(Data_Struc,
                         Cool_Struc,
-                        warpfield_params,
                         fit_len, 
                         fit_len_short,
         ):
@@ -82,7 +81,7 @@ def get_bubbleStructure(Data_Struc,
                           'dMdt_factor': dMdt_factor, 'Qi':Data_Struc['Qi'], 
                           'mypath': Data_Struc['mypath']}
             np.seterr(all='warn')
-            Lb, T0, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav = get_bubbleParams.get_bubbleLuminosity(data_struc_temp, Cool_Struc, warpfield_params)
+            Lb, T0, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav = get_bubbleParams.get_bubbleLuminosity(data_struc_temp, Cool_Struc, temp_counter)
         else:
             print('here')
             # time step (allow certain relative change in (in-out)-luminosity)
@@ -185,7 +184,7 @@ def get_bubbleStructure(Data_Struc,
                     bubbleFailed = True # something went wrong
 
             data_struc_temp['delta'] = delta
-            Lb, T0, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav = get_bubbleParams.get_bubbleLuminosity(Data_Struc, Cool_Struc, warpfield_params)
+            Lb, T0, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav = get_bubbleParams.get_bubbleLuminosity(Data_Struc, Cool_Struc, temp_counter)
 
             # calculate next time step
             Lres = Lw - Lb

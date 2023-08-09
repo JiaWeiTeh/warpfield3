@@ -13,8 +13,9 @@ import os.path
 import sys
 import astropy.constants as c
 #--
-from src.warpfield.phase0_init import set_phase
-from src.warpfield.functions import nameparser
+from src.warpfield.phase_general import set_phase
+# TODO: fix this.
+# from src.warpfield.functions import nameparser
 
 # TODO
 # Add warpfield_params!

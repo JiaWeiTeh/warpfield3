@@ -18,6 +18,8 @@ import sys
 import numpy as np
 import os
 import yaml
+import astropy.units as u
+import astropy.constants as c 
 # from src.input_tools import input_warnings 
 
 def read_param(path2file, write_summary = True):    
@@ -95,6 +97,7 @@ def read_param(path2file, write_summary = True):
                    'frag_RTinstab': 0.0, 
                    'frag_densInhom': 0.0, 
                    'frag_cf': 1.0, 
+                   'frag_cf_end': 0.1,
                    'frag_enable_timescale': 1.0, 
                    'stop_n_diss': 1.0, 
                    'stop_t_diss': 1.0, 
@@ -104,11 +107,13 @@ def read_param(path2file, write_summary = True):
                    'stop_t_unit': 'Myr', 
                    'adiabaticOnlyInCore': False,
                    'immediate_leak': True,
+                   'phase_Emin': 1e-4,
                    'write_main': 1.0, 
                    'write_stellar_prop': 0.0, 
                    'write_bubble': 0.0, 
                    'write_bubble_CLOUDY': 0.0, 
                    'write_shell': 0.0, 
+                   'write_figures': 0.0,
                    'write_potential': 0.0,
                    'xi_Tb': 0.99,
                    'inc_grav': 1.0, 
@@ -248,7 +253,7 @@ def read_param(path2file, write_summary = True):
         # If user did not specify, the directory will be set as ./outputs/ 
         # check if directory exists; if not, create one.
         # TODO: Add smart system that adds 1, 2, 3 if repeated default to avoid overwrite.
-        path2output = r'./outputs/default/'
+        path2output = os.path.join(os.getcwd(), 'outputs/example_run/')
         Path(path2output).mkdir(parents=True, exist_ok = True)
         params_dict['out_dir'] = path2output
     else:
@@ -309,17 +314,25 @@ def read_param(path2file, write_summary = True):
             
     # Here we deal with tStop based on units. If the unit is Myr, then
     # tStop is tStop. If it is in free-frall time, then we need to change
-    # to a proper unit of time.
+    # to a proper unit of time. Add a parameter 'tff' that calculates the 
+    # free-fall time. This may be used even if stop_t_unit is not in tff time, 
+    # as it may be called if mult_SF = 2, where the second startburst is
+    # characterised by the free-fall time.
+    params_dict['tff'] = np.sqrt(3. * np.pi / (32. * c.G.cgs.value * params_dict['dens_navg_pL'] * params_dict['mu_n'])) / u.Myr.to(u.s)
     if params_dict['stop_t_unit'] == 'tff':
-        tff = params_dict['dens_navg_pL']
-        params_dict['stop_t'] = params_dict['stop_t'] * tff
+        params_dict['stop_t'] = params_dict['stop_t'] * params_dict['tff']
+    # if params_dict['stop_t_unit'] == 'Myr', it is fine; Myr is also the 
+    # unit in all other calculations. 
     
     # Here we include calculations for mCloud, for future ease.
     params_dict['mCloud'] = 10**params_dict['log_mCloud']
     
-    # Here for the magnatic field related stuffs
+    # Here for the magnatic field related constants
     params_dict['BMW'] = 10**params_dict['log_BMW']
     params_dict['nMW'] = 10**params_dict['log_nMW']
+    
+    # Is there a density gradient?
+    params_dict['density_gradient'] = (params_dict['dens_profile'] == 'pL_prof') and (params_dict['dens_profile'] != 0)
     
     # =============================================================================
     # Save output
@@ -342,6 +355,7 @@ def read_param(path2file, write_summary = True):
     # save path to object
     # TODO: delete this after warpfield is finished.
     # save file
+    print(filename)
     os.environ['PATH_TO_CONFIG'] = filename
     
     return params_dict

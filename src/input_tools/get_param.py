@@ -14,7 +14,7 @@ import yaml
 def get_param():
     # load
     with open(os.environ['PATH_TO_CONFIG'],'r') as file:
-        warpfield_params = yaml.load(file)
+        warpfield_params = yaml.load(file, Loader=yaml.Loader)
     
     # A simple script that turns dictionaries into objects
     class Dict2Class(object):

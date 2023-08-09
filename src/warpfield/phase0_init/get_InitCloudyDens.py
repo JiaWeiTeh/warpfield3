@@ -17,7 +17,6 @@ import src.warpfield.cloud_properties.density_profile as density_profile
 def get_InitCloudyDens(path2output,
                        density_specific_param, 
                        rCloud, mCloud,
-                       warpfield_params,
                        coll_counter=0):
 
     # Note:
@@ -31,7 +30,7 @@ def get_InitCloudyDens(path2output,
     # get density profile
     
     n = density_profile.get_density_profile(r, density_specific_param,
-                                            rCloud, mCloud, warpfield_params)
+                                            rCloud, mCloud)
     
     logn = np.log10(n)
     logr = np.log10(r * c.pc.cgs.value)

@@ -9,17 +9,19 @@ This script includes function that calculates the density profile.
 """
 
 import numpy as np
-import src.warpfield.cloud_properties.bonnorEbert as bE
 import astropy.units as u
 import astropy.constants as c
 import sys
 import scipy.integrate
-    
+#--
+import src.warpfield.cloud_properties.bonnorEbert as bE
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
+
 def get_density_profile(r_arr,
                          density_specific_param, 
                          rCloud, 
                          mCloud,
-                         warpfield_params
                          ):
     """
     This function takes in a list of radius and evaluates the density profile

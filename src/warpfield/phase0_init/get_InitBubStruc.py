@@ -39,7 +39,8 @@ def get_InitBubStruc(Mcloud, SFE, path):
     # path to bubble details
     pstr = path +"/BubDetails/Bstrux.txt"
     # save to path
-    np.savetxt(pstr, np.c_[R1R2,R2pR2],delimiter='\t',header='R1/R2'+'\t'+'R2p/R2')
+    # TODO
+    # np.savetxt(pstr, np.c_[R1R2,R2pR2],delimiter='\t',header='R1/R2'+'\t'+'R2p/R2')
     
     # initialise some environment variables. 
     # path

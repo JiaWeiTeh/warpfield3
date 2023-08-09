@@ -19,9 +19,15 @@ import os
 #--
 from src.warpfield.phase0_init import (get_InitCloudProp, get_InitBubStruc,
                                         get_InitCloudyDens, get_InitPhaseParam,
-                                        set_phase)
+                                        get_InitCoolFunc,
+                                        )
+from src.warpfield.phase_general import set_phase
 from src.warpfield.sb99 import read_SB99
 from src.warpfield.phase1_energy import run_energy_phase
+from src.warpfield.phase1b_energy_implicit import run_energy_implicit_phase
+from src.warpfield.phase1c_transition import run_transition_phase
+from src.warpfield.phase2_momentum import run_momentum_phase
+from src.warpfield.cloudy import __cloudy__
 
 # get parameter
 from src.input_tools import get_param
@@ -60,7 +66,6 @@ def start_expansion():
     print(f'sfe: {warpfield_params.sfe}')
     print(f'metallicity: {warpfield_params.metallicity}')
     print(f'density profile: {warpfield_params.dens_profile}')
-    sys.exit()
     
     # TODO: This shouldn't be required - because there should be an operation at the very
     # beginning that deals with this.
@@ -69,7 +74,7 @@ def start_expansion():
     
     # # prepare directories and write some basic files (like the file cotaining the input parameters)
     # mypath, cloudypath, outdata_file, figure_file = warp_writedata.getmake_dir(i.basedir, i.navg, i.Zism, SFE,
-    #                                                                            Mcloud_au_INPUT, SB99_data)
+    #         
     
     # output path
     # params_dict['out_dir']+params_dict['model_name']+'_summary.txt'
@@ -98,7 +103,7 @@ def start_expansion():
     
     # Step 1: Obtain initial cloud properties
     # note now that the parameter mCloud here is the cloud mass AFTER star formation.
-    rCore, bE_T, rCloud, nEdge, mCloud, mCluster = get_InitCloudProp.get_InitCloudProp(warpfield_params)
+    rCore, bE_T, rCloud, nEdge, mCloud, mCluster = get_InitCloudProp.get_InitCloudProp()
     
     # Now, set up density parameter
     if warpfield_params.dens_profile == "bE_prof":
@@ -121,7 +126,7 @@ def start_expansion():
     # set dissolution time to arbitrary high number (i.e. the shell has not yet dissolved)
     ODEpar['Rsh_max'] = 0.
     ODEpar['tSF_list'] = np.array([tSF])
-    ODEpar['Mcluster_list'] = np.array([ODEpar['Mcluster_au']])
+    ODEpar['Mcluster_list'] = np.array([ODEpar['mCluster']])
     ODEpar['tStop'] = warpfield_params.stop_t
     ODEpar['mypath'] = mypath 
     
@@ -142,7 +147,6 @@ def start_expansion():
     
     # TODO: check if the dictionaries have values. Ex: Mcluster_au does not exist
     # anymore, so they should not apper; the interface will not say it is wrong!
-    
     # Step 2: Obtain parameters from Starburst99
     # Scaling factor for cluster masses. Though this might only be accurate for
     # high mass clusters (~>1e5) in which the IMF is fully sampled.
@@ -153,6 +157,12 @@ def start_expansion():
                                                   f_mass = factor_feedback, BHcutoff = warpfield_params.SB99_BHCUT)
     # if tSF != 0.: we would actually need to shift the feedback parameters by tSF
     
+    
+    
+    
+    
+    
+    
     # create density law for cloudy
     get_InitCloudyDens.get_InitCloudyDens(mypath, density_specific_param,
                                           ODEpar['rCloud'], ODEpar['mCloud'], 
@@ -162,11 +172,10 @@ def start_expansion():
     get_InitBubStruc.get_InitBubStruc(warpfield_params.mCloud, warpfield_params.sfe, warpfield_params['out_dir'])
 
 
-    ########### Simulate the Evolution (until end time reached, cloud dissolves, or re-collapse happens) ###############
-
-
     # =============================================================================
     # Begin WARPFIELD simulation.
+    # Simulate the Evolution (until end time reached, cloud dissolves, 
+    # or re-collapse)
     # =============================================================================
 
 
@@ -250,7 +259,7 @@ def run_expansion(ODEpar, SB99_data, SB99f, mypath, cloudypath):
     # print(y0)
     # [0.23790232199299727, 3656.200432285518, 5722974.028981317, 67741779.55773313]
     # sys.exit('stop')
-    Cool_Struc = get_startvalues.get_firstCoolStruc(i.Zism, t0 * 1e6, warpfield_params)
+    Cool_Struc = get_InitCoolFunc.get_firstCoolStruc(warpfield_params.metallicity, t0 * 1e6)
 
     shell_dissolved = False
     t_shdis = 1e99
@@ -286,7 +295,7 @@ def run_expansion(ODEpar, SB99_data, SB99f, mypath, cloudypath):
     pdot_SNefee=SB99f['fpdot_SNe_cgs'](tfeed)
 
     
-    psoln_energy, params = phase_energy.run_phase_energy(params, ODEpar, SB99f)
+    psoln_energy, params = run_energy_implicit_phase.run_phase_energy(params, ODEpar, SB99f)
 
     t = psoln_energy.t
     r = psoln_energy.y[0]
@@ -295,14 +304,14 @@ def run_expansion(ODEpar, SB99_data, SB99f, mypath, cloudypath):
     T = psoln_energy.y[3]
 
     ######### STEP C: transition phase ########################
-    if (aux.check_continue(t[-1], r[-1], v[-1], tStop) == ph.cont):
+    if (set_phase.check_simulation_status(t[-1], r[-1], v[-1], tStop) == set_phase.cont):
 
 
         t0 = psoln_energy.t[-1]
         y0 = [psoln_energy.y[0][-1], psoln_energy.y[1][-1], psoln_energy.y[2][-1], psoln_energy.y[3][-1]]
         cs = params['cs_avg']
 
-        psoln_transition = phase_transition.run_phase_transition(t0, y0, cs, ODEpar, SB99f)
+        psoln_transition = run_transition_phase.run_phase_transition(t0, y0, cs, ODEpar, SB99f)
         #print psoln_transition
 
         t = np.append(t, psoln_transition.t)
@@ -312,12 +321,12 @@ def run_expansion(ODEpar, SB99_data, SB99f, mypath, cloudypath):
         T = np.append(T, psoln_transition.y[3])
 
         ######### STEP D: momentum phase ##############################
-        if (aux.check_continue(t[-1], r[-1], v[-1], tStop) == ph.cont):
+        if (set_phase.check_simulation_status(t[-1], r[-1], v[-1], tStop) == set_phase.cont):
             t0 = psoln_transition.t[-1]
             y0 = [psoln_transition.y[0][-1], psoln_transition.y[1][-1], psoln_transition.y[2][-1],
                   psoln_transition.y[3][-1]]
 
-            psoln_momentum = phase_momentum.run_fE_momentum(t0, y0, ODEpar, SB99f)
+            psoln_momentum = run_momentum_phase.run_fE_momentum(t0, y0, ODEpar, SB99f)
             #print psoln_momentum
 
             t = np.append(t, psoln_momentum.t)
@@ -329,4 +338,49 @@ def run_expansion(ODEpar, SB99_data, SB99f, mypath, cloudypath):
     return t, r, v, E, T
 
 
+
+
+def expansion_next(tStart, ODEpar, SB99_data_old, SB99f_old, mypath, cloudypath, ii_coll):
+
+    print("Preparing new expansion...")
+    
+    ODEpar['tSF_list'] = np.append(ODEpar['tSF_list'], tStart) # append time of this SF event
+    dtSF = ODEpar['tSF_list'][-1] - ODEpar['tSF_list'][-2] # time difference between this star burst and the previous
+    ODEpar['tStop'] = i.tStop - tStart
+
+    # TODO: make verbose
+    print('list of collapses:', ODEpar['tSF_list'])
+
+    # get new cloud/cluster properties and overwrite those keys in old dictionary
+    CloudProp2 = get_startvalues.make_new_cluster(ODEpar['Mcloud_au'], ODEpar['SFE'], ODEpar['tSF_list'], ii_coll)
+    for key in CloudProp2:
+        ODEpar[key] = CloudProp2[key]
+
+    # create density law for cloudy
+    get_InitCloudyDens.get_InitCloudyDens(mypath, i.namb, i.nalpha, ODEpar['Rcore_au'], ODEpar['Rcloud_au'], ODEpar['Mcluster_au'], ODEpar['SFE'], coll_counter=ii_coll)
+
+    ODEpar['Mcluster_list'] = np.append(ODEpar['Mcluster_list'], CloudProp2['Mcluster_au']) # contains list of masses of indivdual clusters
+
+    # new method to get feedback
+    SB99_data, SB99f = read_SB99.full_sum(ODEpar['tSF_list'], ODEpar['Mcluster_list'], i.Zism, rotation=i.rotation, BHcutoff=i.BHcutoff, return_format='array')
+
+    # get new feedback parameters
+    #factor_feedback = ODEpar['Mcluster_au'] / i.SB99_mass
+    #SB99_data2 = getSB99_data.load_stellar_tracks(i.Zism, rotation=i.rotation, f_mass=factor_feedback,BHcutoff=i.BHcutoff, return_format="dict") # feedback of only 2nd cluster
+    #SB99_data = getSB99_data.sum_SB99(SB99f_old, SB99_data2, dtSF, return_format = 'array') # feedback of summed cluster --> use this
+    #SB99f = getSB99_data.make_interpfunc(SB99_data) # make interpolation functions for summed cluster (allowed range of t: 0 to (99.9-tStart))
+
+    if i.write_SB99 is True:
+        SB99_data_write = getSB99_data.SB99_conc(SB99_data_old, getSB99_data.time_shift(SB99_data, tStart))
+        warp_writedata.write_warpSB99(SB99_data_write, mypath)  # create file containing SB99 feedback info
+
+    # for the purpose of gravity it is important that we pass on the summed mass of all clusters
+    # we can do this as soon as all all other things (like getting the correct feedback) have been finished
+    ODEpar['Mcluster_au'] = np.sum(ODEpar['Mcluster_list'])
+
+    print("ODEpar:", ODEpar)
+
+    t, r, v, E, T = run_expansion(ODEpar, SB99_data, SB99f, mypath, cloudypath)
+
+    return t, r, v, E, T, ODEpar, SB99_data, SB99f
 
