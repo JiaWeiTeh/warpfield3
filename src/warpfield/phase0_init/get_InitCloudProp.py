@@ -48,12 +48,6 @@ def get_InitCloudProp():
     alpha : float
         The exponent, if pL_prof is chosen for `profile_type`. 
         The default is -2.
-    g : float
-        The ratio given as g = rho_core/rho_edge. The default is 14.1.
-        This will only be considered if `bE_prof` is selected.
-    T : float
-        The temperature of the BE sphere. (Units: K). The default value is 1e5 K.
-        This will only be considered if `bE_prof` is selected.
 
     Returns
     -------
