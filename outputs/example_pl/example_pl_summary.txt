@@ -1,6 +1,6 @@
 # =============================================================================
 # Summary of parameters in the 'example_pl' run.
-# Created at 18/08/2023 11:50:15.
+# Created at 18/08/2023 16:41:49.
 # =============================================================================
 
 model_name    example_pl
@@ -28,7 +28,7 @@ SB99_forcefile    0.0
 SB99_age_min    500000.0
 dens_profile    pL_prof
 dens_a_pL    0.0
-dens_navg_pL    100.0
+dens_navg_pL    10000.0
 frag_enabled    0.0
 frag_cf_end    0.1
 stop_n_diss    1.0

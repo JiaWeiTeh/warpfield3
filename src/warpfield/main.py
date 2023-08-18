@@ -38,7 +38,6 @@ warpfield_params = get_param.get_param()
 #%%
 
 
-
 def start_expansion():
     """
     This wrapper takes in the parameters and feed them into smaller
@@ -104,20 +103,15 @@ def start_expansion():
     
     # Step 1: Obtain initial cloud properties
     # note now that the parameter mCloud here is the cloud mass AFTER star formation.
-    rCore, bE_T, rCloud, nEdge, mCloud, mCluster = get_InitCloudProp.get_InitCloudProp()
+    rCloud, nEdge = get_InitCloudProp.get_InitCloudProp()
     
-    # Now, set up density parameter
-    if warpfield_params.dens_profile == "bE_prof":
-        density_specific_param = bE_T
-    elif warpfield_params.dens_profile == "pL_prof":
-        density_specific_param = rCore
-        
+    # -----
     # Turn into dictionary
-    ODEpar = {'mCloud': mCloud,
+    ODEpar = {'mCloud': warpfield_params.mCloud,
               'nEdge': nEdge,
               'rCloud': rCloud,
-              'rCore': rCore,
-              'mCluster': mCluster,
+              'rCore': warpfield_params.rCore,
+              'mCluster': warpfield_params.mCluster,
               't_dissolve': 1e30,
               'Rsh_max': 0.,
               }
@@ -131,11 +125,6 @@ def start_expansion():
     ODEpar['tStop'] = warpfield_params.stop_t
     ODEpar['mypath'] = path2output 
     
-    if warpfield_params.dens_profile == 'bE_prof':
-        ODEpar['density_specific_param'] = bE_T
-    elif warpfield_params.dens_profile == 'pL_prof':
-        ODEpar['density_specific_param'] = rCore
-        
     #  ODEpar['density_specific_param'] added.
     #  ODEpar['gamma'] = myc.gamma removed.
     #  ODEpar['Mcloud_au'] = Mcloud_au renamed to ODEpar['mCloud'] = mCloud
@@ -145,6 +134,8 @@ def start_expansion():
     #  ODEpar['nalpha'] = i.nalpha removed.
     #  ODEpar['SFE'] = SFE removed.
     #  ODEpar['rhocore_au'] = i.rhoa_au removed, because i.rhoa_au is rhoCore, and it can be calculated from scratch.
+    # -----
+    
     
     # TODO: check if the dictionaries have values. Ex: Mcluster_au does not exist
     # anymore, so they should not apper; the interface will not say it is wrong!
@@ -153,7 +144,7 @@ def start_expansion():
     # high mass clusters (~>1e5) in which the IMF is fully sampled.
     factor_feedback = ODEpar['mCluster'] / warpfield_params.SB99_mass
     # Get SB99 data. This function returns data and interpolation functions.
-    SB99_data, SB99f = read_SB99.read_SB99( warpfield_params.metallicity,
+    SB99_data, SB99f = read_SB99.read_SB99(warpfield_params.metallicity,
                                                   rotation = warpfield_params.SB99_rotation, 
                                                   f_mass = factor_feedback, BHcutoff = warpfield_params.SB99_BHCUT)
     # if tSF != 0.: we would actually need to shift the feedback parameters by tSF
@@ -161,7 +152,7 @@ def start_expansion():
     
     
     # create density law for cloudy
-    get_InitCloudyDens.get_InitCloudyDens(path2output, density_specific_param,
+    get_InitCloudyDens.get_InitCloudyDens(path2output,
                                           ODEpar['rCloud'], ODEpar['mCloud'], 
                                           coll_counter = ii_coll)
     
@@ -255,6 +246,7 @@ def run_expansion(ODEpar, SB99_data, SB99f):
     # print(y0)
     # [0.23790232199299727, 3656.200432285518, 5722974.028981317, 67741779.55773313]
     # sys.exit('stop')
+    
     Cool_Struc = get_InitCoolFunc.get_firstCoolStruc(warpfield_params.metallicity, t0 * 1e6)
 
     shell_dissolved = False
@@ -272,7 +264,6 @@ def run_expansion(ODEpar, SB99_data, SB99f):
                                                                  ODEpar['rCore'],
                                                                  warpfield_params.sigma_d,
                                                                  tcoll, ii_coll,
-                                                                 ODEpar['density_specific_param'],
                                                                  Cool_Struc,
                                                                  shell_dissolved, t_shdis,
                                                                  SB99_data,

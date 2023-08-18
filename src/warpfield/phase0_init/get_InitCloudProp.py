@@ -22,7 +22,6 @@ def get_InitCloudProp():
         - cloud edge density (Units: 1/cm3)
         And either of these two (depending on density profile):
         - cloud core radius (Units: pc)  (for pL)
-        - cloud bE temperature (Units: K)  (for bE)
         
     Watch out units!
 
@@ -54,119 +53,63 @@ def get_InitCloudProp():
     rCore : float
         cloud radius (Units: pc). 
         This value is only computed if power-law profile is selected.
-    bE_T: float
-        Temperature of the bE sphere.
-        This value is only computed if Bonnor-ebert profile is selected.
     rCloud : float
         cloud core radius (Units: pc).
     nEdge : float
         cloud edge density (Units: 1cm3).
     mCloud_afterSF: float
         cloud mass after cluster formation (Units: Msun).
-   mCluster: float 
+    mCluster: float 
        cluster mass (Units: Msun).
 
     """
 
-    # density is in 1/cm3 and radius is in pc.
-    
     # Note:
     #   old code: get_cloudproperties() in get_startvalues.py in 
     #           expansion_main() in expansion_full.py
         
-    
-    log_mCloud = warpfield_params.log_mCloud
-    sfe = warpfield_params.sfe
-    rCore = warpfield_params.rCore
-    nCore = warpfield_params.nCore
+    # load parameters
     mu_n = warpfield_params.mu_n
-    gamma = warpfield_params.gamma_adia
-    
-    # mass of cloud
-    if warpfield_params.is_mCloud_beforeSF == 1:
-        mCloud = 10**(log_mCloud)
-    else:
-        mCloud = 10**(log_mCloud) / (1 - sfe)
-    # cluster mass
-    mCluster = mCloud * sfe
-    # cloud mass after SF
-    mCloud_afterSF = mCloud - mCluster
+    alpha = warpfield_params.dens_a_pL
     
     # Old code: get_cloud_Rn().
-    # =============================================================================
-    # For power-law density profile    
-    # =============================================================================
-    if warpfield_params.dens_profile == "pL_prof":
-        # initialise value if not selected.
-        bE_T = np.nan
-        alpha = warpfield_params.dens_a_pL
-        # converting to cgs
-        mCloud = mCloud * u.M_sun.to(u.g)
+    # converting to cgs
+    mCloud = warpfield_params.mCloud * u.M_sun.to(u.g)
+    
+    # compute cloud radius
+    # use core radius/density if there is a power law. If not, use average density.
+    if alpha != 0:
+        nCore = warpfield_params.nCore
+        rCore = warpfield_params.rCore
         rCore = rCore * u.pc.to(u.cm)
-        # compute cloud radius
         rCloud = (
                     (
                         mCloud/(4 * np.pi * nCore * mu_n) - rCore**3/3
-                    ) * rCore ** alpha * (alpha + 3)\
-                        + rCore**(alpha + 3)
+                    ) * rCore ** alpha * (alpha + 3) + rCore**(alpha + 3)
                  )**(1/(alpha + 3))
-        # compute the density at edge
-        nEdge = nCore * mu_n * (rCloud/rCore)**alpha
-        # sanity check
-        print('nEdge', nEdge)
-        if nEdge < warpfield_params.nISM:
-            print(f'nCore: {nCore}, nISM: {warpfield_params.nISM}')
-            sys.exit('"The density at the edge of the cloud is lower than the ISM; please consider increasing nCore."')
-        print(f'nCore: {nCore}, nISM: {warpfield_params.nISM}')
-        sys.exit()
-        # converting back
-        rCore = rCore * u.cm.to(u.pc)
-        rCloud = rCloud * u.cm.to(u.pc)
-
-    # =============================================================================
-    # For Bonnor-Ebert density profile
-    # =============================================================================
-    elif warpfield_params.dens_profile == "bE_prof":
-        # initialise value if not selected.
-        rCore = warpfield_params.rCore
-        g = warpfield_params.dens_g_bE
-        # Remember that rCore is a property of power-law. it is bE_T for bE spheres.
-        # print(mCloud, nCore, g, mu_n, gamma)
-        bE_T = bE.get_bE_T(mCloud, nCore, g, mu_n, gamma)
-        # print(mCloud, nCore, g, mu_n, gamma)
-        # these are the values
-        # 1000000.0 1000.0 14.1 2.1287915392418182e-24 1.6666666666666667
-        # 4649.954642315685
-        rCloud, nEdge = bE.get_bE_rCloud_nEdge(nCore, bE_T, mCloud, mu_n, gamma)
+        # density at edge
+        nEdge = nCore * (rCloud/rCore)**alpha
         
+    elif alpha == 0:
+        nAvg = warpfield_params.dens_navg_pL
+        rCloud = (3 * mCloud / 4 / np.pi / (nAvg * mu_n))**(1/3)
+        # density at edge should just be the average density
+        nEdge = nAvg
+        
+    # converting back
+    rCloud = rCloud * u.cm.to(u.pc)
+    
+    # print('check for initials')
+    # print('rCore, mCloud, nEdge, nCore, rCloud')
+    # print( (rCore * u.cm.to(u.pc)), (mCloud/u.M_sun.to(u.g)), nEdge, nCore, rCloud)
+    # sys.exit()
+    
+    # sanity check
+    if nEdge < warpfield_params.nISM:
+        print(f'nCore: {nCore}, nISM: {warpfield_params.nISM}')
+        sys.exit('"The density at the edge of the cloud is lower than the ISM; please consider increasing nCore."')
+
     # return
-    return rCore, bE_T, rCloud, nEdge, mCloud_afterSF, mCluster
+    return rCloud, nEdge
     
-
-
-#%%
-
-# # fix this
-
-# aa = get_InitCloudProp(warpfield_params.sfe, warpfield_params.warpfield_params.log_mCloud,
-#                       warpfield_params.mCloud_beforeSF, 
-#                       warpfield_params.nCore,
-#                       warpfield_params.rCore,
-#                       warpfield_params.mu_n, warpfield_params.gamma_adia,
-#                       warpfield_params,
-#                        # "pL_prof", 
-#                        "bE_prof",
-#                       warpfield_params.dens_a_pL, warpfield_params.dens_g_bE,
-#                       T = 1e5,
-#                       )
-    
-# print(aa)
-
-
-
-
-
-
-
-
 

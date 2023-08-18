@@ -101,7 +101,7 @@ sfe    0.01
 # then dens_navg_pL will overwrite this (i.e., adopting an average cloud density).
 # type: float
 # DEFAULT: 1e4
-nCore    1e5
+nCore    1e4
 
 # What is the core radius of the molecular cloud? (unit: pc)
 # type: string
@@ -305,7 +305,7 @@ dens_a_pL    0
 # of the cloud. (unit: 1/cm3)
 # type: float
 # DEFAULT: 100
-dens_navg_pL    100
+dens_navg_pL    10000
 
 # =============================================================================
 # parameters for fragmentation of cloud

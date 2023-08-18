@@ -33,15 +33,16 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         rCore, #this is modified, not necessary the one in warpfield_params
         sigma_dust,
         tcoll, coll_counter,
-        density_specific_param, # this can be nalpha or T, depending on density profile.
         Cool_Struc,
         shell_dissolved, t_shelldiss,
         stellar_outputs, # old code: SB99_data
-        # change tfinal to depend on warpfield_param
+        # TODO: change tfinal to depend on warpfield_param
         # not only tfinal, but all others too.
         tfinal = 50,
         Tarr = [], Larr = [], 
         
+    # Note:
+    # old code: Weaver_phase()
         
 # """Test: In this function, rCloud and mCloud is called assuming xx units."""
         
@@ -52,8 +53,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         
       ):
     
-    
-    print('rCore is', rCore)
     # TODO: remember double check with old files to make sure
     # that the cloudy business are taken care of. This is becaus
     # in the original file, write_cloudy is set to False. 
@@ -73,8 +72,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     
     # print('\n\n\n')
     
-    # Note:
-    # old code: Weaver_phase()
     
     # the energy-driven phase
     # winds hit the shell --> reverse shock --> thermalization
@@ -83,7 +80,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # =============================================================================
     # Now, we begin Energy-driven calculations (Phase 1)
     # =============================================================================
-
+    # header
     terminal_prints.phase1()
 
     mypath = warpfield_params.out_dir
@@ -126,18 +123,9 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # print(tStop_i,"\n\n", dLwdt,"\n\n", abs_dLwdt,"\n\n",\
     #       t_problem,"\n\n", Lw0,"\n\n", pdot0,"\n\n", vterminal0)
     # sys.exit()
-    
- 
 
     # initial values (radius, velocity, energy, temperature)
-    if len(y0) == 3:
-        r0, v0, E0 = y0
-        # initial temperature of bubble
-        # see Weaver+77, eq. (37)
-        T0 = 1.51e6 * (Lw_evo[0]/1e36)**(8./35.) * warpfield_params.nCore**(2./35.) *\
-            (t0-tcoll[coll_counter])**(-6./35.) * (1.- warpfield_params.xi_Tb)**0.4 
-    elif len(y0) == 4:
-        r0, v0, E0, T0 = y0
+    r0, v0, E0, T0 = y0
 
     # initial radius of inner discontinuity
     R1 = scipy.optimize.brentq(get_bubbleParams.get_r1, 1e-3 * r0, r0, 

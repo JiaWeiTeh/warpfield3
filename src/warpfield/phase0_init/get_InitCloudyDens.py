@@ -12,11 +12,10 @@ write initial density profile to a txt. file.
 import numpy as np
 import astropy.constants as c
 import os
-import csv
+import sys
 import src.warpfield.cloud_properties.density_profile as density_profile
 
 def get_InitCloudyDens(path2output,
-                       density_specific_param, 
                        rCloud, mCloud,
                        coll_counter=0):
 
@@ -31,8 +30,11 @@ def get_InitCloudyDens(path2output,
     r = np.concatenate([[dx_small],r,[r[-1]+0.001], [r[-1]+5.0], [r[-1]+500.0]])
     # get density profile
     
-    n = density_profile.get_density_profile(r, density_specific_param,
-                                            rCloud, mCloud)[0]
+    n = density_profile.get_density_profile(r, rCloud)
+    
+    # print('Checking initial density')
+    # print(n)
+    # sys.exit()
     
     logn = np.log10(n)
     logr = np.log10(r * c.pc.cgs.value)

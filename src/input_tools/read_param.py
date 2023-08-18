@@ -281,6 +281,8 @@ def read_param(path2file, write_summary = True):
         Path(path2cooling).mkdir(parents=True, exist_ok = True)
         params_dict['path_cooling'] = path2cooling
         
+    # ----
+    
     # Then, organise dictionary so that it does not include useless info
     # Remove fragmentation if frag_enabled == 0
     if params_dict['frag_enabled'] == 0:
@@ -291,10 +293,14 @@ def read_param(path2file, write_summary = True):
         params_dict.pop('frag_densInhom')
         params_dict.pop('frag_cf')
         params_dict.pop('frag_enable_timescale')
+        
+    # ----
     
     # Remove stochasticity related parameters
     if params_dict['stochastic_sampling'] == 0:
         params_dict.pop('n_trials')
+        
+    # ----
     
     # Remove unrelated parameters depending on selected density profile
     if params_dict['dens_profile'] == 'bE_prof':
@@ -302,6 +308,10 @@ def read_param(path2file, write_summary = True):
         params_dict.pop('dens_navg_pL')
     elif params_dict['dens_profile'] == 'pL_prof':
         params_dict.pop('dens_g_bE')
+        
+    # ----
+    
+    # ----
         
     # datetime object containing current date and time
     now = datetime.now()
@@ -339,11 +349,29 @@ def read_param(path2file, write_summary = True):
     if params_dict['stop_t_unit'] == 'tff':
         params_dict['stop_t'] = params_dict['stop_t'] * params_dict['tff']
     # if params_dict['stop_t_unit'] == 'Myr', it is fine; Myr is also the 
-    # unit in all other calculations. å
+    # unit in all other calculations.
+    
+    # ----
     
     # Here we include calculations for mCloud, for future ease.
     params_dict['mCloud'] = 10**params_dict['log_mCloud']
     
+    # Here we calculate mCloud, depending on whether the user specifies of this
+    # is given as before or after the star formation event.
+    if params_dict['is_mCloud_beforeSF'] == True:
+        mCloud = params_dict['mCloud']
+    else:
+        mCloud = params_dict['mCloud'] / (1 - params_dict['sfe'])
+    # cluster mass
+    mCluster = mCloud * params_dict['sfe']
+    # cloud mass after SF
+    mCloud = mCloud - mCluster
+    # save
+    params_dict['mCloud'] = mCloud
+    params_dict['mCluster'] = mCluster
+
+    # ----
+
     # Here for the magnatic field related constants
     params_dict['BMW'] = 10**params_dict['log_BMW']
     params_dict['nMW'] = 10**params_dict['log_nMW']
