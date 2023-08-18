@@ -183,7 +183,7 @@ def get_set_save_prefix(my_prefix, use_relative_path):
     :return:
     """
 
-    if use_relative_path is True:
+    if use_relative_path == True:
         cwd = os.getcwd()
         # now model has lost the piece of the path which leads to the current working dir -> relative path
         set_save_prefix = os.path.relpath(my_prefix, cwd) 
@@ -226,7 +226,7 @@ def write_shell(my_prefix, Z_cloud, log10_n0, coll_counter, logB0, SB99model, SB
             model_input_file.writelines("grains PAH function sublimation\n") # better use sublimation in shell
 
     # only if there is no static component (i.e. the cloud has been fully swept by the shell) add the interstellar radiation field to the shell
-    if static_exist is False:
+    if static_exist == False:
         model_input_file.writelines("# table ISM\n") # commented table ISM out because when at late times the shell is at a very low density (huge volume) the X-ray from the ISRF is very high and dominates over the X-ray from the cluster (--> not good when we want to make statements about the X-ray of a cluster)
 
     ############################# add in additional info ###########################
@@ -238,7 +238,7 @@ def write_shell(my_prefix, Z_cloud, log10_n0, coll_counter, logB0, SB99model, SB
 
     ############################# add line list ####################################
     # write table of emission lines to shell.in and static.in files
-    if write_line_list is True:
+    if write_line_list == True:
         create_line_list_file(model_input_file)
 
     ############################# spectrum (THIS NEEDS TO GO TO THE END) ###########
@@ -264,11 +264,11 @@ def write_static(my_prefix, Z_cloud, log10_n0, coll_counter, logB0, SB99model, S
     # open file to write
     # if this part is not directly illuminated we need to wait for cloudy to run on the inner (directly illuminated) part first
     # that's why we can not create a cloudy .in file but only an .ini file (which will need to get updated with info from the directly illuminated part)
-    if direct_illumination is False:
+    if direct_illumination == False:
         model_input_file = open(my_prefix + ".ini", mode='w')
         model_input_file.writelines("# use for static (not yet swept up) part of the cloud\n")
     # if this part is directly illuminated we can directly create a cloudy .in file
-    elif direct_illumination is True:
+    elif direct_illumination == True:
         model_input_file = open(my_prefix + ".in", mode='w')
         model_input_file.writelines("# use for static ISM when the shell has dissolved\n")
         # TODO: verbosity here
@@ -306,15 +306,15 @@ def write_static(my_prefix, Z_cloud, log10_n0, coll_counter, logB0, SB99model, S
     additional_info(model_input_file, key_moreinfo, add_info_data)
 
     #################### add line list ####################################
-    if write_line_list is True:
+    if write_line_list == True:
         create_line_list_file(model_input_file)
 
     # if this part is not directly illuminated, get cloudy continuum file from inner illuminated part
-    if direct_illumination is False:
+    if direct_illumination == False:
         # model_input_file.writelines("radius PLACEHOLDER linear parsec\n")
         model_input_file.writelines("table read file = \"%s\"\n" % (continuum_file))
         model_input_file.writelines("luminosity total %0.3f\n" % (SB99_log10_L0))
-    elif direct_illumination is True:
+    elif direct_illumination == True:
         write_spectrum(model_input_file, coll_counter, SB99model, SB99_age, SB99_log10_L0, Tarr, t0, Larr,
                        warpfield_params)
         # if this part is directly ilumminated by the star cluster, we know its inner radius
@@ -426,7 +426,7 @@ def create_template(model_input_file, set_save_prefix,
             model_input_file.writelines("metals log %0.2f\n" % (log10_Z_cloud))
 
     if (not np.isnan(logB0)):
-        if B_cloudy is True:
+        if B_cloudy == True:
             model_input_file.writelines("magnetic field tangled %0.4f 2\n" % (logB0))
 
     if (not np.isnan(log10_n0)):

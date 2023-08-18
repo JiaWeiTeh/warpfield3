@@ -151,7 +151,7 @@ def run_momentum(t0, y0,
         dt_real = tStop_i - t0
         # TODO: write_cloudy
         # make sure, that only 1 cloudy output is written per time step (if necessary, decrease time step)
-        # if ((i.write_cloudy is True) and (dt_real > my_cloudy_dt)):
+        # if ((i.write_cloudy == True) and (dt_real > my_cloudy_dt)):
         #     dt_real = my_cloudy_dt
         #     tStop_i = t0 + dt_real
             
@@ -204,7 +204,7 @@ def run_momentum(t0, y0,
         tau_IR = rhodr * warpfield_params.kappa_IR
 
         # TODO write these
-        # if i.write_potential is True:
+        # if i.write_potential == True:
             # aux.write_pot_to_file(mypath, t0, r_Phi, Phi_grav_r0, f_grav, rCloud, rCore, warpfield_params.dens_a_pL, mCloud, mCluster, warpfield_params.sfe)
 
         # if i.output_verbosity >= 1:

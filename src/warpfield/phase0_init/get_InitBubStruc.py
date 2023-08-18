@@ -8,8 +8,12 @@ Created on Tue Apr 25 17:14:13 2023
 
 import os
 import numpy as np
+# get parameter
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
 
-def get_InitBubStruc(Mcloud, SFE, path):
+
+def get_InitBubStruc():
     """
     This function initialises environmental variables to help calculate
     bubble structures.
@@ -32,19 +36,22 @@ def get_InitBubStruc(Mcloud, SFE, path):
     
     # Initialise this
     R1R2 = R2pR2 = np.array([0])
+    
+    
+    
     # check if directory exists
-    dirstring = os.path.join(path, "BubDetails")
-    if not os.path.isdir(dirstring):
-        os.makedirs(dirstring)
-    # path to bubble details
-    pstr = path +"/BubDetails/Bstrux.txt"
+    # dirstring = os.path.join(path, "BubDetails")
+    # if not os.path.isdir(dirstring):
+    #     os.makedirs(dirstring)
+    # # path to bubble details
+    # pstr = path +"/BubDetails/Bstrux.txt"
     # save to path
     # TODO
     # np.savetxt(pstr, np.c_[R1R2,R2pR2],delimiter='\t',header='R1/R2'+'\t'+'R2p/R2')
     
     # initialise some environment variables. 
     # path
-    os.environ["Bstrpath"] = pstr
+    os.environ["Bstrpath"] = warpfield_params.out_dir
     # dMdt
     os.environ["DMDT"] = str(0)
     # count
@@ -57,8 +64,8 @@ def get_InitBubStruc(Mcloud, SFE, path):
     # ??
     os.environ["BD_res_count"] = str(0)
     # ??
-    os.environ["Mcl_aux"] = str(Mcloud)
-    os.environ["SF_aux"]= str(SFE)
+    os.environ["Mcl_aux"] = str(warpfield_params.mCloud)
+    os.environ["SF_aux"]= str(warpfield_params.sfe)
     # ??
     dic_res={'Lb': 0, 'Trgoal': 0, 'dMdt_factor': 0, 'Tavg': 0, 'beta': 0, 'delta': 0, 'residual': 0}
     os.environ["BD_res"]=str(dic_res)

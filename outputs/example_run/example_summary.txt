@@ -1,6 +1,6 @@
 # =============================================================================
 # Summary of parameters in the 'example' run.
-# Created at 09/08/2023 16:40:12.
+# Created at 16/08/2023 17:37:42.
 # =============================================================================
 
 model_name    example
@@ -47,7 +47,8 @@ write_bubble_CLOUDY    0.0
 write_shell    0.0
 write_figures    0.0
 write_potential    0.0
-xi_Tb    0.99
+path_cooling    /Users/jwt/Documents/Code/warpfield3/lib/cooling_tables/opiate/
+xi_Tb    0.9
 inc_grav    1.0
 f_Mcold_W    0.0
 f_Mcold_SN    0.0

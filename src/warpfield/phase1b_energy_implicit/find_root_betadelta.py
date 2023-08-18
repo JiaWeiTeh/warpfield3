@@ -334,7 +334,7 @@ def rootfinder_bd(beta_guess, delta_guess, params, Cool_Struc, verbose=0, xtol=1
         # print beta2, delta2, "residual2:", log_residual2
 
         # print "residual:", log_residual2
-        if ((log_residual2 > log_error_min) and (log_residual1 > log_error_min) and error_exit is True):
+        if ((log_residual2 > log_error_min) and (log_residual1 > log_error_min) and error_exit == True):
             sys.exit("Could not find correct beta, delta...")
         if log_residual2 > log_residual1:
             # print "The old attempt was better."

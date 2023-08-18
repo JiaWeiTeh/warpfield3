@@ -15,6 +15,8 @@ import os
 import argparse
 import yaml
 from src.input_tools import read_param
+
+
 # =============================================================================
 # Read in parameter files
 # =============================================================================
@@ -26,20 +28,22 @@ parser.add_argument('path2param')
 args = parser.parse_args()
 # Get class and write summary file
 params = read_param.read_param(args.path2param, write_summary = True)
-print('Finished reading parameters.')
 
-# from src.warpfield import main
+
+from src.warpfield.functions import header
+header.display()
+
+
+# this import has to be here or warpfield_params will not work.
+from src.warpfield import main
 ## test
 # With this dictionary, run the simulation.
-# main.start_expansion()
+main.start_expansion()
 # Done!
 # print("Done!")
 
+# from src.input_tools import get_param
+# warpfield_params = get_param.get_param()
 
-
-from src.input_tools import get_param
-warpfield_params = get_param.get_param()
-
-from src.output_tools import write_outputs
-
-write_outputs.get_dir()
+# import src.output_tools.write_outputs as write_outputs
+# write_outputs.init_dir()

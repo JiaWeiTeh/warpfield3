@@ -137,7 +137,7 @@ def get_mass_profile(r_arr,
         T = density_specific_param
         # Get density profile before altering units
         dens_arr, xi_arr = density_profile.get_density_profile(r_arr,
-                         density_specific_param,  rCloud, mCloud, warpfield_params)
+                         density_specific_param,  rCloud, mCloud)
         # sound speed
         # print('values that are fed into the c_s calculation\n', T)
         c_s = bE.get_bE_soundspeed(T, warpfield_params.mu_n, warpfield_params.gamma_adia)

@@ -19,6 +19,7 @@ import src.warpfield.bubble_structure.bubble_structure as bubble_structure
 import src.warpfield.shell_structure.shell_structure as shell_structure
 import src.warpfield.cloud_properties.mass_profile as mass_profile
 import src.warpfield.phase1_energy.energy_phase_ODEs as energy_phase_ODEs
+import src.warpfield.functions.terminal_prints as terminal_prints
 from src.warpfield.functions.operations import find_nearest_lower, find_nearest_higher
 
 from src.input_tools import get_param
@@ -34,11 +35,12 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         tcoll, coll_counter,
         density_specific_param, # this can be nalpha or T, depending on density profile.
         Cool_Struc,
-        shell_dissolved,
+        shell_dissolved, t_shelldiss,
         stellar_outputs, # old code: SB99_data
         # change tfinal to depend on warpfield_param
         # not only tfinal, but all others too.
-        t_shelldiss, Tarr = [], Larr = [], tfinal = 50
+        tfinal = 50,
+        Tarr = [], Larr = [], 
         
         
 # """Test: In this function, rCloud and mCloud is called assuming xx units."""
@@ -51,6 +53,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
       ):
     
     
+    print('rCore is', rCore)
     # TODO: remember double check with old files to make sure
     # that the cloudy business are taken care of. This is becaus
     # in the original file, write_cloudy is set to False. 
@@ -77,10 +80,11 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # winds hit the shell --> reverse shock --> thermalization
     # shell is driven mostly by the high thermal pressure by the shocked ISM, also (though weaker) by the radiation pressure, at late times also SNe
 
-    print("############################################################")
-    print("           Entering phase I (energy-driven)...")
-    print("############################################################")
-    
+    # =============================================================================
+    # Now, we begin Energy-driven calculations (Phase 1)
+    # =============================================================================
+
+    terminal_prints.phase1()
 
     mypath = warpfield_params.out_dir
 
@@ -156,11 +160,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # calculate swept mass depending on density profile.
     # watch out units
     Msh0, _ = mass_profile.get_mass_profile(r0, density_specific_param, rCloud, mCloud)
-        
-    # print("\n\n\nfirst Msh calculation params\n\n\n", r0, density_specific_param, rCloud, mCloud)
-    # print('\n\n\n, Msh0, \n\n\n')
-    # sys.exit('done')
-    
     # The initial bubble pressure
     P0 = get_bubbleParams.bubble_E2P(E0, r0, R1, warpfield_params.gamma_adia)
 
@@ -179,11 +178,10 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         rfinal = rCloud
         
         
-    # print(Msh0, P0, rCore, rCloud, rfinal)
+    # print('checkpoint3')
+    # print("\n\n\nfirst Msh calculation params\n\n\n", r0, density_specific_param, rCloud, mCloud)
+    # print(Msh0, P0, rCore, rfinal)
     # sys.exit()
-    
- 
-    
  
     
     # Now, we define some start values
@@ -233,12 +231,17 @@ def run_energy(t0, y0, #r0, v0, E0, T0
 
     continueWeaver = True
     
+    
+    print('active branch check:', r0,t0, rfinal, tfinal)
+    print(all([r0 < rfinal, (tfinal - t0) > dt_Emin, continueWeaver]))
+    sys.exit()
+    
     while all([r0 < rfinal, (tfinal - t0) > dt_Emin, continueWeaver]):
 
         # calculate bubble structure and shell structure?
         # r0 > 0.1, Do I need only temp_counter > 0?
         structure_switch = (temp_counter > 0) 
-        if structure_switch is True:
+        if structure_switch == True:
             dt_Emin = dt_Emin
         else:
             dt_Emin = dt_Estart
@@ -298,7 +301,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
 
         # make sure, that only 1 cloudy output is written per time step (if necessary, decrease time step)
         # TODO
-        # if (i.write_cloudy is True):
+        # if (i.write_cloudy == True):
         #     tStop_i = np.min([tmax,t0+np.min([dt_L,my_cloudy_dt,dt_Emax,dt_Lw])]) # this is the stop time for this time step
         # else:
         tStop_i = np.min([tmax,t0+np.min([dt_L,dt_Emax,dt_Lw])])
@@ -489,7 +492,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
             # Phi_grav_r0 = Phi_grav_r0b + Phi_grav_r0s 
             # f_grav = np.concatenate([f_grav_b, f_grav_sh])
             
-            # # if i.write_potential is True:
+            # # if i.write_potential == True:
             # #     aux.write_pot_to_file(mypath, t0, r_Phi, Phi_grav_r0, f_grav, rcloud_au, rcore_au, nalpha, Mcloud_au, Mcluster_au, SFE)
 
         else:
@@ -661,7 +664,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         # another way to estimate when fragmentation occurs: Raylor-Taylor instabilities, see Baumgartner 2013, eq. (48)
         # not implemented yet
 
-        if (was_close_to_frag is False):
+        if (was_close_to_frag == False):
             frag_stop = 1.0 - float(fit_len)*dt_Emin*dfragdt # if close to fragmentation: take small time steps
             if (frag_value >= frag_stop):
                 # TODO
@@ -679,7 +682,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
                 was_close_to_frag = True
 
 
-        if ((frag_value > 1.0) and (first_frag is True)):
+        if ((frag_value > 1.0) and (first_frag == True)):
             #print frag_value
             # fragmentation occurs
             # TODO
@@ -702,7 +705,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
             # if i.output_verbosity >= 1: print(t_frag)
             first_frag = False
             # OPTION 1 for switching to mom-driving: if i.immediate_leak is set to True, we will immeadiately enter the momentum-driven phase now
-            if warpfield_params.immediate_leak is True:
+            if warpfield_params.immediate_leak == True:
                 mom_phase = True
                 continueWeaver = False
                 Eb[-1] = 0.

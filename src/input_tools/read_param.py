@@ -88,8 +88,8 @@ def read_param(path2file, write_summary = True):
                    'SB99_age_min': 500000.0,
                    'dens_profile': 'bE_prof', 
                    'dens_g_bE': 14.1, 
-                   'dens_a_pL': -2.0, 
-                   'dens_navg_pL': 170.0, 
+                   'dens_a_pL': 0, 
+                   'dens_navg_pL': 100.0, 
                    'frag_enabled': 0.0, 
                    'frag_r_min': 0.1, 
                    'frag_grav': 0.0, 
@@ -115,7 +115,8 @@ def read_param(path2file, write_summary = True):
                    'write_shell': 0.0, 
                    'write_figures': 0.0,
                    'write_potential': 0.0,
-                   'xi_Tb': 0.99,
+                   'path_cooling': 'def_dir',
+                   'xi_Tb': 0.9,
                    'inc_grav': 1.0, 
                    'f_Mcold_W': 0.0, 
                    'f_Mcold_SN': 0.0, 
@@ -143,6 +144,11 @@ def read_param(path2file, write_summary = True):
     # =============================================================================
     # First, for parameters specified in .param file, update dictionary and use the
     # specified values instead of the default.
+    
+    # TODO:
+        # What do if randomised? Should show both randomised range, and randomised result. 
+    
+    
     try:
         for pairs in params_input_list:
             param, value = pairs.split(maxsplit = 1)
@@ -150,18 +156,16 @@ def read_param(path2file, write_summary = True):
             if param not in params_dict:
                 sys.exit(f'{param} is not a parameter.')
             value = value.split(',')
+            # value is a list. That's why we needed [0], and can calculate its length.
             if len(value) == 1:
                 # Convert to float if possible
                 try:
                     val = float(value[0])
-                    # However, if output is integer, write them as
-                    # integer instead (because I have OCD)
-                    if int(val) == val:
-                        params_dict[param] = int(val)
-                        params_dict[param] = val
+                    params_dict[param] = val
                 # otherwise remain as string
                 except:
                     params_dict[param] = value[0]
+            # not done, but for now we save them as a list.
             else:
                 params_dict[param] = value 
     except Exception:
@@ -227,7 +231,7 @@ def read_param(path2file, write_summary = True):
         
         # # figure out the SB99 file for use in cloudy (cloudy will not interpolate between files, just pick the one that comes closest)
         # if force_SB99file == 0: # no specific cloudy file is forced, determine which file to use from BHcutoff, metallicity, ...
-        #     if rotation is True: rot_string = "_rot_"
+        #     if rotation == True: rot_string = "_rot_"
         #     else: rot_string = "_norot_"
         #     BH_string = "_BH" + str(int(BHcutoff))
         #     if abs(Zism-1.0) < abs(Zism-0.15): Z_string = "Z0014"
@@ -248,12 +252,13 @@ def read_param(path2file, write_summary = True):
     # =============================================================================
     # Store only useful parameters into the summary.txt file
     # =============================================================================
-    # First, grab output directory
+    # First, grab directories
+    # 1. Output directory:
     if params_dict['out_dir'] == 'def_dir':
         # If user did not specify, the directory will be set as ./outputs/ 
         # check if directory exists; if not, create one.
         # TODO: Add smart system that adds 1, 2, 3 if repeated default to avoid overwrite.
-        path2output = os.path.join(os.getcwd(), 'outputs/example_run/')
+        path2output = os.path.join(os.getcwd(), 'outputs/'+params_dict['model_name']+'/')
         Path(path2output).mkdir(parents=True, exist_ok = True)
         params_dict['out_dir'] = path2output
     else:
@@ -261,7 +266,21 @@ def read_param(path2file, write_summary = True):
         path2output = str(params_dict['out_dir'])
         Path(path2output).mkdir(parents=True, exist_ok = True)
         params_dict['out_dir'] = path2output
-    
+ 
+    # 2. Cooling table directory:
+    if params_dict['path_cooling'] == 'def_dir':
+        # If user did not specify, the directory will be set as ./lib/cooling_tables/opiate/
+        # check if directory exists; if not, create one.
+        # TODO: Add smart system that adds 1, 2, 3 if repeated default to avoid overwrite.
+        path2cooling = os.path.join(os.getcwd(), 'lib/cooling_tables/opiate/')
+        Path(path2cooling).mkdir(parents=True, exist_ok = True)
+        params_dict['path_cooling'] = path2cooling
+    else:
+        # if instead given a path, then use that instead
+        path2cooling = str(params_dict['path_cooling'])
+        Path(path2cooling).mkdir(parents=True, exist_ok = True)
+        params_dict['path_cooling'] = path2cooling
+        
     # Then, organise dictionary so that it does not include useless info
     # Remove fragmentation if frag_enabled == 0
     if params_dict['frag_enabled'] == 0:
@@ -280,9 +299,9 @@ def read_param(path2file, write_summary = True):
     # Remove unrelated parameters depending on selected density profile
     if params_dict['dens_profile'] == 'bE_prof':
         params_dict.pop('dens_a_pL')
+        params_dict.pop('dens_navg_pL')
     elif params_dict['dens_profile'] == 'pL_prof':
         params_dict.pop('dens_g_bE')
-        params_dict.pop('dens_navg_pL')
         
     # datetime object containing current date and time
     now = datetime.now()
@@ -304,9 +323,6 @@ def read_param(path2file, write_summary = True):
             # close
             f.close()
    
-    print(f"Summary file created and saved at {path2output}{params_dict['model_name']}{'_summary.txt'}")
-        
-        
     # =============================================================================
     # This section contains information which you do not want to appear in the 
     # final summary.txt file, but want it included. Mostly mini-conversions.
@@ -318,11 +334,12 @@ def read_param(path2file, write_summary = True):
     # free-fall time. This may be used even if stop_t_unit is not in tff time, 
     # as it may be called if mult_SF = 2, where the second startburst is
     # characterised by the free-fall time.
-    params_dict['tff'] = np.sqrt(3. * np.pi / (32. * c.G.cgs.value * params_dict['dens_navg_pL'] * params_dict['mu_n'])) / u.Myr.to(u.s)
+    tff = np.sqrt(3. * np.pi / (32. * c.G.cgs.value * params_dict['dens_navg_pL'] * params_dict['mu_n'])) / u.Myr.to(u.s)
+    params_dict['tff'] = float(tff)
     if params_dict['stop_t_unit'] == 'tff':
         params_dict['stop_t'] = params_dict['stop_t'] * params_dict['tff']
     # if params_dict['stop_t_unit'] == 'Myr', it is fine; Myr is also the 
-    # unit in all other calculations. 
+    # unit in all other calculations. å
     
     # Here we include calculations for mCloud, for future ease.
     params_dict['mCloud'] = 10**params_dict['log_mCloud']
@@ -332,15 +349,16 @@ def read_param(path2file, write_summary = True):
     params_dict['nMW'] = 10**params_dict['log_nMW']
     
     # Is there a density gradient?
-    params_dict['density_gradient'] = (params_dict['dens_profile'] == 'pL_prof') and (params_dict['dens_profile'] != 0)
+    params_dict['density_gradient'] = float((params_dict['dens_profile'] == 'pL_prof') and (params_dict['dens_profile'] != 0))
     
     # =============================================================================
-    # Save output
+    # Save output to yaml. This contains parameters in which you do not whish
+    # user to see in the output summary.txt.
     # =============================================================================
     # relative path to yaml
     path2yaml = r'./param/'
     # Write this into a file
-    filename =  path2yaml + params_dict['model_name'] + '_config.yaml'
+    filename =  path2output + params_dict['model_name'] + '_config.yaml'
     with open(filename, 'w',) as file :
         # header
         file.writelines('\
@@ -350,12 +368,10 @@ def read_param(path2file, write_summary = True):
 # =============================================================================\n\n\
 '%(params_dict['model_name'], dt_string))
         yaml.dump(params_dict, file, sort_keys=False) 
-    print(f'Parameters successfully saved to {filename}')
     
     # save path to object
     # TODO: delete this after warpfield is finished.
     # save file
-    print(filename)
     os.environ['PATH_TO_CONFIG'] = filename
     
     return params_dict

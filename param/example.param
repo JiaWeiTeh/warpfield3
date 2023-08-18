@@ -494,6 +494,16 @@ write_figures   0
 # =============================================================================
 
 
+# ==============================================================================
+# parameters for setting path
+# ==============================================================================
+
+# Path to cooling tables?
+# WARNING: MUST provide absolute path. Do not include ',' character in path.
+# type: string
+# DEFAULT: def_dir: path/to/warpfield/lib/cooling_tables/opiate/
+path_cooling    def_dir
+
 
 
 # =============================================================================
@@ -505,8 +515,8 @@ write_figures   0
 # See Weaver+77, Equation 23. old code: r_Tb
 # Available values:
 # 0 < xi_Tb < 1
-# DEFAULT: 0.99
-xi_Tb    0.99
+# DEFAULT: 0.9
+xi_Tb    0.9
 
 
 # =============================================================================

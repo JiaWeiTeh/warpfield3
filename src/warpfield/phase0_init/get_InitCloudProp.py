@@ -98,7 +98,7 @@ def get_InitCloudProp():
     # cloud mass after SF
     mCloud_afterSF = mCloud - mCluster
     
-    # Here is get_cloud_Rn().
+    # Old code: get_cloud_Rn().
     # =============================================================================
     # For power-law density profile    
     # =============================================================================
@@ -119,9 +119,12 @@ def get_InitCloudProp():
         # compute the density at edge
         nEdge = nCore * mu_n * (rCloud/rCore)**alpha
         # sanity check
+        print('nEdge', nEdge)
         if nEdge < warpfield_params.nISM:
-            sys.exit("Exiting: Density at cloud edge lower than ISM density; please increase nCore.")
-
+            print(f'nCore: {nCore}, nISM: {warpfield_params.nISM}')
+            sys.exit('"The density at the edge of the cloud is lower than the ISM; please consider increasing nCore."')
+        print(f'nCore: {nCore}, nISM: {warpfield_params.nISM}')
+        sys.exit()
         # converting back
         rCore = rCore * u.cm.to(u.pc)
         rCloud = rCloud * u.cm.to(u.pc)
@@ -131,7 +134,7 @@ def get_InitCloudProp():
     # =============================================================================
     elif warpfield_params.dens_profile == "bE_prof":
         # initialise value if not selected.
-        rCore = np.nan
+        rCore = warpfield_params.rCore
         g = warpfield_params.dens_g_bE
         # Remember that rCore is a property of power-law. it is bE_T for bE spheres.
         # print(mCloud, nCore, g, mu_n, gamma)

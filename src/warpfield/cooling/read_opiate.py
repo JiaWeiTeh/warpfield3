@@ -69,8 +69,6 @@ def get_Cool_dat_timedep(Zism, age,
 
 
 
-
-
 def get_NN_ages(Zism, age, 
                 basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables"):
     """
@@ -86,22 +84,23 @@ def get_NN_ages(Zism, age,
     
     rotation = warpfield_params.SB99_rotation
     # string in filenames which stores information about stellar rotation
-    if rotation is True: rot_str = "_rot"
+    if rotation == True: rot_str = "_rot"
     else: rot_str = "_norot"
 
     file_list = []
     age_list = []
 
     # check all files in cooling table folder with the correct filenames (rotating/non-rotating stars, metallicity, extension)
-    cooltable_dir = get_cooltable_dir(cool_folder)
+    cooltable_dir = warpfield_params.path_cooling
     for file in os.listdir(cooltable_dir):
-        if (basename in file and rot_str in file and get_Zstring(Zism) in file and file.endswith(extension)): # check whether files with the correct metallicity and data extension exist
+        # check whether files with the correct metallicity and data extension exist
+        if (basename in file and rot_str in file and get_Zstring(Zism) in file and file.endswith(extension)): 
             # files will be read in any order, need to sort them later
             file_list.append(file)
             age_list.append(extract_keyvalue(file, key="age"))
 
     if len(file_list) == 0:
-        sys.exist("No cooling tables! E.g., I am expecting: "+make_cooling_filename(Zism, age, 
+        sys.exit("No cooling tables! E.g., I am expecting: "+make_cooling_filename(Zism, age, 
                                                                                     basename=basename, extension=extension, cool_folder=cool_folder))
 
     # sort according to age
@@ -113,17 +112,10 @@ def get_NN_ages(Zism, age,
     idx1 = operations.find_nearest_higher(age_list, age)
     age_lower = age_list[idx0]
     age_higher = age_list[idx1]
-
+    
     return age_lower, age_higher
 
 
-def get_cooltable_dir(cool_folder):
-    
-    # old code:
-    # cooltable_dir = mc.path_to_code + "/" + cool_folder + "/"
-    cooltable_dir = "./" + "/" + cool_folder + "/"
-
-    return cooltable_dir
 
 def get_Zstring(Zism):
 
@@ -155,10 +147,10 @@ def make_cooling_filename(Zism, age,
                           basename="opiate_cooling", extension = ".dat", cool_folder = "cooling_tables"):
 
     rotation = warpfield_params.SB99_rotation
-    if rotation is True: rot_str = "rot"
+    if rotation == True: rot_str = "rot"
     else: rot_str = "norot"
 
-    cooltable_dir = get_cooltable_dir(cool_folder)
+    cooltable_dir = warpfield_params.path_cooling
     agestr = get_agestring(age)
     Zstr = get_Zstring(Zism)  # use 2 digits after point
     cooltable_file = cooltable_dir + basename + "_" + rot_str + "_" + Zstr + "_" + agestr + extension
@@ -167,7 +159,6 @@ def make_cooling_filename(Zism, age,
 
 
 def get_Cool_dat(Zism, age, 
-                 warpfield_params,
                  basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables", indiv_CH=False):
     """
     get cooling data

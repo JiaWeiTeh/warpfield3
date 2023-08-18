@@ -28,10 +28,15 @@ from src.warpfield.phase1b_energy_implicit import run_energy_implicit_phase
 from src.warpfield.phase1c_transition import run_transition_phase
 from src.warpfield.phase2_momentum import run_momentum_phase
 from src.warpfield.cloudy import __cloudy__
+import src.warpfield.functions.terminal_prints as terminal_prints
+import src.output_tools.write_outputs as write_outputs
 
 # get parameter
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()
+
+#%%
+
 
 
 def start_expansion():
@@ -52,34 +57,30 @@ def start_expansion():
     # Note:
         # old code: expansion_main()
     
-# TODO: make sure there is no confusion between mCloud (before and after)
+    # TODO: make sure there is no confusion between mCloud (before and after)
+    
+    
     # =============================================================================
     # Step 0: Preliminary stuffs.
     # =============================================================================
     
+    terminal_prints.phase0()
+    
     # Record timestamp
     startdatetime = datetime.datetime.now()
-    # print some useful information
-    print("Warpfield is running now with the following parameters:")
-    print(f'Name: {warpfield_params.model_name}')
-    print(f'log_mCloud: {warpfield_params.log_mCloud}')
-    print(f'sfe: {warpfield_params.sfe}')
-    print(f'metallicity: {warpfield_params.metallicity}')
-    print(f'density profile: {warpfield_params.dens_profile}')
     
     # TODO: This shouldn't be required - because there should be an operation at the very
     # beginning that deals with this.
     
     # However, we still need to provide function that creasts '_evo' etc suffix files. 
     
-    # # prepare directories and write some basic files (like the file cotaining the input parameters)
-    # mypath, cloudypath, outdata_file, figure_file = warp_writedata.getmake_dir(i.basedir, i.navg, i.Zism, SFE,
-    #         
+    # prepare directories and write some basic files (like the file cotaining the input parameters)
+    output_filename = write_outputs.init_dir()
     
     # output path
     # params_dict['out_dir']+params_dict['model_name']+'_summary.txt'
-    # e.g.,  mypath = r'./outputs/default/'
-    mypath = warpfield_params.out_dir
+    # This prints '/Users/jwt/Documents/Code/warpfield3/outputs/example_run/'
+    path2output = warpfield_params.out_dir
     
     # General setup
     # time where SF event happens
@@ -128,7 +129,7 @@ def start_expansion():
     ODEpar['tSF_list'] = np.array([tSF])
     ODEpar['Mcluster_list'] = np.array([ODEpar['mCluster']])
     ODEpar['tStop'] = warpfield_params.stop_t
-    ODEpar['mypath'] = mypath 
+    ODEpar['mypath'] = path2output 
     
     if warpfield_params.dens_profile == 'bE_prof':
         ODEpar['density_specific_param'] = bE_T
@@ -159,17 +160,13 @@ def start_expansion():
     
     
     
-    
-    
-    
-    
     # create density law for cloudy
-    get_InitCloudyDens.get_InitCloudyDens(mypath, density_specific_param,
+    get_InitCloudyDens.get_InitCloudyDens(path2output, density_specific_param,
                                           ODEpar['rCloud'], ODEpar['mCloud'], 
                                           coll_counter = ii_coll)
     
     # get initial bubble structure and path to where the file is saved.
-    get_InitBubStruc.get_InitBubStruc(warpfield_params.mCloud, warpfield_params.sfe, warpfield_params['out_dir'])
+    get_InitBubStruc.get_InitBubStruc()
 
 
     # =============================================================================
@@ -180,7 +177,7 @@ def start_expansion():
 
 
     # MAIN WARPFIELD CODE
-    t1, r1, v1, E1, T1 = run_expansion(ODEpar, SB99_data, SB99f, mypath, cloudypath)
+    t1, r1, v1, E1, T1 = run_expansion(ODEpar, SB99_data, SB99f)
     t = np.append(t, t1)
     r = np.append(r, r1)
     v = np.append(v, v1)
@@ -208,7 +205,7 @@ def start_expansion():
         ii_coll += 1
 
         # run expansion_next
-        t1, r1, v1, E1, T1, ODEpar, SB99_data, SB99f = expansion_next(t[-1], ODEpar, SB99_data, SB99f, mypath, cloudypath, ii_coll)
+        t1, r1, v1, E1, T1, ODEpar, SB99_data, SB99f = expansion_next(t[-1], ODEpar, SB99_data, SB99f, path2output, cloudypath, ii_coll)
         t = np.append(t, t1 + t[-1])
         r = np.append(r, r1)
         v = np.append(v, v1)
@@ -232,14 +229,12 @@ def start_expansion():
     
     #%%
     
-def run_expansion(ODEpar, SB99_data, SB99f, mypath, cloudypath):
+def run_expansion(ODEpar, SB99_data, SB99f):
     """
     Model evolution of the cloud (both energy- and momentum-phase) until next recollapse or (if no re-collapse) until end of simulation
     :param ODEpar:
     :param SB99_data:
     :param SB99f:
-    :param mypath:
-    :param cloudypath:
     :return:
     """
 
@@ -253,7 +248,8 @@ def run_expansion(ODEpar, SB99_data, SB99f, mypath, cloudypath):
     # y0 = [r0, v0, E0, T0]
     # r0 = initial separation (pc)
     # v0 = initial velocity (km/s)
-    t0, y0 = get_InitPhaseParam.get_y0(0., SB99f, warpfield_params)
+    t0, y0 = get_InitPhaseParam.get_y0(0., SB99f)
+    
     # print(t0)
     # 6.506818386985495e-05
     # print(y0)
@@ -264,16 +260,25 @@ def run_expansion(ODEpar, SB99_data, SB99f, mypath, cloudypath):
     shell_dissolved = False
     t_shdis = 1e99
 
-    tfinal = t0 + 30. * i.dt_Estart
+    dt_Estart = 0.0001
+    tfinal = t0 + 30. * dt_Estart
     #print "tfinal:", tfinal
 
-    [Dw, shell_dissolved, t_shdis] = run_energy_phase.run_energy(t0, y0, ODEpar['Rcloud_au'], SB99_data,
-                                                                ODEpar['Mcloud_au'], ODEpar['SFE'], mypath,
-                                                                cloudypath, shell_dissolved, t_shdis,
-                                                                ODEpar['Rcore_au'], i.nalpha, ODEpar['Mcluster_au'],
-                                                                ODEpar['nedge'], Cool_Struc, tcoll=tcoll,
-                                                                coll_counter=ii_coll, tfinal=tfinal)
-
+    [Dw, shell_dissolved, t_shdis] = run_energy_phase.run_energy(t0, y0, 
+                                                                 ODEpar['rCloud'],
+                                                                 ODEpar['mCloud'],
+                                                                 ODEpar['mCluster'],
+                                                                 ODEpar['nEdge'],
+                                                                 ODEpar['rCore'],
+                                                                 warpfield_params.sigma_d,
+                                                                 tcoll, ii_coll,
+                                                                 ODEpar['density_specific_param'],
+                                                                 Cool_Struc,
+                                                                 shell_dissolved, t_shdis,
+                                                                 SB99_data,
+                                                                 tfinal,
+                                                                 )
+                                                                 
     ######## STEP B: energy-phase (implicit) ################
     # if (aux.check_continue(Dw['t_end'], Dw['r_end'], Dw['v_end']) == ph.cont):
 
@@ -370,7 +375,7 @@ def expansion_next(tStart, ODEpar, SB99_data_old, SB99f_old, mypath, cloudypath,
     #SB99_data = getSB99_data.sum_SB99(SB99f_old, SB99_data2, dtSF, return_format = 'array') # feedback of summed cluster --> use this
     #SB99f = getSB99_data.make_interpfunc(SB99_data) # make interpolation functions for summed cluster (allowed range of t: 0 to (99.9-tStart))
 
-    if i.write_SB99 is True:
+    if i.write_SB99 == True:
         SB99_data_write = getSB99_data.SB99_conc(SB99_data_old, getSB99_data.time_shift(SB99_data, tStart))
         warp_writedata.write_warpSB99(SB99_data_write, mypath)  # create file containing SB99 feedback info
 
