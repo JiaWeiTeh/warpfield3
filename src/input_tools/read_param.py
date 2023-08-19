@@ -116,9 +116,10 @@ def read_param(path2file, write_summary = True):
                    'write_figures': 0.0,
                    'write_potential': 0.0,
                    'path_cooling': 'def_dir',
+                   'path_sps': 'def_dir',
                    'xi_Tb': 0.9,
                    'inc_grav': 1.0, 
-                   'f_Mcold_W': 0.0, 
+                   'f_Mcold_wind': 0.0, 
                    'f_Mcold_SN': 0.0, 
                    'v_SN': 1000000000.0, 
                    'sigma0': 1.5e-21, 
@@ -280,6 +281,20 @@ def read_param(path2file, write_summary = True):
         path2cooling = str(params_dict['path_cooling'])
         Path(path2cooling).mkdir(parents=True, exist_ok = True)
         params_dict['path_cooling'] = path2cooling
+        
+    # 2. Starburst99 (sps) table directory:
+    if params_dict['path_sps'] == 'def_dir':
+        # If user did not specify, the directory will be set as ./lib/sps/starburst99/
+        # check if directory exists; if not, create one.
+        # TODO: Add smart system that adds 1, 2, 3 if repeated default to avoid overwrite.
+        path2sps = os.path.join(os.getcwd(), 'lib/sps/starburst99/')
+        Path(path2sps).mkdir(parents=True, exist_ok = True)
+        params_dict['path_sps'] = path2sps
+    else:
+        # if instead given a path, then use that instead
+        path2sps = str(params_dict['path_sps'])
+        Path(path2sps).mkdir(parents=True, exist_ok = True)
+        params_dict['path_sps'] = path2sps        
         
     # ----
     

@@ -1,6 +1,6 @@
 # =============================================================================
 # Summary of parameters in the 'example_pl' run.
-# Created at 18/08/2023 16:41:49.
+# Created at 19/08/2023 18:52:59.
 # =============================================================================
 
 model_name: example_pl
@@ -48,9 +48,10 @@ write_shell: 0.0
 write_figures: 0.0
 write_potential: 0.0
 path_cooling: /Users/jwt/Documents/Code/warpfield3/lib/cooling_tables/opiate/
+path_sps: /Users/jwt/Documents/Code/warpfield3/lib/sps/starburst99/
 xi_Tb: 0.9
 inc_grav: 1.0
-f_Mcold_W: 0.0
+f_Mcold_wind: 0.0
 f_Mcold_SN: 0.0
 v_SN: 1000000000.0
 sigma0: 1.5e-21

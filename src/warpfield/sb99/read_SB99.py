@@ -76,6 +76,7 @@ def read_SB99(metallicity = warpfield_params.metallicity, rotation = warpfield_p
                                         warpfield_params.SB99_BHCUT, 
                                         warpfield_params.SB99_mass) 
     
+    
     # case: specific file is forced
     if warpfield_params.SB99_forcefile != 0 and isinstance(warpfield_params.SB99_forcefile, str):  
         SB99file = warpfield_params.SB99_forcefile
@@ -88,6 +89,7 @@ def read_SB99(metallicity = warpfield_params.metallicity, rotation = warpfield_p
                                                                                             SB99_file_Z0002, 0.15,
                                                                                             SB99_file_Z0014, 1.0, f_mass = f_mass)
         elif metallicity == 1.0:
+            print('sb99', SB99_file_Z0014)
             SB99file = SB99_file_Z0014
             [t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo] = getSB99_data(SB99file, f_mass)
 
@@ -146,7 +148,7 @@ def getSB99_data(file,
     t = data[:,0]/1e6 # in Myr
     # all other quantities are in cgs
     Qi = 10.0**data[:,1] *f_mass # emission rate of ionizing photons (number per second)
-    fi = 10**data[:,2] # fraction of ionizing radiation
+    fi = 10**data[:,2] # fract =ion of ionizing radiation
     Lbol = 10**data[:,3] *f_mass # bolometric luminosity (erg/s)
     Li = fi*Lbol # luminosity in the ionizing part of the spectrum (>13.6 eV)
     Ln = (1.0-fi)*Lbol # luminosity in the non-ionizing part of the spectrum (<13.6 eV)
@@ -185,16 +187,21 @@ def getSB99_data(file,
         return pdot, Lmech
 
     # winds
-    Mdot_W, v_W = getMdotv(pdot_W_tmp, Lmech_W_tmp) # convert pdot and Lmech to mass loss rate and terminal velocity
-    Mdot_W *= f_met * (1. + warpfield_params.f_Mcold_W) # modify mass injection rate according to 1) metallicity and 2) cold mass content in cluster (NB: metallicity affects mainly the mass loss rate, not the terminal velocity)
-    v_W *= np.sqrt(warpfield_params.thermcoeff_wind / (1. + warpfield_params.f_Mcold_W)) # modifiy terminal velocity according to 1) thermal efficiency and 2) cold mass content in cluster
+    # convert pdot and Lmech to mass loss rate and terminal velocity
+    Mdot_W, v_W = getMdotv(pdot_W_tmp, Lmech_W_tmp) 
+    # modify mass injection rate according to 1) metallicity and 2) cold mass content in cluster (NB: metallicity affects mainly the mass loss rate, not the terminal velocity)
+    Mdot_W *= f_met * (1. + warpfield_params.f_Mcold_wind) 
+    # modifiy terminal velocity according to 1) thermal efficiency and 2) cold mass content in cluster
+    v_W *= np.sqrt(warpfield_params.thermcoeff_wind / (1. + warpfield_params.f_Mcold_W)) 
     pdot_W, Lmech_W = getpdotLmech(Mdot_W, v_W)
 
     # supernovae
     v_SN = warpfield_params.v_SN # assuming a constant ejecta velocity (which is not quite right, TO DO: get time-dependent velocity, e.g. when mass of ejecta are known)
     Mdot_SN = 2.* Lmech_SN_tmp/v_SN**2
-    Mdot_SN *= (1. + warpfield_params.f_Mcold_SN) # # modify mass injection rate according to 1) cold mass content in cluster during SN explosions, do not modify according to metallicity
-    v_SN *= np.sqrt(warpfield_params.thermcoeff_SN / (1. + warpfield_params.f_Mcold_SN)) # modifiy terminal velocity according to 1) thermal efficiency and 2) cold mass content in cluster during SN explosions
+    # # modify mass injection rate according to 1) cold mass content in cluster during SN explosions, do not modify according to metallicity
+    Mdot_SN *= (1. + warpfield_params.f_Mcold_SN) 
+    # modifiy terminal velocity according to 1) thermal efficiency and 2) cold mass content in cluster during SN explosions
+    v_SN *= np.sqrt(warpfield_params.thermcoeff_SN / (1. + warpfield_params.f_Mcold_SN)) 
     pdot_SN, Lmech_SN = getpdotLmech(Mdot_SN, v_SN)
 
     # add mechanical energy and momentum injection rate, respectively, from winds and supernovae
@@ -402,13 +409,22 @@ def make_interpfunc(SB99_data_IN):
     SB99_data = dict2arr(SB99_data_IN)
     [t_Myr, Qi_cgs, Li_cgs, Ln_cgs, Lbol_cgs, Lw_cgs, pdot_cgs, pdot_SNe_cgs] = SB99_data
 
-    fQi_cgs = scipy.interpolate.interp1d(t_Myr, Qi_cgs, kind='cubic')
-    fLi_cgs = scipy.interpolate.interp1d(t_Myr, Li_cgs, kind='cubic')
-    fLn_cgs = scipy.interpolate.interp1d(t_Myr, Ln_cgs, kind='cubic')
-    fLbol_cgs = scipy.interpolate.interp1d(t_Myr, Lbol_cgs, kind='cubic')
-    fLw_cgs = scipy.interpolate.interp1d(t_Myr, Lw_cgs, kind='cubic')
-    fpdot_cgs = scipy.interpolate.interp1d(t_Myr, pdot_cgs, kind='cubic')
-    fpdot_SNe_cgs = scipy.interpolate.interp1d(t_Myr, pdot_SNe_cgs, kind='cubic')
+    fQi_cgs = scipy.interpolate.interp1d(t_Myr, Qi_cgs, kind='linear')
+    fLi_cgs = scipy.interpolate.interp1d(t_Myr, Li_cgs, kind='linear')
+    fLn_cgs = scipy.interpolate.interp1d(t_Myr, Ln_cgs, kind='linear')
+    fLbol_cgs = scipy.interpolate.interp1d(t_Myr, Lbol_cgs, kind='linear')
+    fLw_cgs = scipy.interpolate.interp1d(t_Myr, Lw_cgs, kind='linear')
+    fpdot_cgs = scipy.interpolate.interp1d(t_Myr, pdot_cgs, kind='linear')
+    fpdot_SNe_cgs = scipy.interpolate.interp1d(t_Myr, pdot_SNe_cgs, kind='linear')
+
+    # original
+    # fQi_cgs = scipy.interpolate.interp1d(t_Myr, Qi_cgs, kind='cubic')
+    # fLi_cgs = scipy.interpolate.interp1d(t_Myr, Li_cgs, kind='cubic')
+    # fLn_cgs = scipy.interpolate.interp1d(t_Myr, Ln_cgs, kind='cubic')i
+    # fLbol_cgs = scipy.interpolate.interp1d(t_Myr, Lbol_cgs, kind='cubic')
+    # fLw_cgs = scipy.interpolate.interp1d(t_Myr, Lw_cgs, kind='cubic')
+    # fpdot_cgs = scipy.interpolate.interp1d(t_Myr, pdot_cgs, kind='cubic')
+    # fpdot_SNe_cgs = scipy.interpolate.interp1d(t_Myr, pdot_SNe_cgs, kind='cubic')
 
     SB99f = {'fQi_cgs': fQi_cgs, 'fLi_cgs': fLi_cgs, 'fLn_cgs': fLn_cgs, 'fLbol_cgs': fLbol_cgs, 'fLw_cgs': fLw_cgs,
              'fpdot_cgs': fpdot_cgs, 'fpdot_SNe_cgs': fpdot_SNe_cgs}

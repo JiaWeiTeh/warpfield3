@@ -35,7 +35,9 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         tcoll, coll_counter,
         Cool_Struc,
         shell_dissolved, t_shelldiss,
-        stellar_outputs, # old code: SB99_data
+        stellar_outputs, 
+        # old code: SB99_data
+        SB99f,
         # TODO: change tfinal to depend on warpfield_param
         # not only tfinal, but all others too.
         tfinal = 50,
@@ -82,8 +84,47 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # =============================================================================
     # header
     terminal_prints.phase1()
-
+    
     mypath = warpfield_params.out_dir
+
+
+    # -----------
+    # Step1: Obtain values such as 
+    # -----------
+        
+    
+    # output:
+#   t: time in Myr
+#   Qi: rate of ionizing photons (1/s)
+#   Li: luminosity of ionizing radiation (erg/s)
+#   Ln: luminosity of non-ionizing radiation (erg/s)
+#   Lbol: Li+Ln
+#   Lw: mechanical wind luminosity
+#   vw: wind velocity (cm/s)
+#   Mw_dot: mass loss rate due to winds (g/s)
+#   pdot_SNe: momentum flux of SN ejecta (SN mass loss rate times 1e4 cm/s)
+
+        
+
+    # -----------
+    # Describing the free-expanding phase
+    # We consider first region (c) of swept-up interstellar
+    # gas, whose outer boundary, at R2, is a shock separating
+    # it from the ambient interstellar gas (d), and whose
+    # inner boundary, at Rc, is a contact discontinuity
+    # separating it from the shocked stellar wind (b). The
+    # structure of this region can be described by a similarity
+    # solution (Avedisova 1972). Our calculation parallels
+    # the theory of the adiabatic blast wave given by Taylor
+    # (1950); the only substantive difference in the case at
+    # hand is that the energy is fed into the system at a
+    # constant rate instead of in an initial blast.
+    # 
+    # 
+    # -----------
+
+
+
 
     # first stopping time (will be incremented at beginning of while loop)
     # start time t0 will be incremented at end of while loop
@@ -91,7 +132,10 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # get data from stellar evolution code output
     # unit of t_evo is Myr, the other units are cgs
     t_evo, Qi_evo, Li_evo, Ln_evo, Lbol_evo, Lw_evo, pdot_evo, pdot_SNe_evo = stellar_outputs 
-
+    
+    
+    # Question: isnt this already handelled in main.py in read_SB99?
+    # Also, why is this linear instead?
     # interpolation functions for SB99 values
     fQi_evo = scipy.interpolate.interp1d(t_evo, Qi_evo, kind = 'linear')
     fLi_evo = scipy.interpolate.interp1d(t_evo, Li_evo, kind = 'linear')
@@ -113,9 +157,9 @@ def run_energy(t0, y0, #r0, v0, E0, T0
 
     
     # initial mechanical luminosity in astro units
-    Lw0 = fLw_evo(t0) * (u.g.to(u.Msun) * u.cm.to(u.pc)**2/u.s.to(u.Myr)**3)
+    Lw0 = fLw_evo(0) * (u.g.to(u.Msun) * u.cm.to(u.pc)**2/u.s.to(u.Myr)**3)
     # initial momentum of stellar winds in astro units
-    pdot0 = fpdot_evo(t0) * (u.g.to(u.Msun) * u.cm.to(u.km) / u.s.to(u.Myr))
+    pdot0 = fpdot_evo(0) * (u.g.to(u.Msun) * u.cm.to(u.km) / u.s.to(u.Myr))
     # initial terminal wind velocity
     vterminal0 = 2. * Lw0 / pdot0 
     
@@ -126,6 +170,43 @@ def run_energy(t0, y0, #r0, v0, E0, T0
 
     # initial values (radius, velocity, energy, temperature)
     r0, v0, E0, T0 = y0
+    
+    
+    
+    print('debug here')
+    
+    Lw_evo0 = SB99f['fLw_cgs'](t0)  * (u.g.to(u.Msun) * u.cm.to(u.pc)**2/u.s.to(u.Myr)**3)
+    pdot_evo0 = SB99f['fpdot_cgs'](t0) * (u.g.to(u.Msun) * u.cm.to(u.pc) / u.s.to(u.Myr)**2)
+    
+    print('---------')
+    print('Lw_evo0, pdot_evo0')
+    print(Lw_evo0, pdot_evo0)
+    # this calculated using cubic
+    vterminal0 = 2.*Lw_evo0/pdot_evo0 
+    print( 'vterminal0_withconversionfirst' )
+    print( vterminal0 )
+    print('---------')
+    
+    Lw_evo0 = SB99f['fLw_cgs'](t0)  
+    pdot_evo0 = SB99f['fpdot_cgs'](t0) 
+    print('Lw_evo0, pdot_evo0')
+    print(Lw_evo0, pdot_evo0)
+    # this calculated using cubic
+    vterminal0 = 2.*Lw_evo0/pdot_evo0  / (( u.km/u.s).to(u.cm/u.s)) 
+    print( 'vterminal0_after' )
+    print( vterminal0 )
+
+
+    
+    # print('Lw0, Lw_evo0')
+    # print(Lw0, Lw_evo0)
+    # print('pdot0, pdot_evo0')
+    # print(pdot0, pdot_evo0)
+    
+    # print('comparison between values to check')
+    # print('vterminal0, v0')
+    # print(vterminal0, v0)
+    sys.exit()
 
     # initial radius of inner discontinuity
     R1 = scipy.optimize.brentq(get_bubbleParams.get_r1, 1e-3 * r0, r0, 
@@ -144,12 +225,15 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # sys.exit()
  
     
-    
     # calculate swept mass depending on density profile.
-    # watch out units
-    Msh0, _ = mass_profile.get_mass_profile(r0, density_specific_param, rCloud, mCloud)
+    Msh0 = mass_profile.get_mass_profile(r0, rCloud, mCloud, return_mdot = False)
+    
+    
     # The initial bubble pressure
-    P0 = get_bubbleParams.bubble_E2P(E0, r0, R1, warpfield_params.gamma_adia)
+    P0 = get_bubbleParams.bubble_E2P(E0, r0, R1)
+
+
+
 
     # initialize r and derivatives
     tSweaver = []; rSweaver = []; vSweaver = []; ESweaver = []

@@ -58,6 +58,9 @@ def start_expansion():
     
     # TODO: make sure there is no confusion between mCloud (before and after)
     
+    from src.warpfield.sb99 import read_SB100
+    read_SB100.read_SB99()
+    sys.exit()
     
     # =============================================================================
     # Step 0: Preliminary stuffs.
@@ -266,7 +269,7 @@ def run_expansion(ODEpar, SB99_data, SB99f):
                                                                  tcoll, ii_coll,
                                                                  Cool_Struc,
                                                                  shell_dissolved, t_shdis,
-                                                                 SB99_data,
+                                                                 SB99_data, SB99f,
                                                                  tfinal,
                                                                  )
                                                                  

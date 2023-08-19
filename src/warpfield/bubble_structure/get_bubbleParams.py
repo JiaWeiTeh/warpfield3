@@ -950,6 +950,10 @@ def get_r1(r1, params):
     # return
     return equation
 
+
+
+
+
 def calc_cons(alpha, beta, delta,
               t_now, press, 
               c_therm):

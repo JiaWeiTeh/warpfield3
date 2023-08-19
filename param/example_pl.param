@@ -225,13 +225,12 @@ stellar_tracks    geneva
 
 
 # ==============================================================================
-# parameters for Starburst99 (if used)
+# parameters for Starburst99 operations (if used)
 # ==============================================================================
 # Note: Remember to check that these are indeed what is in the user's SB99 file.
 # This does not automatically create a Starburst99 file; the purpose of this
-# section is to tell WARPFIELD which SB99 file you are using, should you have
-# many in the library. For more information, see
-# https://www.stsci.edu/science/starburst99/docs/run.html.
+# section is to tell WARPFIELD which SB99 file you are using. 
+# For more information, see https://www.stsci.edu/science/starburst99/docs/run.html.
 
 # What is the default star cluster mass in SB99? This will be used if scaling
 # relation is considered.
@@ -262,6 +261,28 @@ SB99_forcefile    0
 # Minimum age to take when reading in SB99 cluster spectrum for CLOUDY (in years).
 # This prevents a model age from requesting a cluster spectrum out of the bounds of the SB99 calculation
 SB99_age_min    500000
+
+# Add fraction of mass injected into the cloud due to sweeping of cold material
+# from protostars and disks inside star clusters?
+# This will affect in particular the total mass loss rate of cluster, Mdot, and 
+# consequently the escape velocity.
+# type: float
+# DEFAULT: 0.0 (i.e., no extra mass loss)
+f_Mcold_wind   0.0
+f_Mcold_SN    0.0
+
+# What is the velocity of supernova ejecta? (units: cm/s)
+# type: float
+# DEFAULT: 1e9
+v_SN    1e9
+
+# The thermalisation efficiency for colliding winds and supernova ejecta.
+# See Stevens and Hartwell 2003 or Kavanagh 2020 for a review.
+# The new mechanical energy will thus be:
+#       Lw_new = thermcoeff * Lw_old
+# DEFAULT: 1.0
+thermcoeff_wind    1.0 
+thermcoeff_SN    1.0 
 
 
 
@@ -507,6 +528,9 @@ write_figures   0
 # DEFAULT: def_dir: path/to/warpfield/lib/cooling_tables/opiate/
 path_cooling    def_dir
 
+# Path to starburst99 files?
+# DEFAULT: def_dir: path/to/warpfield/lib/sps/starburst99/
+path_sps    def_dir
 
 
 # =============================================================================
@@ -535,20 +559,6 @@ xi_Tb    0.9
 # -- 1 gravity please
 # DEFAULT: 1
 inc_grav    1
-
-# Add fraction of mass injected into the cloud due to sweeping of cold material
-# from protostars and disks inside star clusters?
-# This will affect in particular the total mass loss rate of cluster, Mdot, and 
-# consequently the escape velocity.
-# type: float
-# DEFAULT: 0.0 (i.e., no extra mass loss)
-f_Mcold_W    0.0
-f_Mcold_SN    0.0
-
-# What is the velocity of supernova ejecta? (units: cm/s)
-# type: float
-# DEFAULT: 1e9
-v_SN    1e9
 
 # Dust cross-section at solar metallicity? (unit: cm^2)
 # If non-solar metallicity is given, the repective dust cross-section, sigma_d,
@@ -591,14 +601,6 @@ kappa_IR    4
 # What is the adiabatic index?
 # DEFAULT: 5/3
 gamma_adia    1.6666666666666667
-
-# The thermalisation efficiency for colliding winds and supernova ejecta.
-# See Stevens and Hartwell 2003 or Kavanagh 2020 for a review.
-# The new mechanical energy will thus be:
-#       Lw_new = thermcoeff * Lw_old
-# DEFAULT: 1.0
-thermcoeff_wind    1.0 
-thermcoeff_SN    1.0 
 
 # The case B recombination coefficient (unit: cm3/s)
 # Osterbrock and Ferland 2006
