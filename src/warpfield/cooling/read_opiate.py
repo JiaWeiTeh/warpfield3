@@ -35,7 +35,6 @@ def get_Cool_dat_timedep(Zism, age,
     :return:
     """
 
-
     age_lo, age_hi = get_NN_ages(Zism, age, 
                                  basename=basename, extension=extension, cool_folder=cool_folder)
 

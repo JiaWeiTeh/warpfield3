@@ -20,6 +20,10 @@ import astropy.units as u
 import src.warpfield.functions.operations as operations
 
 
+
+
+# This is the simple case when CIE is achieved, so Lambda depends only on T. 
+
 # =============================================================================
 # Here, we provide values (hardcoded) quoted from studies.
 # =============================================================================

@@ -138,6 +138,7 @@ def read_param(path2file, write_summary = True):
                    'log_BMW': -4.3125,
                    'log_nMW': 2.065,
                    'c_therm': 1.2e-6,
+                   'dMdT_factor': 1.646
                    }
     
     # =============================================================================
@@ -392,7 +393,7 @@ def read_param(path2file, write_summary = True):
     params_dict['nMW'] = 10**params_dict['log_nMW']
     
     # Is there a density gradient?
-    params_dict['density_gradient'] = float((params_dict['dens_profile'] == 'pL_prof') and (params_dict['dens_profile'] != 0))
+    params_dict['density_gradient'] = float((params_dict['dens_profile'] == 'pL_prof') and (params_dict['dens_a_pL'] != 0))
     
     # =============================================================================
     # Save output to yaml. This contains parameters in which you do not whish

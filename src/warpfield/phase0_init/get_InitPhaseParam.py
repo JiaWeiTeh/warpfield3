@@ -29,13 +29,11 @@ def get_y0(tSF, SB99f):
 
     Returns
     -------
-    t0 : TYPE
-        DESCRIPTION.
-    y0 : array
-        An array of initial values. Check comments below for references in the literature
-        r0: initial separation of bubble edge calculated using (terminal velocity / duration of free expansion phase)
-        v0: velocity of expanding bubble (terminal velocity) 
-        E0: energy contained within the bubble
+    t0 [Myr] : starting time for Weaver phase (free_expansion phase)
+    y0 : An array of initial values. Check comments below for references in the literature
+        r0 [pc]: initial separation of bubble edge calculated using (terminal velocity / duration of free expansion phase)
+        v0 [km/s]: velocity of expanding bubble (terminal velocity) 
+        E0 [erg/s]: energy contained within the bubble
         T0: temperature
         
     """
@@ -56,20 +54,22 @@ def get_y0(tSF, SB99f):
     rhoa =  warpfield_params.nCore * warpfield_params.mu_n
     # duration of inital free-streaming phase (Myr)
     # see https://www.imprs-hd.mpg.de/399417/thesis_Rahner.pdf pg 17 Eq 1.15
-    dt_phase0 = np.sqrt(3. * Mdot0_cgs / (4. * np.pi * rhoa * vterminal0_cgs ** 3.)) / u.Myr.to(u.s)  
+    dt_phase0 = np.sqrt(3. * Mdot0_cgs / (4. * np.pi * rhoa * vterminal0_cgs ** 3.)) * u.s.to(u.Myr)  
     # start time for Weaver phase (Myr)
     t0 = tSF + dt_phase0  
     # initial separation (pc)
-    r0 = (vterminal0_cgs / (( u.km/u.s).to(u.cm/u.s))) * dt_phase0  
+    r0 = vterminal0_cgs * (u.cm/u.s).to(u.pc/u.Myr) *  dt_phase0 
     # initial velocity (km/s)
-    v0 = vterminal0_cgs / (( u.km/u.s).to(u.cm/u.s)) 
+    v0 = vterminal0_cgs * ( u.cm/u.s).to(u.km/u.s)
     # The energy contained within the bubble (calculated using wind luminosity)
     # see Weaver+77, eq. (20)
-    E0 = 5. / 11. * Lw_evo0*(u.Myr.to(u.s)/((c.M_sun.cgs.value)*(( u.km/u.s).to(u.cm/u.s))**2)) * dt_phase0 
+    # old: not sure what unit is used here. Seems to be in some weird combination of Myr, Msun and km/s.
+    # E0 = 5. / 11. * Lw_evo0*(u.Myr.to(u.s)/((c.M_sun.cgs.value)*(( u.km/u.s).to(u.cm/u.s))**2)) * dt_phase0 
+    # New, now changed to erg
+    E0 = 5. / 11. * Lw_evo0  * dt_phase0 * u.Myr.to(u.s)
     # see Weaver+77, eq. (37)
     # TODO: isn't it 2.07?
     T0 = 1.51e6 * (Lw_evo0/1e36)**(8./35.) * warpfield_params.nCore**(2./35.) * (t0-tSF)**(-6./35.) * (1.-warpfield_params.xi_Tb)**0.4 
-
 
     y0 = [r0, v0, E0, T0]
     print('r0, v0, E0, T0')

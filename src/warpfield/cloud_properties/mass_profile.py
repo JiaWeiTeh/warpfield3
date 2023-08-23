@@ -29,12 +29,12 @@ def get_mass_profile(r_arr,
 
     Parameters
     ----------
-    r_arr : list/array of radius of interest
-        Radius at which we are interested in the density (Units: pc).
-    rCloud: outer radius of the cloud
-        Outer radius of the cloud (Units: pc)
-    mCloud : float
-        Mass of cloud (Units: solar mass).
+    r_arr [pc]: list/array of radius of interest
+        Radius at which we are interested in the density.
+    rCloud [pc]: outer radius of the cloud
+        Outer radius of the cloud.
+    mCloud [Msol]: float
+        Mass of cloud.
     return_rdot: boolean { True | False }
         Whether or not to also compute the time-derivative of radius.
         If True, then further specify an array of velocity.
@@ -43,15 +43,18 @@ def get_mass_profile(r_arr,
 
     Returns
     -------
-    mGas: array of float
-        The mass profile. (Units: Msol)
+    mGas [Msol]: array of float
+        The mass profile. 
     mGasdot: array of float. Only returned if return_mdot == True.
-        The time-derivative mass profile dM/dt. (Units: Msol/s)
+        The time-derivative mass profile dM/dt. 
 
     """
     # convert to np.array
     # array for easier operation
-    r_arr  = np.array(r_arr)
+    if hasattr(r_arr, '__len__'):
+        r_arr  = np.array(r_arr)
+    else:
+        r_arr = np.array([r_arr])
     
     # retrieve values
     alpha = warpfield_params.dens_a_pL
@@ -67,7 +70,7 @@ def get_mass_profile(r_arr,
     mGasdot = r_arr * np.nan
 
     # ----
-    # Case 1: The density profile is homogeneous
+    # Case 1: The density profile is homogeneous, i.e., alpha = 0
     if alpha == 0:
         # sphere
         mGas =  4 / 3 * np.pi * r_arr**3 * rhoAvg
@@ -90,7 +93,7 @@ def get_mass_profile(r_arr,
             return mGas
         
     # ----
-    # Case 2: The density profile has power law of alpha = -2. 
+    # Case 2: The density profile has power-law profile (alpha)
     else:
         # input values into mass array
         # inner sphere

@@ -58,10 +58,6 @@ def start_expansion():
     
     # TODO: make sure there is no confusion between mCloud (before and after)
     
-    from src.warpfield.sb99 import read_SB100
-    read_SB100.read_SB99()
-    sys.exit()
-    
     # =============================================================================
     # Step 0: Preliminary stuffs.
     # =============================================================================
@@ -139,20 +135,16 @@ def start_expansion():
     #  ODEpar['rhocore_au'] = i.rhoa_au removed, because i.rhoa_au is rhoCore, and it can be calculated from scratch.
     # -----
     
-    
     # TODO: check if the dictionaries have values. Ex: Mcluster_au does not exist
     # anymore, so they should not apper; the interface will not say it is wrong!
     # Step 2: Obtain parameters from Starburst99
     # Scaling factor for cluster masses. Though this might only be accurate for
     # high mass clusters (~>1e5) in which the IMF is fully sampled.
     factor_feedback = ODEpar['mCluster'] / warpfield_params.SB99_mass
-    # Get SB99 data. This function returns data and interpolation functions.
-    SB99_data, SB99f = read_SB99.read_SB99(warpfield_params.metallicity,
-                                                  rotation = warpfield_params.SB99_rotation, 
-                                                  f_mass = factor_feedback, BHcutoff = warpfield_params.SB99_BHCUT)
+    # Get SB99 data and interpolation functions.
+    SB99_data = read_SB99.read_SB99(f_mass = factor_feedback)
+    SB99f = read_SB99.get_interpolation(SB99_data)
     # if tSF != 0.: we would actually need to shift the feedback parameters by tSF
-    
-    
     
     # create density law for cloudy
     get_InitCloudyDens.get_InitCloudyDens(path2output,
@@ -162,13 +154,11 @@ def start_expansion():
     # get initial bubble structure and path to where the file is saved.
     get_InitBubStruc.get_InitBubStruc()
 
-
     # =============================================================================
     # Begin WARPFIELD simulation.
     # Simulate the Evolution (until end time reached, cloud dissolves, 
     # or re-collapse)
     # =============================================================================
-
 
     # MAIN WARPFIELD CODE
     t1, r1, v1, E1, T1 = run_expansion(ODEpar, SB99_data, SB99f)
@@ -233,6 +223,12 @@ def run_expansion(ODEpar, SB99_data, SB99f):
     """
 
     print('here we enter run_expansion.')
+    
+    
+    
+    
+    
+    
     ii_coll = 0
     tcoll = [0.]
     tStop = ODEpar['tStop']
@@ -242,6 +238,8 @@ def run_expansion(ODEpar, SB99_data, SB99f):
     # y0 = [r0, v0, E0, T0]
     # r0 = initial separation (pc)
     # v0 = initial velocity (km/s)
+    # E0 = initial energy (erg/s)
+    # T0 = initial temperature (K)
     t0, y0 = get_InitPhaseParam.get_y0(0., SB99f)
     
     # print(t0)

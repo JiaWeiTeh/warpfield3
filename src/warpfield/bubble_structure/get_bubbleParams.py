@@ -258,7 +258,6 @@ def bubble_E2P(Eb, r2, r1, gamma = warpfield_params.gamma_adia):
         Bubble pressure.
 
     """
-    # TODO: Check if it is in cgs
     # Note:
         # old code: PfromE()
     
@@ -474,6 +473,9 @@ def get_bubbleLuminosity(Data_struc,
 
     """
     
+    
+    # from get_bubbleStructure(), which is from run_energy_phase()
+    
     # Note
     # old code: calc_Lb()
     # data_struc and cool_struc obtained from bubble_wrap()
@@ -523,6 +525,8 @@ def get_bubbleLuminosity(Data_struc,
     
     # print("cons", cons)
     
+    # find dMdt -- 
+    
     # See eq. 33, Weaver+77
     # get guess value
     dMdt_guess = float(os.environ["DMDT"])
@@ -534,6 +538,7 @@ def get_bubbleLuminosity(Data_struc,
     # initiate integration at radius R2_prime slightly less than R2 
     # (we define R2_prime by T(R2_prime) = TR2_prime
     # this is the temperature at R2_prime (important: must be > 1e4 K)
+    # This thing here sets Tgoal. 
     TR2_prime = 3e4 
     
     # path to bubble strucutre file
@@ -585,6 +590,9 @@ def get_bubbleLuminosity(Data_struc,
     # from shell into the shocked region.
     dMdt = get_dMdt(dMdt_guess, bubble_params, warpfield_params, factor_fsolve = factor_fsolve, xtol = 1e-3)
     
+    
+    # -- dMdt found
+    
     # print("dMdt", dMdt_guess, dMdt)
         
     # if output is an array, make it a float (this is here because some
@@ -592,7 +600,7 @@ def get_bubbleLuminosity(Data_struc,
     if hasattr(dMdt, "__len__"): 
         dMdt = dMdt[0]
         
-    ######################################################################
+    ################################################      ######################
     
     # Here, two kinds of problem can occur:
     #   Problem 1 (for very high beta): dMdt becomes negative, the cooling luminosity diverges towards infinity
@@ -942,6 +950,7 @@ def get_r1(r1, params):
     # old code: R1_zero()
     
     Lw, Ebubble, vw, r2 = params
+    
     # set minimum energy to avoid zero
     if Ebubble < 1e-4:
         Ebubble = 1e-4
@@ -1208,6 +1217,8 @@ def get_start_bstruc(dMdt, bubble_params, warpfield_params):
     """
     This function computes starting values for the bubble structure
     measured at r2_prime (upper limit of integration, but slightly lesser than r2).
+    
+    This uses a shooting method to find what is the upper boundary condition. 
 
     Parameters
     ----------
@@ -1246,10 +1257,15 @@ def get_start_bstruc(dMdt, bubble_params, warpfield_params):
     # Tgoal is the target temperature. It is set as 3e4K.
     # spatial separation between R2 and the point where the ODE solver is initialized (cannot be exactly at R2)
     dR2 = (bubble_params["Tgoal"]**2.5) / (coeff_T * dMdt / (4. * np.pi * bubble_params["R2"] ** 2.))
+    
+    
+    # Question: What does this do? This just records the value. Is this important for future?
     # path2bubble structure
     path2bubble = os.environ["Bstrpath"]
     # load data; the file is empty, and was initialised in initialise_bstruc().
     R1R2 , R2pR2 = np.loadtxt(path2bubble, skiprows=1, delimiter='\t', usecols=(0,1), unpack=True)
+    
+    
     # IMPORTANT: this number might have to be higher in case of very strong winds (clusters above 1e7 Msol)! 
     # TODO: figure out, what to set this number to...
     dR2min = 1.0e-7 
@@ -1260,6 +1276,7 @@ def get_start_bstruc(dMdt, bubble_params, warpfield_params):
         dR2min = 1.0e-14 * mCluster + 1.0e-7
     if dR2 < dR2min: 
         dR2 = np.sign(dR2)*dR2min # prevent super small dR2
+        
         
     # radius at which ODE solver is initialized. At this radius the temperature is Tgoal
     # these primes are analogous to dR2 from above.
@@ -1282,6 +1299,8 @@ def get_start_bstruc(dMdt, bubble_params, warpfield_params):
     # y0: initial conditions for bubble structure
     y0 = [vR2_prime, TR2_prime, dTdrR2_prime]
     # return
+    
+    
     return R2_prime, y0
 
 # =============================================================================

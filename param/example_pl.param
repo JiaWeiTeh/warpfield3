@@ -574,8 +574,8 @@ z_nodust    0.05
 
 # Mean mass per nucleus and the mean mass per particle? (unit: cgs, i.e. g)
 # We assume the standard composition of 1 He atom every 10 H atoms.
-# DEFAULT:  -- mu_n = (14/11)*m_H
-#           -- mu_p = (14/23)*m_H
+# DEFAULT:  -- mu_n = (14/11)*m_H (ion)
+#           -- mu_p = (14/23)*m_H (particle)
 mu_n    2.1287915392418182e-24
 mu_p    1.0181176926808696e-24
 
@@ -628,11 +628,12 @@ log_nMW    2.065
 #    presumably cited from Spitzer 1962 Table 5.1)
 # -- 6e-7 (used in  MacLow 1988, in agreement with Spitzer 1956)
 # DEFAULT: 1.2e-6
-c_therm    1.2e-6
+c_therm    6e-7
 
-
-
-
+# Factor A, which is related to the rate at which mass evaporates from the shell into
+# the hot region (Region b in Weaver+77). See Equation 33 in the same paper. 
+# DEFAULT: 1.646
+dMdT_factor    1.646
 
 
 
