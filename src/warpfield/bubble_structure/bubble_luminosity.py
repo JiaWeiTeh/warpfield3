@@ -531,6 +531,12 @@ def get_energy_loss_cooling():
 
 
 
+
+
+
+
+
+
     
 def get_bubble_ODE(t, 
                    alpha, beta, delta, 
@@ -551,7 +557,7 @@ def get_bubble_ODE(t,
     bubble R2 , which is also the radius of the thin shell. The rate of
     change of the radiative component of the internal energy density 
     
-    old code: calc_cons() and get_bubble_ODE()
+    old code: calc_cons() and get_bubble_ODE() aka bubble_struct()
     """
     
     # old code: dTdrd

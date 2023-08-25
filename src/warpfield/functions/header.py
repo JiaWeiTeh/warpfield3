@@ -23,6 +23,7 @@ def display():
     print('\t\t         - Documentation can be found \033[32m'+link('https://warpfield3.readthedocs.io/en/latest/', 'here')+'\033[39m.')
     print('\t\t         - \033[1m\033[96mBolded text\033[0m highlights the designated')
     print('\t\t           locations of saved files.\n')
+    print('\t\t         - \033[1m\033[94mThis is warning/info\033[0m but nothing is huge.')
     print('\t\t      '+prompt['[Version 3.0] 2022. All rights reserved.'])
     print('\t\t      --------------------------------------------------')
     # show initial parameters

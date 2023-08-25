@@ -211,6 +211,7 @@ def get_bubbleODEs(r, y0, data_struc, metallicity):
     Phi = Qi / (4. * np.pi * (r*u.pc.to(u.cm)) ** 2)
 
     # interpolation range (currently repeated in calc_Lb --> merge?)
+    # this seems to be separating when to use CIE and when not to?
     log_T_interd = 0.1
     log_T_noeqmin = Cool_Struc["log_T"]["min"]+1.0001*log_T_interd
     log_T_noeqmax = Cool_Struc["log_T"]["max"] - 1.0001 * log_T_interd
@@ -222,6 +223,9 @@ def get_bubbleODEs(r, y0, data_struc, metallicity):
         T = 10.**3.61
 
     # loss (or gain) of internal energy
+    # cool_interp_master actually belongs to non-CIE i think (i.e. opiate), 
+    # because it is just mislocated, and the parameters are clearly from non-CIE. 
+    
     dudt = get_coolingFunction.cool_interp_master({"n":ndens, "T":T, "Phi":Phi}, Cool_Struc, metallicity,
                                        log_T_noeqmin=log_T_noeqmin, log_T_noeqmax=log_T_noeqmax, 
                                        log_T_intermin=log_T_intermin, log_T_intermax=log_T_intermax)

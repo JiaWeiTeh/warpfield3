@@ -53,6 +53,13 @@ def start_expansion():
     None.
 
     """
+    
+    from src.warpfield.cooling import read_opiate
+    
+    filename, _ = read_opiate.get_filename(3.4e6)
+    print(filename)
+    sys.exit()
+    
     # Note:
         # old code: expansion_main()
     

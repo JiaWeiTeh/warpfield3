@@ -1,6 +1,6 @@
 # =============================================================================
 # Summary of parameters in the 'example_pl' run.
-# Created at 20/08/2023 16:16:03.
+# Created at 24/08/2023 22:21:39.
 # =============================================================================
 
 model_name    example_pl
@@ -69,5 +69,6 @@ alpha_B    2.59e-13
 gamma_mag    1.3333333333333333
 log_BMW    -4.3125
 log_nMW    2.065
-c_therm    1.2e-06
+c_therm    6e-07
+dMdT_factor    1.646
 sigma_d    1.5e-21

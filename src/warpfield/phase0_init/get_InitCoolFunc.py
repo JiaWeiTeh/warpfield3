@@ -5,28 +5,25 @@ Created on Wed May 17 15:16:06 2023
 
 @author: Jia Wei Teh
 
-This script contains the function to obatin the initial cooling function.
+This script contains the function to obatin the cooling function.
 """
 
 from src.warpfield.cooling import read_opiate
 
-def get_firstCoolStruc(Zism, age, 
-                       basename="opiate_cooling", 
-                       extension=".dat", cool_folder="cooling_tables",
-                       indiv_CH=False):
+
+def get_firstCoolStruc(age):
     """
-    get the first cooling function to start with
-    :param Zism:
-    :param age:
-    :param basename:
-    :param extension:
-    :param cool_folder:
-    :param indiv_CH:
-    :return:
+    
+    
     """
 
-    Cool_Struc = read_opiate.get_Cool_dat_timedep(Zism, age, 
-                                               basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=True)
+    # TODO: change file names here so that they are more intuitive.
+    
+    # Get cooling structure for 
+    Cool_Struc = read_opiate.read_opiate(age)
+    
+    
+    # TODO: dont do this here. Do this there. 
     onlycoolfunc, onlyheatfunc = read_opiate.create_onlycoolheat(Zism, age, 
                                                               basename=basename, extension=extension, cool_folder=cool_folder)
     Cool_Struc['Cfunc'] = onlycoolfunc

@@ -55,9 +55,8 @@ def read_SB99(f_mass):
     # Step1: find and read the SB99 file. 
     # =============================================================================
     # grab the file name based on simulation input
-    # filename = get_filename()
-    filename = r'1e6cluster_rot_Z0014_BH120.txt'
-    path2sps = r'/Users/jwt/Documents/Code/warpfield3/lib/sps/starburst99/'
+    filename = get_filename()
+    path2sps = warpfield_params.path_sps
     # read file
     # SB99_file = np.loadtxt(warpfield_params.path_sps + filename)
     SB99_file = np.loadtxt(path2sps + filename)

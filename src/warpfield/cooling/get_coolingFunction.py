@@ -285,11 +285,17 @@ def Interp3_dudt(point, Cool_Struc, element = "Netcool"):
 
     return dudt
 
+
+
+
 def cool_interp_master(point, Cool_Struc, metallicity, log_T_intermin = 3.9, log_T_noeqmin = 4.0, log_T_noeqmax = 5.4, log_T_intermax=5.499):
 
+    
+    # THese if/else cases seem to be for T range for when to/not to use CIE cooling curves?
+    
     if (np.log10(point["T"]) > log_T_intermax) or (np.log10(point["T"]) < log_T_intermin):
         Lambda = get_coolingFunction(point["T"], metallicity)
-        dudt = -1. * (point["n"]) ** 2 * Lambda / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
+        dudt = -1. * (point["n"]) ** 2 *  Lambda / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
 
     elif (np.log10(point["T"]) >= log_T_noeqmax):
         dudt1 = -1. * (point["n"]) ** 2 * get_coolingFunction(point["T"], metallicity) / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
