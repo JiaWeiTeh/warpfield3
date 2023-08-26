@@ -26,25 +26,24 @@
 # Basic information
 # =============================================================================
 
-# Model name?
+# Model name? This sets the prefix for all output filenames. 
 # type: string
-# DEFAULT: WARPFIELD_DEFAULT. Include ONLY alphabets, numbers, and '_'. No spaces.
+# DEFAULT: def_name. Include only alphabets, numbers, and '_'.
 model_name    example_pl
 
-# Directory for output files?
-# WARNING: MUST provide absolute path. Do not include ',' or space character in path.
+# Directory for output files? Must provide absolute path. Do not include ',' or space character in path.
 # type: string
-# DEFAULT: def_dir: directory in which WARPFIELD is being ran, i.e., path/to/warpfield/output/your_model_name/
+# DEFAULT: def_dir: The default directory is the root directory in which WARPFIELD is being run. i.e., path/to/warpfield/output/your_model_name/
 out_dir    def_dir
 
 # Output intensity level in terminal?
 # type: int
 # Available values:
-# -- 0  only errors
-# -- 1  basic output
-# -- 2  everything (intense)
-# DEFAULT: 1
-verbose    1
+# -- 1  only errors
+# -- 2  basic output
+# -- 3  everything (intense)
+# DEFAULT: 2
+verbose    2
 
 # Output format?
 # Available values:
@@ -227,19 +226,19 @@ stellar_tracks    geneva
 # ==============================================================================
 # parameters for Starburst99 operations (if used)
 # ==============================================================================
-# Note: Remember to check that these are indeed what is in the user's SB99 file.
 # This does not automatically create a Starburst99 file; the purpose of this
-# section is to tell WARPFIELD which SB99 file you are using. 
+# section is to tell WARPFIELD which SB99 file (from your folder) do you wish to use in the current run.
 # For more information, see https://www.stsci.edu/science/starburst99/docs/run.html.
 
-# What is the default star cluster mass in SB99? This will be used if scaling
-# relation is considered.
+# What is the default star cluster mass in SB99? This will be used for scaling relation in outputs.
 # type: float
 # DEFAULT: 1e6
 SB99_mass    1e6
 
 
-# Are we using rotating or non-rotating stars in SB99?
+# Are we consdering rotating or non-rotating stars in the stellar track?
+# Rotation extends stellar lifetime due to mixing and being nitrogen-rich, 
+# plus it mixes fresh hydrogen into the core, prolonging fusion.
 # Available values:
 # -- 1 with rotation
 # -- 0 without rotation
@@ -271,10 +270,11 @@ SB99_age_min    500000
 f_Mcold_wind   0.0
 f_Mcold_SN    0.0
 
-# What is the velocity of supernova ejecta? (units: cm/s)
+# What is the velocity of supernova ejecta? (units: km/s)
 # type: float
-# DEFAULT: 1e9
-v_SN    1e9
+TO CHECK: WHAT is the supernova velocity ejecta? what is the unit?
+# DEFAULT: 1e7
+v_SN    1e7
 
 # The thermalisation efficiency for colliding winds and supernova ejecta.
 # See Stevens and Hartwell 2003 or Kavanagh 2020 for a review.

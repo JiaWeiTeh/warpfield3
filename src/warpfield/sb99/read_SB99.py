@@ -103,7 +103,7 @@ def read_SB99(f_mass):
     # =============================================================================
     # first break down into mass loss and velocity
     # TODO: get time-dependent velocity, e.g. when mass of ejecta are known
-    velocity_SN = warpfield_params.v_SN
+    velocity_SN = warpfield_params.v_SN * 100
     Mdot_SN = 2 * Lmech_SN / velocity_SN**2
     # Add fraction of mass injected into the cloud due to sweeping of cold material
     # from protostars and disks inside star clusters?

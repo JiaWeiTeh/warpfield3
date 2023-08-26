@@ -141,6 +141,13 @@ def read_param(path2file, write_summary = True):
                    'dMdT_factor': 1.646
                    }
     
+    
+    
+    # TODO: remove _summary. Provide only the yaml file, and then 
+    # make a python file that turns it into something that is human-readable!
+    # Then, print in terminal that there is two files, one yaml, one for human.
+    
+    
     # =============================================================================
     # Check if parameters given in .param file makes sense
     # =============================================================================
