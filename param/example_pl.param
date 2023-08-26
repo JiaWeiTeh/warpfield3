@@ -273,6 +273,7 @@ f_Mcold_SN    0.0
 # What is the velocity of supernova ejecta? (units: km/s)
 # type: float
 TO CHECK: WHAT is the supernova velocity ejecta? what is the unit?
+is this correct?
 # DEFAULT: 1e7
 v_SN    1e7
 
