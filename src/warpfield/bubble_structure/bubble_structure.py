@@ -20,13 +20,6 @@ def get_bubbleStructure(Data_Struc,
         ):
     
     
-    #     structure_bubble = (structure_switch and not mom_phase)
-    # bubble_wrap_struc = {'structure_switch': structure_bubble, 'alpha': alpha, 'beta': beta, 'delta': delta,
-    #                      'Lres0': Lres0, 't_10list': t_10list, 'r_10list': r_10list, 'P_10list': P_10list,
-    #                      'T_10list': T_10list, 'Lw': Lw, 'vterminal': vterminal, 'r0': r0,
-    #                      't0': t0 - tcoll[coll_counter], 'E0': E0,
-    #                      'T0': T0, 'dt_L': dt_real, 'temp_counter': temp_counter, 'dMdt_factor': dMdt_factor,
-    #                      'Qi': fQi_evo(thalf)*c.Myr, 'mypath': mypath}
                     
     # Notes:
     # old code: bubble_wrap()
@@ -244,93 +237,5 @@ def get_bubbleStructure(Data_Struc,
 
 # Cool_Struc = np.load('/Users/jwt/Documents/Code/warpfield3/outputs/cool.npy', allow_pickle = True).item()
 
-# warpfield_params = {'model_name': 'example', 
-#                     'out_dir': 'def_dir', 
-#                     'verbose': 1.0, 
-#                     'output_format': 'ASCII', 
-#                     'rand_input': 0.0, 
-#                     'log_mCloud': 6.0, 
-#                     'mCloud_beforeSF': 1.0, 
-#                     'sfe': 0.01, 
-#                     'nCore': 1000.0, 
-#                     'rCore': 0.099, 
-#                     'metallicity': 1.0, 
-#                     'stochastic_sampling': 0.0, 
-#                     'n_trials': 1.0, 
-#                     'rand_log_mCloud': ['5', ' 7.47'], 
-#                     'rand_sfe': ['0.01', ' 0.10'], 
-#                     'rand_n_cloud': ['100.', ' 1000.'], 
-#                     'rand_metallicity': ['0.15', ' 1'], 
-#                     'mult_exp': 0.0, 
-#                     'r_coll': 1.0, 
-#                     'mult_SF': 1.0, 
-#                     'sfe_tff': 0.01, 
-#                     'imf': 'kroupa.imf', 
-#                     'stellar_tracks': 'geneva', 
-#                     'dens_profile': 'bE_prof', 
-#                     'dens_g_bE': 14.1, 
-#                     'dens_a_pL': -2.0, 
-#                     'dens_navg_pL': 170.0, 
-#                     'frag_enabled': 0.0, 
-#                     'frag_r_min': 0.1, 
-#                     'frag_grav': 0.0, 
-#                     'frag_grav_coeff': 0.67, 
-#                     'frag_RTinstab': 0.0, 
-#                     'frag_densInhom': 0.0, 
-#                     'frag_cf': 1.0, 
-#                     'frag_enable_timescale': 1.0, 
-#                     'stop_n_diss': 1.0, 
-#                     'stop_t_diss': 1.0, 
-#                     'stop_r': 1000.0, 
-#                     'stop_t': 15.05, 
-#                     'stop_t_unit': 'Myr', 
-#                     'write_main': 1.0, 
-#                     'write_stellar_prop': 0.0, 
-#                     'write_bubble': 0.0, 
-#                     'write_bubble_CLOUDY': 0.0, 
-#                     'write_shell': 0.0, 
-#                     'xi_Tb': 0.9,
-#                     'inc_grav': 1.0, 
-#                     'f_Mcold_W': 0.0, 
-#                     'f_Mcold_SN': 0.0, 
-#                     'v_SN': 1000000000.0, 
-#                     'sigma0': 1.5e-21, 
-#                     'z_nodust': 0.05, 
-#                     'mu_n': 2.1287915392418182e-24, 
-#                     'mu_p': 1.0181176926808696e-24, 
-#                     't_ion': 10000.0, 
-#                     't_neu': 100.0, 
-#                     'nISM': 0.1, 
-#                     'kappa_IR': 4.0, 
-#                     'gamma_adia': 1.6666666666666667, 
-#                     'thermcoeff_wind': 1.0, 
-#                     'thermcoeff_SN': 1.0,
-#                     'alpha_B': 2.59e-13,
-#                     'gamma_mag': 1.3333333333333333,
-#                     'log_BMW': -4.3125,
-#                     'log_nMW': 2.065,
-#                     'c_therm': 1.2e-6,
-#                     }
-
-
-# class Dict2Class(object):
-#     # set object attribute
-#     def __init__(self, dictionary):
-#         for k, v in dictionary.items():
-#             setattr(self, k, v)
-            
-# # initialise the class
-# warpfield_params = Dict2Class(warpfield_params)
-
-# get_bubbleParams.initialise_bstruc(990000000, 0.01, '/Users/jwt/Documents/Code/warpfield3/outputs')
-
-# a = get_bubbleStructure(Data_Struc,
-#                         Cool_Struc,
-#                         warpfield_params,
-#                         fit_len=5, fit_len_short = 5,
-#         )
-
-
-# print(a)
 
 
