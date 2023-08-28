@@ -541,7 +541,7 @@ def get_energy_loss_cooling():
 def get_bubble_ODE(t, 
                    alpha, beta, delta, 
                    r, T, dTdr, v, 
-                   pressure, C, dudt
+                   pressure, C,
                    ):
     
     
@@ -559,6 +559,13 @@ def get_bubble_ODE(t,
     
     old code: calc_cons() and get_bubble_ODE() aka bubble_struct()
     """
+    
+    
+    
+    
+    
+    dudt = cooling(age, ndens, T, phi)
+    
     
     # old code: dTdrd
     dTdrr = pressure/(warpfield_params.c_therm * T**(5/2)) * (

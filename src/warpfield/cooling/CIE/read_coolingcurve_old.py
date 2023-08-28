@@ -21,6 +21,11 @@ import src.warpfield.functions.operations as operations
 
 
 
+# This section summarizes the available CIE cooling curves
+# 
+
+
+
 
 # This is the simple case when CIE is achieved, so Lambda depends only on T. 
 
@@ -48,6 +53,10 @@ slope_GF_exp_mod_list = np.append((logLambda_GF_mod_list[1:] - logLambda_GF_mod_
 # Sutherland and Dopita1993 for [Fe/H] = -1
 logT_SD_Z002 = np.array([3.9999, 4.2, 4.4, 4.52,4.66,4.82,4.94,4.99,5.09,5.29,5.38,5.45,5.51,5.57,5.64,5.70,5.77,5.85,5.92,6.03,6.12,6.24,6.35,6.45,6.63,6.78,7.00,7.16,7.45,7.65,7.93,8.34,8.49, 10.01])
 logLambda_SD_Z002 = np.array([-23.31,-21.88,-22.16,-22.20,-22.09,-21.83,-21.66,-21.63,-21.62,-21.50,-21.47,-21.55,-21.76,-21.98,-22.16,-22.20,-22.22,-22.33,-22.51,-22.63,-22.67,-22.68,-22.78,-22.90,-22.99,-23.02,-22.99,-22.97,-22.90,-22.83,-22.71,-22.53,-22.47,-21.64])
+
+
+
+
 
 # =============================================================================
 # Archived values
@@ -133,44 +142,12 @@ def get_coolingFunction(T, metallicity):
     return Lambda
 
 
-def get_coolingFunction_arr(T_arr, metallicity):
-    """
-    This is the same as get_coolingFunction(), but for list of temperatures
-    :param T: list of temperatures in K
-    :return: list of Lambdas in erg cm**3 / s
-    """
-    # Note:
-    # old code: coolfunc_arr()
-
-    # determine which CIE cooling curves to use
-    if metallicity == 1.0:
-        logT_list = logT_GnatFerland
-        logLambda_list = logLambda_GnatFerland
-    elif metallicity == 0.15 or metallicity == 0.14:
-        logT_list = logT_SD_Z002
-        logLambda_list = logLambda_SD_Z002
-    else:
-        sys.exit("The chosen metallicity has not been implemented. Cooling tables are missing.")
-        
-    # slope of the cooling function
-    slope_exp_list = np.append((logLambda_list[1:] - logLambda_list[0:-1]) / (logT_list[1:] - logT_list[0:-1]), 0.5)
-
-    logT_arr = np.log10(T_arr)
-    # find nearest neighbors in logT_list (see top of this module)
-    # closest temperature indeces but not the closest one for which T_list[idx] is smaller than T
-    idx = find_NN(logT_arr, logT_list) 
-
-    # these are the closest indeces for which T_list[idx] is smaller than T
-    idx[logT_arr<logT_list[idx]] += -1 
-    logLambda = logLambda_list[idx] + slope_exp_list[idx]*(logT_arr - logT_list[idx])
-    Lambda = 10.**logLambda
-    # return
-    return Lambda
-
 def create_coolCIE(metallicity):
     """
     This function creates interpolation function for CIE cooling curve
     :param metallicity: metallicity in solar units
+    
+    This can be merged, too!
     """
     # determine which CIE cooling curves to use
     if metallicity == 1.0:

@@ -6,6 +6,8 @@ Created on Tue Sep 13 17:25:54 2022
 @author: Jia Wei Teh
 
 This script contains functions to read cooling curves in non-CIE environments. 
+
+Old code: coolnoeq.py
 """
 
 
@@ -17,27 +19,33 @@ from scipy.interpolate import LinearNDInterpolator
 import warnings
 #--
 import src.warpfield.functions.operations as operations
-# Old file: coolnoeq.py
 
 # # get parameter
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()
 
 
-
-
-
-# cooling files take metallicity and age.
-
-
-
-
-def read_opiate(age):
+def get_coolingStructure(age):
+    """
+    Time-dependent cooling curve.
+    See create_cooling_grid() for values contained in the variable `Cool_Struc`, and 
+    what is available or should be contained in the cooling files. 
     
-    
-    
-    # Grab path to cooling table
-    path2cooling = warpfield_params.path_cooling
+    It's called a structure because it is a grid that depends on three parameters.
+
+    Parameters
+    ----------
+    age : float
+        Current age.
+
+    Returns
+    -------
+    Cool_Struc:
+        In addition to what was already in (see create_cooling_grid()), this also inludes:
+            log_cooling_interpolation:
+            log_cooling_interpolation:
+
+    """
     
     # =============================================================================
     # Step1: Time-dependent cooling curve: figure out which time!
@@ -50,69 +58,67 @@ def read_opiate(age):
     # For given time (cluster age), find the nearest available age. 
     filename = get_filename(age)
     
-    
     # if return only one file, no need interpolation. see get_filename()
     if len(filename) == 1:
-        create_cooling_grid(filename)
+        Cool_Struc = create_cooling_grid(age)
+        cooling = Cool_Struc['cooling']
+        heating = Cool_Struc['heating']
     # if two files, then it means there is interpolation. This is the nearest higher/lower file
     else:
         # pseudocode
         age_lower, age_higher = filename
         # values from higher and lower ages
-        up = create_cooling_grid(higher)
-        down = create_cooling_grid(lower)
-        # get interpolation value
-        tru = get_interpolation(up, down)
+        Cool_Struc = create_cooling_grid(age_lower)
+        Cool_Struc_higher = create_cooling_grid(age_higher)
+        # get values
+        cooling_higherage = Cool_Struc_higher['cooling']
+        heating_higherage = Cool_Struc_higher['heating']
+        cooling_lowerage = Cool_Struc['cooling']
+        heating_lowerage = Cool_Struc['heating']
+        # create cooling and heating from dict if tney don't exist. 
+        def simple_linear_interpolation(x, xList, yList):
+            return yList[0] + (yList[1] - yList[0]) * (x - xList[0])/(xList[1] - xList[0])
+        
+        cooling = simple_linear_interpolation(age, [age_lower, age_higher], [cooling_lowerage, cooling_higherage])
+        heating = simple_linear_interpolation(age, [age_lower, age_higher], [heating_lowerage, heating_higherage])
     
-        
-# THEN
-
-
-
-    #     np_onlycoolfilename = make_cooling_filename(Zism, age, 
-    #                                                 basename=basename + "C", extension = ".npy", cool_folder = cool_folder)
-    #     np_onlyheatfilename = make_cooling_filename(Zism, age, 
-    #                                                 basename=basename + "H", extension=".npy", cool_folder=cool_folder)
-    #     # do the numpy readable-files already exist?
-    #     if (os.path.isfile(np_coolfilename) and os.path.isfile(np_onlycoolfilename)) and os.path.isfile(np_onlyheatfilename):
-    #         ln_dat, lT_dat, lP_dat = get_opiate_gridstruc(Zism, age, 
-    #                                                       basename="opiate_cooling", extension=".dat", cool_folder="cooling_tables")
-    #         NetCool = np.load(np_coolfilename)
-    #         Cool_dat = {"Netcool": NetCool, "log_n": ln_dat, "log_T": lT_dat, "log_Phi": lP_dat}
-    #         Cool = np.load(make_cooling_filename(Zism, age, 
-    #                                              basename=basename + "C", extension=".npy", cool_folder=cool_folder))
-    #         Cool_dat["Cool"] = Cool
-    #         Heat = np.load(make_cooling_filename(Zism, age, 
-    #                                              basename=basename + "H", extension=".npy", cool_folder=cool_folder))
-    #         Cool_dat["Heat"] = Heat
-    #     else:
-    #         Cool_dat = prep_coolingtable(Zism, age, 
-    #                                      basename=basename, extension=extension, cool_folder=cool_folder, indiv_CH=indiv_CH)
-
-    # return Cool_dat
-   
-        
-    return 
-
+    # Create interpolation functions
+    phase_space = np.transpose(np.vstack(Cool_Struc['ndens'], Cool_Struc['temp'], Cool_Struc['phi']))
+    
+    # remember that these are in log
+    log_cooling_interpolation = LinearNDInterpolator(np.log10(phase_space), np.log10(cooling))
+    log_heating_interpolation = LinearNDInterpolator(np.log10(phase_space), np.log10(heating))
+    
+    # record
+    # old code: create_onlycoolheat(), Cool_Struc['Cfunc'] = onlycoolfunc, Cool_Struc['Hfunc'] = onlyheatfunc
+    Cool_Struc['log_cooling_interpolation'] = log_cooling_interpolation
+    Cool_Struc['log_heating_interpolation'] = log_heating_interpolation
+    
+    return Cool_Struc
 
 
 def create_cooling_grid(filename):
-    
-    
-    
     """
-    This function will take filename and just return values?
-    
-    
-    
-    Here are the important columnes:
-        n: ion number density [cm-3]
+    This function will take filename and return useful variables.
+
+    Parameters
+    ----------
+    filename : str
+        Filename -> contains cooling table.
+
+    Returns
+    -------
+    Cool_Struc: A dictionary which inclues:
+        ndens: ion number density [cm-3] 
         T: temperature [T]
         phi: number flux of ionizing photons [cm-2s-1]
-    
-    
+        cooling:
+        heating:
+        log_n: modified ndens; written in log10, sorted, and removed any duplicates.
+        log_T: modified T; written in log10, sorted, and removed any duplicates. 
+        log_Phi: modified phi; written in log10, sorted, and removed any duplicates.
+        
     """
-
 
     # =============================================================================
     # Step1: read in file, perform some basic operations
@@ -158,17 +164,39 @@ def create_cooling_grid(filename):
     # This should always be true, because this should be how it was defined in CLOUDY.
     if len(set(np.diff(log_ndens))) != 1 or len(set(np.diff(log_temp))) != 1 or len(set(np.diff(log_phi))) != 1:
         sys.exit('Structure of cooling table not recognised. Distance between grid points in log-space is not constant.')
+
     
     # return cooling data structure
-    Cool_Struc = {"log_n": log_ndens, "log_T": log_temp, "log_Phi": log_phi}
+    Cool_Struc = {"ndens": ndens, "temp": temp, "phi": phi,
+                  "cooling": cooling, "heating": heating, "netcooling": netcooling,
+                  "log_n": log_ndens, "log_T": log_temp, "log_phi": log_phi, 
+                  }
+                      
+    
     
     return Cool_Struc
 
 
 
+# Remember, read_opiatetable returns UNMODULATED data. some interpolations with this.
+# whereas get_opiate_gridstruc returns modulated, logged data.
 
 
 def get_filename(age):
+    """
+    This function creates the filename appropriate for curent run.
+
+    Parameters
+    ----------
+    age : float
+        Current time.
+
+    Returns
+    -------
+    filename : str
+        Filename corresponding to the parameters set.
+
+    """
 
     # All filenames have the convention of opiate_cooling_[rotation]_Z[metallicity]_age[age].dat
     # Right now, only solar metallicity and rotation is considered. 
@@ -223,28 +251,6 @@ def get_filename(age):
     except:
         raise Exception("Opiate/CLOUDY file (non-CIE) for cooling curve not found. Make sure to double check parameters in the 'parameters for Starburst99 operations' and 'parameters for setting path' section.")
     
-
-def get_interpolation():
-    
-    
-    
-    
-    
-    
-    return
-
- 
-
-
-
-
-
-
-
-
-
-
-
 
 
 

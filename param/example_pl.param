@@ -287,6 +287,12 @@ thermcoeff_SN    1.0
 
 
 
+
+
+
+
+
+
 # =============================================================================
 # parameters for density of cloud
 # =============================================================================
@@ -518,15 +524,35 @@ write_figures   0
 # =============================================================================
 
 
+
+
+
+
+
 # ==============================================================================
 # parameters for setting path
 # ==============================================================================
 
-# Path to cooling tables?
-# WARNING: MUST provide absolute path. Do not include ',' character in path.
-# type: string
+
+# Path to cooling curve FILE would you like to use for collisional ionization 
+# equilibrium (CIE)? This is the cooling curve to use for T > 10^5.5 K. 
+# These are the available paths:
+# 1: CLOUDY cooling curve for HII region, solar metallicity.
+# 2: CLOUDY cooling curve for HII region, solar metallicity. 
+#    Includes the evaporative (sublimation) cooling of icy interstellar 
+#    grains (occurs e.g., when heated by cosmic-ray particle)
+#
+# 3. Gnat and Ferland 2012 (slightly interpolated for values)
+# 4. Sutherland and Dopita 1993, for [Fe/H] = -1].
+# Note: Either enter these numbers that represents the filenames, or enter your own path to your own cooling curve. 
+# DEFAULT: 3, or path/to/warpfield/lib/cooling_tables/CIE/current/
+path_cooling_CIE    3
+
+
+# Path to cooling curve FOLDER would you like to use for non-CIE (T < 10^5.5 K). 
 # DEFAULT: def_dir: path/to/warpfield/lib/cooling_tables/opiate/
-path_cooling    def_dir
+path_cooling_nonCIE    def_dir
+
 
 # Path to starburst99 files?
 # DEFAULT: def_dir: path/to/warpfield/lib/sps/starburst99/

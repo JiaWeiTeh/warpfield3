@@ -115,7 +115,8 @@ def read_param(path2file, write_summary = True):
                    'write_shell': 0.0, 
                    'write_figures': 0.0,
                    'write_potential': 0.0,
-                   'path_cooling': 'def_dir',
+                   'path_cooling_nonCIE': 'def_dir',
+                   'path_cooling_CIE': 3,
                    'path_sps': 'def_dir',
                    'xi_Tb': 0.9,
                    'inc_grav': 1.0, 
@@ -276,27 +277,40 @@ def read_param(path2file, write_summary = True):
         Path(path2output).mkdir(parents=True, exist_ok = True)
         params_dict['out_dir'] = path2output
  
-    # 2. Cooling table directory:
-    if params_dict['path_cooling'] == 'def_dir':
+    # 2. Cooling table directory - nonCIE:
+    if params_dict['path_cooling_nonCIE'] == 'def_dir':
         # If user did not specify, the directory will be set as ./lib/cooling_tables/opiate/
-        # check if directory exists; if not, create one.
-        # TODO: Add smart system that adds 1, 2, 3 if repeated default to avoid overwrite.
-        path2cooling = os.path.join(os.getcwd(), 'lib/cooling_tables/opiate/')
-        Path(path2cooling).mkdir(parents=True, exist_ok = True)
-        params_dict['path_cooling'] = path2cooling
+        path2cooling_nonCIE = os.path.join(os.getcwd(), 'lib/cooling_tables/opiate/')
+        params_dict['path_cooling_nonCIE'] = path2cooling_nonCIE
     else:
         # if instead given a path, then use that instead
-        path2cooling = str(params_dict['path_cooling'])
-        Path(path2cooling).mkdir(parents=True, exist_ok = True)
-        params_dict['path_cooling'] = path2cooling
+        path2cooling_nonCIE = str(params_dict['path_cooling_nonCIE'])
+        Path(path2cooling_nonCIE).mkdir(parents=True, exist_ok = True)
+        params_dict['path_cooling_nonCIE'] = path2cooling_nonCIE
         
-    # 2. Starburst99 (sps) table directory:
+    # 3. Cooling table directory - CIE:
+    if params_dict['path_cooling_CIE'] == 1:
+        # If user did not specify, the directory will be set as ./lib/cooling_tables/CIE/current/
+        params_dict['path_cooling_CIE'] = os.path.join(os.getcwd(), 'lib/cooling_tables/CIE/current/coolingCIE_1_Cloudy.dat')
+    elif params_dict['path_cooling_CIE'] == 2:
+        # If user did not specify, the directory will be set as ./lib/cooling_tables/CIE/current/
+        params_dict['path_cooling_CIE'] = os.path.join(os.getcwd(), 'lib/cooling_tables/CIE/current/coolingCIE_2_Cloudy_grains.dat')
+    elif params_dict['path_cooling_CIE'] == 3:
+        # If user did not specify, the directory will be set as ./lib/cooling_tables/CIE/current/
+        params_dict['path_cooling_CIE'] = os.path.join(os.getcwd(), 'lib/cooling_tables/CIE/current/coolingCIE_3_Gnat-Ferland2012.dat')
+    elif params_dict['path_cooling_CIE'] == 4:
+        # If user did not specify, the directory will be set as ./lib/cooling_tables/CIE/current/
+        params_dict['path_cooling_CIE'] = os.path.join(os.getcwd(), 'lib/cooling_tables/CIE/current/coolingCIE_4_Sutherland-Dopita1993.dat')
+    else:
+        # if instead given a path, then use that instead
+        path2cooling_CIE = str(params_dict['path_cooling_CIE'])
+        Path(path2cooling_CIE).mkdir(parents=True, exist_ok = True)
+        params_dict['path2cooling_CIE'] = path2cooling_CIE
+        
+    # 4. Starburst99 (sps) table directory:
     if params_dict['path_sps'] == 'def_dir':
         # If user did not specify, the directory will be set as ./lib/sps/starburst99/
-        # check if directory exists; if not, create one.
-        # TODO: Add smart system that adds 1, 2, 3 if repeated default to avoid overwrite.
         path2sps = os.path.join(os.getcwd(), 'lib/sps/starburst99/')
-        Path(path2sps).mkdir(parents=True, exist_ok = True)
         params_dict['path_sps'] = path2sps
     else:
         # if instead given a path, then use that instead

@@ -18,9 +18,7 @@ import os
 
 #--
 from src.warpfield.phase0_init import (get_InitCloudProp, get_InitBubStruc,
-                                        get_InitCloudyDens, get_InitPhaseParam,
-                                        get_InitCoolFunc,
-                                        )
+                                        get_InitCloudyDens, get_InitPhaseParam)
 from src.warpfield.phase_general import set_phase
 from src.warpfield.sb99 import read_SB99
 from src.warpfield.phase1_energy import run_energy_phase
@@ -28,14 +26,14 @@ from src.warpfield.phase1b_energy_implicit import run_energy_implicit_phase
 from src.warpfield.phase1c_transition import run_transition_phase
 from src.warpfield.phase2_momentum import run_momentum_phase
 from src.warpfield.cloudy import __cloudy__
+from src.warpfield.cooling import read_opiate
 import src.warpfield.functions.terminal_prints as terminal_prints
 import src.output_tools.write_outputs as write_outputs
+
 
 # get parameter
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()
-
-#%%
 
 
 def start_expansion():
@@ -54,10 +52,11 @@ def start_expansion():
 
     """
     
-    from src.warpfield.cooling import read_opiate
+    from src.warpfield.cooling.CIE import read_coolingcurve
     
-    filename, _ = read_opiate.get_filename(3.4e6)
-    print(filename)
+    logT, logLambda = read_coolingcurve.get_Lambda(1e5)
+    print(logT)
+    print(logLambda)
     sys.exit()
     
     # Note:
@@ -255,8 +254,9 @@ def run_expansion(ODEpar, SB99_data, SB99f):
     # [0.23790232199299727, 3656.200432285518, 5722974.028981317, 67741779.55773313]
     # sys.exit('stop')
     
-    Cool_Struc = get_InitCoolFunc.get_firstCoolStruc(warpfield_params.metallicity, t0 * 1e6)
-
+    # get cooling function
+    Cool_Struc = read_opiate.get_coolingStructure(t0 * 1e6)
+    
     shell_dissolved = False
     t_shdis = 1e99
 
