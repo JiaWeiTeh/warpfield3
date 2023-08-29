@@ -17,18 +17,18 @@ import yaml
 import os
 
 #--
-from src.warpfield.phase0_init import (get_InitCloudProp, get_InitBubStruc,
-                                        get_InitCloudyDens, get_InitPhaseParam)
-from src.warpfield.phase_general import set_phase
-from src.warpfield.sb99 import read_SB99
-from src.warpfield.phase1_energy import run_energy_phase
-from src.warpfield.phase1b_energy_implicit import run_energy_implicit_phase
-from src.warpfield.phase1c_transition import run_transition_phase
-from src.warpfield.phase2_momentum import run_momentum_phase
-from src.warpfield.cloudy import __cloudy__
-from src.warpfield.cooling import read_opiate
-import src.warpfield.functions.terminal_prints as terminal_prints
-import src.output_tools.write_outputs as write_outputs
+# from src.warpfield.phase0_init import (get_InitCloudProp, get_InitBubStruc,
+#                                         get_InitCloudyDens, get_InitPhaseParam)
+# from src.warpfield.phase_general import set_phase
+# from src.warpfield.sb99 import read_SB99
+# from src.warpfield.phase1_energy import run_energy_phase
+# from src.warpfield.phase1b_energy_implicit import run_energy_implicit_phase
+# from src.warpfield.phase1c_transition import run_transition_phase
+# from src.warpfield.phase2_momentum import run_momentum_phase
+# from src.warpfield.cloudy import __cloudy__
+# from src.warpfield.cooling import read_opiate
+# import src.warpfield.functions.terminal_prints as terminal_prints
+# import src.output_tools.write_outputs as write_outputs
 
 
 # get parameter
@@ -52,11 +52,11 @@ def start_expansion():
 
     """
     
-    from src.warpfield.cooling.CIE import read_coolingcurve
+    from src.warpfield.cooling.non_CIE import read_cloudy
     
-    logT, logLambda = read_coolingcurve.get_Lambda(1e5)
-    print(logT)
-    print(logLambda)
+    Cool_Struc = read_cloudy.get_coolingStructure(1e6)
+    # print(logT)
+    # print(logLambda)
     sys.exit()
     
     # Note:

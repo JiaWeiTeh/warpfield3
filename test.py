@@ -98,6 +98,14 @@ print('with scipy', f_dudt([x, y, z]))
 
 
 
+#%%
+
+
+# But if I already have the interpolation function, why can't I just give values and 
+# dont do any of the calculations daniel do?
+
+
+
 
 
 

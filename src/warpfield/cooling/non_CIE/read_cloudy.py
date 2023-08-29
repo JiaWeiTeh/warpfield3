@@ -125,7 +125,7 @@ def create_cooling_grid(filename):
     # =============================================================================
 
     # read in the file 
-    opiate_file = ascii.read(warpfield_params.path_cooling + filename)
+    opiate_file = ascii.read(warpfield_params.path_cooling_nonCIE + filename)
     # read in the columns
     ndens = opiate_file['ndens']
     temp = opiate_file['temp']
@@ -220,21 +220,23 @@ def get_filename(age):
         # is lower than the minimum, then use the max/min instead. Otherwise, do interpolation (in another function).
         # loop through the folder which contains all the data
         age_list = []
-        for files in os.listdir(warpfield_params.path_cooling):
+        print(warpfield_params.path_cooling_nonCIE)
+        for files in os.listdir(warpfield_params.path_cooling_nonCIE):
             # look for .dat
             if files[-4:] == '.dat':
                 # look for the numbers after 'age'. 
                 age_index_begins = files.find('age')
                 # returns i.e. '1.00e+06'.
                 age_list.append(float(files[age_index_begins+3:age_index_begins+3+8]))
+        print(age_list)
         # array
         age_list = np.array(age_list)
-        # for min/max age
-        if age > max(age_list):
+        # for min/max age, use the max/min
+        if age >= max(age_list):
             age_str = format(max(age_list), '.2e')
             filename = 'opiate_cooling' + '_' + rot_str + '_' + 'Z' + Z_str + '_' + 'age' + age_str + '.dat'
             return filename
-        elif age < min(age_list):
+        elif age <= min(age_list):
             age_str = format(min(age_list), '.2e')
             filename = 'opiate_cooling' + '_' + rot_str + '_' + 'Z' + Z_str + '_' + 'age' + age_str + '.dat'
             return filename

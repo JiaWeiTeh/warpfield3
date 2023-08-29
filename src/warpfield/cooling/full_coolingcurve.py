@@ -28,7 +28,7 @@ def get_dudt(age, ndens, T, phi):
     
     # import values from two cooling curves
     cooling_grid_nonCIE = non_CIE.read_cloudy.get_coolingStructure(age)
-    Lambda, logT, logLambda = CIE.get_Lambda(T)
+    Lambda_CIE, logT_CIE, logLambda_CIE = CIE.get_Lambda(T)
 
     # if temperature is lower than the non-CIE age, use non-CIE
     if np.log10(T) < max(cooling_grid_nonCIE['log_n']) :
@@ -82,73 +82,70 @@ def get_dudt(age, ndens, T, phi):
         return -1 * dudt
         
     # if temperature is higher than the CIE curve, use CIE.
-    elif np.log10(T) > min():
+    elif np.log10(T) > min(logT_CIE):
         
         # get CIE cooling rate
-        dudt = ndens**2 * Lambda 
+        dudt = ndens**2 * Lambda_CIE
         return -1 * dudt        
         
     # if temperature is between, do interpolation
-    elif np.log10(T) > max(cooling_grid_nonCIE['log_n']) and np.log10(T) < min():
+    elif np.log10(T) >= max(cooling_grid_nonCIE['log_n']) and np.log10(T) <= min(logT_CIE):
         
         not correct, have to use endpoints instead because T is not same in both cases. 
         
+        
+        # =============================================================================
+        # This part is just for non-CIE, and slight-modification from above
+        # Get the maximum point of non-CIE. 
+        # =============================================================================
         
         # non-CIE tables
         log_ndens_table = cooling_grid_nonCIE['log_n']
         log_T_table = cooling_grid_nonCIE['log_T']
         log_phi_table = cooling_grid_nonCIE['log_phi']
         
+        # log-space
+        log_ndens = np.log10(ndens)
+        log_T = np.log10(T)
+        log_phi = np.log10(phi)
         
+        # CIE tables
+        log_ndens_table = cooling_grid_nonCIE['log_n']
+        log_T_table = cooling_grid_nonCIE['log_T']
+        log_phi_table = cooling_grid_nonCIE['log_phi']
         
+        # find the spacings in array
+        d_log_ndens = np.round(np.diff(log_ndens_table), decimals = 3)[0]
+        d_log_T = np.round(np.diff(log_T_table), decimals = 3)[0]
+        d_log_phi = np.round(np.diff(log_phi_table), decimals = 3)[0]
         
+        # find the indices of endpoints
+        ndens_ii = int((log_ndens - min(log_ndens_table))/d_log_ndens)
+        T_ii = int((max(log_T_table) - min(log_T_table))/d_log_T)
+        phi_ii = int((log_phi - min(log_phi_table))/d_log_phi)
         
-        
-        # # =============================================================================
-        # # This part is just for non-CIE, and copy-paste from above
-        # # =============================================================================
-        # # log-space
-        # log_ndens = np.log10(ndens)
-        # log_T = np.log10(T)
-        # log_phi = np.log10(phi)
-        
-        # # CIE tables
-        # log_ndens_table = cooling_grid_nonCIE['log_n']
-        # log_T_table = cooling_grid_nonCIE['log_T']
-        # log_phi_table = cooling_grid_nonCIE['log_phi']
-        
-        # # find the spacings in array
-        # d_log_ndens = np.round(np.diff(log_ndens_table), decimals = 3)[0]
-        # d_log_T = np.round(np.diff(log_T_table), decimals = 3)[0]
-        # d_log_phi = np.round(np.diff(log_phi_table), decimals = 3)[0]
-        
-        # # find the indices of endpoints
-        # ndens_ii = int((log_ndens - min(log_ndens_table))/d_log_ndens)
-        # T_ii = int((log_T - min(log_T_table))/d_log_T)
-        # phi_ii = int((log_phi - min(log_phi_table))/d_log_phi)
-        
-        # # define datastructure from netcooling
-        # dens0 = 10 ** log_ndens_table[ndens_ii]
-        # dens1 = 10 ** log_ndens_table[ndens_ii + 1]
-        # dens_arr = np.linspace(dens0, dens1, 2)
+        # define datastructure from netcooling
+        dens0 = 10 ** log_ndens_table[ndens_ii]
+        dens1 = 10 ** log_ndens_table[ndens_ii + 1]
+        dens_arr = np.linspace(dens0, dens1, 2)
 
-        # T0 = 10 ** log_T_table[T_ii]
-        # T1 = 10 ** log_T_table[T_ii + 1]
-        # T_arr = np.linspace(T0, T1, 2)
+        T0 = 10 ** log_T_table[T_ii]
+        T1 = 10 ** log_T_table[T_ii]
+        T_arr = np.linspace(T0, T1, 2)
         
-        # phi0 = 10 ** log_phi_table[phi_ii]
-        # phi1 = 10 ** log_phi_table[phi_ii + 1]
-        # phi_arr = np.linspace(phi0, phi1, 2)
+        phi0 = 10 ** log_phi_table[phi_ii]
+        phi1 = 10 ** log_phi_table[phi_ii + 1]
+        phi_arr = np.linspace(phi0, phi1, 2)
         
-        # # netcooling grid
-        # netcooling = cooling_grid_nonCIE['netcooling']
-        # data = netcooling[ndens_ii:ndens_ii+2, T_ii:T_ii+2, phi_ii:phi_ii+2]
+        # netcooling grid
+        netcooling = cooling_grid_nonCIE['netcooling']
+        data = netcooling[ndens_ii:ndens_ii+2, T_ii:T_ii+2, phi_ii:phi_ii+2]
         
-        # # create interpolation function
-        # f_dudt = scipy.interpolate.RegularGridInterpolator((dens_arr, T_arr, phi_arr), data)
+        # create interpolation function
+        f_dudt = scipy.interpolate.RegularGridInterpolator((dens_arr, T_arr, phi_arr), data)
         
-        # # get net cooling rate
-        # dudt_nonCIE = -1 * f_dudt([ndens, T, phi])
+        # get net cooling rate
+        dudt_nonCIE = -1 * f_dudt([ndens, T, phi])
         
         # # =============================================================================
         # # This part is just for CIE, and copy-paste from above
@@ -161,6 +158,8 @@ def get_dudt(age, ndens, T, phi):
         # =============================================================================
         # Now find interpolation and return
         # =============================================================================
+        
+        
         
         
         

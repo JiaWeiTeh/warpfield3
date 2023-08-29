@@ -83,6 +83,18 @@ def get_bubbleproperties(
     # if it isn't yet computed, set it via estimation from Equation 33 in Weaver+77.
     # Question: should this be mu_n instead?
 
+
+
+
+
+
+
+
+
+
+
+
+
             
     # Question: why is this in the old version? Why are the equation and values weird?
     # if dMdt_guess == 0:
