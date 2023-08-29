@@ -30,6 +30,8 @@ import src.warpfield.cloud_properties.mass_profile as mass_profile
 import src.warpfield.phase1_energy.energy_phase_ODEs as energy_phase_ODEs
 import src.warpfield.functions.terminal_prints as terminal_prints
 from src.warpfield.functions.operations import find_nearest_lower, find_nearest_higher
+import src.warpfield.cooling.full_coolingcurve as full_coolingcurve
+
 
 # get parameter
 from src.input_tools import get_param
@@ -256,101 +258,6 @@ def get_bubbleproperties(
 #     return residual
 
 
-# def get_start_bstruc(dMdt, bubble_params, warpfield_params):
-#     """
-#     This function computes starting values for the bubble structure
-#     measured at r2_prime (upper limit of integration, but slightly lesser than r2).
-
-#     Parameters
-#     ----------
-#     dMdt : float
-#         Mass flow rate into bubble.
-#     bubble_params : dict
-#         A temporary dictionary made to store necessary information of the bubble.
-#         This is defined in bubble_structure.bubble_structure()
-#         includes: [v0 = v[Rsmall], cons = [a,b,c,d,e, Phi], R2_prime, R2, Rsmall, dR2, press
-#             Rsmall: some very small radius (nearly 0)
-#             R2_prime: radius very slightly smaller than shell radius R2
-#             R2: shell radius
-#             dR2: R2 - R2_prime
-#             press: pressure inside bubble
-#     warpfield_params : object
-#         Object containing WARPFIELD parameters.
-
-#     Returns
-#     -------
-#     R2_prime : float
-#         upper limit of integration.
-#     y0 : list
-#         [velocity, temperature, dT/dr].
-#     """
-#     # Notes:
-#     # old code: calc_bstruc_start()
-    
-#     # thermal coefficient in astronomical units
-#     c_therm = warpfield_params.c_therm * u.cm.to(u.pc) * u.g.to(u.Msun) / (u.s.to(u.Myr))**3
-#     # boltzmann constant in astronomical units 
-#     k_B = c.k_B.cgs.value * u.g.to(u.Msun) * u.cm.to(u.pc)**2 / u.s.to(u.Myr)**2
-#     # coefficient for temperature calculations (see Weaver+77, Eq 44)
-#     # https://articles.adsabs.harvard.edu/pdf/1977ApJ...218..377W
-#     coeff_T = (25./4.) * k_B / (0.5 * c.m_p.cgs.value * u.g.to(u.Msun) * c_therm) 
-#     # here dR2 is R2-r in Eq 44
-#     # Tgoal is the target temperature. It is set as 3e4K.
-#     # spatial separation between R2 and the point where the ODE solver is initialized (cannot be exactly at R2)
-#     dR2 = (bubble_params["Tgoal"]**2.5) / (coeff_T * dMdt / (4. * np.pi * bubble_params["R2"] ** 2.))
-#     # path2bubble structure
-#     path2bubble = os.environ["Bstrpath"]
-#     # load data; the file is empty, and was initialised in initialise_bstruc().
-#     R1R2 , R2pR2 = np.loadtxt(path2bubble, skiprows=1, delimiter='\t', usecols=(0,1), unpack=True)
-#     # IMPORTANT: this number might have to be higher in case of very strong winds (clusters above 1e7 Msol)! 
-#     # TODO: figure out, what to set this number to...
-#     dR2min = 1.0e-7 
-#     mCloud = float(os.environ["Mcl_aux"])
-#     sfe = float(os.environ["SF_aux"])
-#     mCluster = mCloud * sfe
-#     if mCluster > 1.0e7:
-#         dR2min = 1.0e-14 * mCluster + 1.0e-7
-#     if dR2 < dR2min: 
-#         dR2 = np.sign(dR2)*dR2min # prevent super small dR2
-        
-#     # radius at which ODE solver is initialized. At this radius the temperature is Tgoal
-#     # these primes are analogous to dR2 from above.
-#     R2_prime = bubble_params["R2"] - dR2 
-#     # should be Tgoal (usually set to 30,000 K)
-#     TR2_prime = (coeff_T * dMdt * dR2/ (4. * np.pi * bubble_params["R2"] ** 2.)) ** 0.4  
-#     # append values for r1/r2, r2prime/r2
-#     R1R2 = np.append(R1R2, 0)
-#     R2pR2 = np.append(R2pR2 ,R2_prime/bubble_params["R2"])
-#     # save data
-#     np.savetxt(path2bubble, np.c_[R1R2,R2pR2],delimiter='\t',header='R1/R2'+'\t'+'R2p/R2')
-#     # sanity check
-#     if (bubble_params["rgoal"] > R2_prime):
-#         sys.exit("rgoal_f is outside allowed range in bubble_structure.py (too large). Decrease r_Tb in .param (<1.0)!")
-#     # temperature gradient at R2_prime, this is not the correct boundary condition (only a guess). We will determine the correct value using a shooting method
-#     dTdrR2_prime = -2. / 5. * TR2_prime / dR2  
-#     # velocity at R2_prime
-#     vR2_prime = bubble_params["cons"]["a"] * bubble_params["R2"] - dMdt * k_B *\
-#         TR2_prime / (4. * np.pi * bubble_params["R2"] ** 2. * 0.5 * c.m_p.cgs.value * u.g.to(u.Msun) * bubble_params["press"]) 
-#     # y0: initial conditions for bubble structure
-#     y0 = [vR2_prime, TR2_prime, dTdrR2_prime]
-#     # return
-#     return R2_prime, y0
-
-
-
-
-
-
-    def get_bubbleODEs():
-        
-        
-        
-        
-        
-        
-        
-        
-        return
 
 
 
@@ -480,59 +387,10 @@ def get_bubble_ODE_initial_conditions(dMdt, pressure, alpha,
     return r, T, dTdr, v
     
     
-    
-    
-    
-    
-    
-    
-    # Qi = Qi / u.Myr.to(u.s)
-    # ndens = d / (2. * k_B * T) /(u.pc.to(u.cm)**3)
-    # Phi = Qi / (4. * np.pi * (r*u.pc.to(u.cm)) ** 2)
 
-    # # interpolation range (currently repeated in calc_Lb --> merge?)
-    # log_T_interd = 0.1
-    # log_T_noeqmin = Cool_Struc["log_T"]["min"]+1.0001*log_T_interd
-    # log_T_noeqmax = Cool_Struc["log_T"]["max"] - 1.0001 * log_T_interd
-    # log_T_intermin = log_T_noeqmin - log_T_interd
-    # log_T_intermax = log_T_noeqmax + log_T_interd
-
-    # #debug (use semi-correct cooling at low T)
-    # if T < 10.**3.61:
-    #     T = 10.**3.61
-
-    # # loss (or gain) of internal energy
-    # dudt = get_coolingFunction.cool_interp_master({"n":ndens, "T":T, "Phi":Phi}, Cool_Struc, metallicity,
-    #                                    log_T_noeqmin=log_T_noeqmin, log_T_noeqmax=log_T_noeqmax, 
-    #                                    log_T_intermin=log_T_intermin, log_T_intermax=log_T_intermax)
-    
-
-
-
-    
-    
-def get_energy_loss_cooling():
-    
-    """
-    energy loss due to cooling
-    """
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    return dudt
-
-
-
-
-
-
-
+# =============================================================================
+# Step1: set up the ODEs
+# =============================================================================
 
 
 
@@ -542,6 +400,8 @@ def get_bubble_ODE(t,
                    alpha, beta, delta, 
                    r, T, dTdr, v, 
                    pressure, C,
+                   # Qi is from SB99 interp
+                   Qi
                    ):
     
     
@@ -557,15 +417,25 @@ def get_bubble_ODE(t,
     bubble R2 , which is also the radius of the thin shell. The rate of
     change of the radiative component of the internal energy density 
     
-    old code: calc_cons() and get_bubble_ODE() aka bubble_struct()
+    old code: calc_cons() and get_bubble_ODEs() aka bubble_struct()
     """
+    #
     
+
+
+
+    # TODO: make sure the units are right
     
+    # semi-correct cooling at low T
+    # if T < 10.**3.61:
+    #     T = 10.**3.61
+
+    # get density and ionising flux
+    ndens = pressure / (2 * c.k_B.cgs.value * T)
+    phi = Qi / (4 * np.pi * r**2)
     
-    
-    
-    dudt = cooling(age, ndens, T, phi)
-    
+    # net cooling rate
+    dudt = full_coolingcurve.get_dudt(t, ndens, T, phi)
     
     # old code: dTdrd
     dTdrr = pressure/(warpfield_params.c_therm * T**(5/2)) * (
@@ -575,6 +445,7 @@ def get_bubble_ODE(t,
     # old code: vd
     dvdr = (beta + delta) / t + (v - alpha * r / t) * dTdr / T - 2 *  v / r
     
+    
     return [dvdr, dTdr, dTdrr]
     
 
@@ -583,64 +454,8 @@ def get_bubble_ODE(t,
 
 
 
-# =============================================================================
-# Step1: set up the ODEs
-# =============================================================================
 
 
-
-def get_bubbleODEs(r, y0, data_struc, metallicity):
-    """
-    system of ODEs for bubble structure (see Weaver+77, eqs. 42 and 43)
-    :param x: velocity v, temperature T, spatial derivate of temperature dT/dr
-    :param r: radius from center
-    :param cons: constants
-    :return: spatial derivatives of v,T,dTdr
-    """
-    
-    # Note:
-    # old code: bubble_struct()
-    
-    # unravel
-    a = data_struc["cons"]["a"]
-    b = data_struc["cons"]["b"]
-    C = data_struc["cons"]["c"]
-    d = data_struc["cons"]["d"]
-    e = data_struc["cons"]["e"]
-    Qi = data_struc["cons"]["Qi"]
-    Cool_Struc = data_struc["Cool_Struc"]
-    v, T, dTdr = y0
-
-    # boltzmann constant in astronomical units 
-    k_B = c.k_B.cgs.value * u.g.to(u.Msun) * u.cm.to(u.pc)**2 / u.s.to(u.Myr)**2
-
-    Qi = Qi / u.Myr.to(u.s)
-    ndens = d / (2. * k_B * T) /(u.pc.to(u.cm)**3)
-    Phi = Qi / (4. * np.pi * (r*u.pc.to(u.cm)) ** 2)
-
-    # interpolation range (currently repeated in calc_Lb --> merge?)
-    log_T_interd = 0.1
-    log_T_noeqmin = Cool_Struc["log_T"]["min"]+1.0001*log_T_interd
-    log_T_noeqmax = Cool_Struc["log_T"]["max"] - 1.0001 * log_T_interd
-    log_T_intermin = log_T_noeqmin - log_T_interd
-    log_T_intermax = log_T_noeqmax + log_T_interd
-
-    #debug (use semi-correct cooling at low T)
-    if T < 10.**3.61:
-        T = 10.**3.61
-
-    # loss (or gain) of internal energy
-    dudt = get_coolingFunction.cool_interp_master({"n":ndens, "T":T, "Phi":Phi}, Cool_Struc, metallicity,
-                                       log_T_noeqmin=log_T_noeqmin, log_T_noeqmax=log_T_noeqmax, 
-                                       log_T_intermin=log_T_intermin, log_T_intermax=log_T_intermax)
-    
-
-    vd = b + (v-a*r)*dTdr/T - 2.*v/r
-    Td = dTdr
-    # negative sign for dudt term (because of definition of dudt)
-    dTdrd = C/(T**2.5) * (e + 2.5*(v-a*r)*dTdr/T - dudt/d) - 2.5*dTdr**2./T - 2.*dTdr/r 
-    # return
-    return [vd,Td,dTdrd]
 
 
 
@@ -650,77 +465,6 @@ def get_bubbleODEs(r, y0, data_struc, metallicity):
 #%%
 
 
-
-
-
-def calc_cons(alpha, beta, delta,
-              t_now, press, 
-              c_therm):
-    """Helper function that helps compute coeffecients for differential equations 
-    to help solve bubble structure. (see Weaver+77, eqs. 42 and 43)"""
-    a = alpha/t_now
-    b = (beta+delta)/t_now
-    C = press/c_therm
-    d = press
-    e = (beta+2.5*delta)/t_now
-    # save into dictionary
-    cons={"a":a, "b":b, "c":C, "d":d, "e":e}
-    # return
-    return cons
-
-
-def get_bubbleODEs(r, y0, data_struc, metallicity):
-    """
-    system of ODEs for bubble structure (see Weaver+77, eqs. 42 and 43)
-    :param x: velocity v, temperature T, spatial derivate of temperature dT/dr
-    :param r: radius from center
-    :param cons: constants
-    :return: spatial derivatives of v,T,dTdr
-    """
-    
-    # Note:
-    # old code: bubble_struct()
-    
-    # unravel
-    a = data_struc["cons"]["a"]
-    b = data_struc["cons"]["b"]
-    C = data_struc["cons"]["c"]
-    d = data_struc["cons"]["d"]
-    e = data_struc["cons"]["e"]
-    Qi = data_struc["cons"]["Qi"]
-    Cool_Struc = data_struc["Cool_Struc"]
-    v, T, dTdr = y0
-
-    # boltzmann constant in astronomical units 
-    k_B = c.k_B.cgs.value * u.g.to(u.Msun) * u.cm.to(u.pc)**2 / u.s.to(u.Myr)**2
-
-    Qi = Qi / u.Myr.to(u.s)
-    ndens = d / (2. * k_B * T) /(u.pc.to(u.cm)**3)
-    Phi = Qi / (4. * np.pi * (r*u.pc.to(u.cm)) ** 2)
-
-    # interpolation range (currently repeated in calc_Lb --> merge?)
-    log_T_interd = 0.1
-    log_T_noeqmin = Cool_Struc["log_T"]["min"]+1.0001*log_T_interd
-    log_T_noeqmax = Cool_Struc["log_T"]["max"] - 1.0001 * log_T_interd
-    log_T_intermin = log_T_noeqmin - log_T_interd
-    log_T_intermax = log_T_noeqmax + log_T_interd
-
-    #debug (use semi-correct cooling at low T)
-    if T < 10.**3.61:
-        T = 10.**3.61
-
-    # loss (or gain) of internal energy
-    dudt = get_coolingFunction.cool_interp_master({"n":ndens, "T":T, "Phi":Phi}, Cool_Struc, metallicity,
-                                       log_T_noeqmin=log_T_noeqmin, log_T_noeqmax=log_T_noeqmax, 
-                                       log_T_intermin=log_T_intermin, log_T_intermax=log_T_intermax)
-    
-
-    vd = b + (v-a*r)*dTdr/T - 2.*v/r
-    Td = dTdr
-    # negative sign for dudt term (because of definition of dudt)
-    dTdrd = C/(T**2.5) * (e + 2.5*(v-a*r)*dTdr/T - dudt/d) - 2.5*dTdr**2./T - 2.*dTdr/r 
-    # return
-    return [vd,Td,dTdrd]
 
 
 def get_xi_Tb(l1, l2, warpfield_params):

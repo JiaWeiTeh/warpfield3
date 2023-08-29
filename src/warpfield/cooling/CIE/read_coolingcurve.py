@@ -165,7 +165,28 @@ def Interp3_dudt(point, Cool_Struc, element = "Netcool"):
     dudt = trilinear([x, y, z], [x0, y0, z0], [x1, y1, z1],
                          my_element[ii_n_0:ii_n_0 + 2, jj_T_0:jj_T_0 + 2, kk_P_0:kk_P_0 + 2])
 
+    print('\n\nto interpolate', 
+          '\nx:', x, 
+          '\ny:', y, 
+          '\nz', z, 
+          '\nsecond three',
+          'x0:', x0, 
+          '\ny0:', y0, 
+          '\nz0', z0, 
+          '\nthird three',
+          '\nx1:', x1, 
+          '\ny1:', y1, 
+          '\nz1', z1,     
+          '\ngridpoints',
+          '\narray', my_element[ii_n_0:ii_n_0 + 2, jj_T_0:jj_T_0 + 2, kk_P_0:kk_P_0 + 2],
+          )
+
+    print('value', dudt)
+    sys.exit()
+    
     return dudt
+
+
 
 
 
