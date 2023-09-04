@@ -90,7 +90,7 @@ def get_NN_ages(Zism, age,
     age_list = []
 
     # check all files in cooling table folder with the correct filenames (rotating/non-rotating stars, metallicity, extension)
-    cooltable_dir = warpfield_params.path_cooling
+    cooltable_dir = warpfield_params.path_cooling_nonCIE
     for file in os.listdir(cooltable_dir):
         # check whether files with the correct metallicity and data extension exist
         if (basename in file and rot_str in file and get_Zstring(Zism) in file and file.endswith(extension)): 
@@ -149,7 +149,7 @@ def make_cooling_filename(Zism, age,
     if rotation == True: rot_str = "rot"
     else: rot_str = "norot"
 
-    cooltable_dir = warpfield_params.path_cooling
+    cooltable_dir = warpfield_params.path_cooling_nonCIE
     agestr = get_agestring(age)
     Zstr = get_Zstring(Zism)  # use 2 digits after point
     cooltable_file = cooltable_dir + basename + "_" + rot_str + "_" + Zstr + "_" + agestr + extension

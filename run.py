@@ -35,10 +35,13 @@ header.display()
 
 
 # this import has to be here or warpfield_params will not work.
-from src.warpfield import main
-## test
 # With this dictionary, run the simulation.
+# import test
+
+
+from src.warpfield import main
 main.start_expansion()
+## test
 # Done!
 # print("Done!")
 

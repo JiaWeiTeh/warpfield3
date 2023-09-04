@@ -9,6 +9,7 @@ import time
 import os
 import sys
 from src.warpfield.functions.dictionary import prompt
+from src.warpfield.functions.terminal_prints import cprint as cpr
 # get parameter
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()
@@ -17,15 +18,15 @@ def display():
     
     # display logo for WARPFIELD
     show_logo()
-    print('\t\t      --------------------------------------------------')
-    print('\t\t      '+prompt['Welcome to']+' \033[32m'+link('https://github.com/JiaWeiTeh/warpfield3', 'WARPFIELD')+'\033[39m!\n')
-    print('\t\t      Notes:')
-    print('\t\t         - Documentation can be found \033[32m'+link('https://warpfield3.readthedocs.io/en/latest/', 'here')+'\033[39m.')
-    print('\t\t         - \033[1m\033[96mBolded text\033[0m highlights the designated')
-    print('\t\t           locations of saved files.')
-    print('\t\t         - \033[1m\033[94mThis is warning/info\033[0m but nothing is huge.\n')
-    print('\t\t      '+prompt['[Version 3.0] 2022. All rights reserved.'])
-    print('\t\t      --------------------------------------------------')
+    print(f'\t\t      --------------------------------------------------')
+    print(f'\t\t      '+prompt['Welcome to']+' \033[32m'+link('https://github.com/JiaWeiTeh/warpfield3', 'WARPFIELD')+'\033[0m!\n')
+    print(f'\t\t      Notes:')
+    print(f'\t\t         - Documentation can be found \033[32m'+link('https://warpfield3.readthedocs.io/en/latest/', 'here')+'\033[0m.')
+    print(f'\t\t         - {cpr.BOLD}Bolded text{cpr.END} highlights the designated')
+    print(f'\t\t           locations of saved files.')
+    print(f'\t\t         - {cpr.WARN}This is a warning message{cpr.END} but code runs still.\n')
+    print(f'\t\t      '+prompt['[Version 3.0] 2022. All rights reserved.'])
+    print(f'\t\t      --------------------------------------------------')
     # show initial parameters
     show_param()
     
@@ -58,7 +59,7 @@ def link(url, label = None):
 
 def show_param():
     # print some useful information
-    print("Loading parameters:")
+    print(f"{cpr.BLINK}Loading parameters:{cpr.END}")
     print(f'\tmodel name: {warpfield_params.model_name}')
     print(f'\tlog_mCloud: {warpfield_params.log_mCloud}')
     print(f'\tSFE: {warpfield_params.sfe}')

@@ -27,3 +27,32 @@ def phase0():
     return
 
 
+
+
+
+class cprint:
+    # A class that deals with printing with colours in terminal. 
+    # e.g., print(f'{cprint.BOLD}This text is bolded{cprint.END}  but this isnt.')
+    
+    # bolded text to signal that a file is being saved
+    BOLD = '\033[1m\033[96m'
+    # aliases
+    SAVE = BOLD
+    FILE = BOLD
+    
+    # Link
+    LINK = '\033[32m'
+    
+    # Warning message, but code runs still. 
+    WARN = '\033[1m\033[94m'
+    
+    # Blink
+    BLINK = '\033[5m'
+    
+    # FAIL
+    FAIL = '\033[1m\033[91m'
+    
+    # END and clear all colours. This should be included in the end of every operations.
+    END = '\033[0m'
+
+

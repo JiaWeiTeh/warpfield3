@@ -12,13 +12,15 @@ Old code: coolnoeq.py
 
 
 import numpy as np
+import math 
 import sys
 import os
 from astropy.io import ascii
-from scipy.interpolate import LinearNDInterpolator
+from scipy.interpolate import LinearNDInterpolator, RegularGridInterpolator
 import warnings
 #--
 import src.warpfield.functions.operations as operations
+from src.warpfield.functions.terminal_prints import cprint as cpr
 
 # # get parameter
 from src.input_tools import get_param
@@ -28,7 +30,7 @@ warpfield_params = get_param.get_param()
 def get_coolingStructure(age):
     """
     Time-dependent cooling curve.
-    See create_cooling_grid() for values contained in the variable `Cool_Struc`, and 
+    See create_cubes() for values contained in the variable `Cool_Struc`, and 
     what is available or should be contained in the cooling files. 
     
     It's called a structure because it is a grid that depends on three parameters.
@@ -41,11 +43,9 @@ def get_coolingStructure(age):
     Returns
     -------
     Cool_Struc:
-        In addition to what was already in (see create_cooling_grid()), this also inludes:
-            log_cooling_interpolation:
-            log_cooling_interpolation:
 
     """
+    
     
     # =============================================================================
     # Step1: Time-dependent cooling curve: figure out which time!
@@ -54,52 +54,54 @@ def get_coolingStructure(age):
     #   (only) cooling, (only) heating, net cooling.
     # =============================================================================
     # Time-dependent cooling curve files:
-    # Availabel ages: 1e6, 2e6, 3e6, 4e6, 5e6, 1e7 yr. 
+    # Available ages: 1e6, 2e6, 3e6, 4e6, 5e6, 1e7 yr. 
     # For given time (cluster age), find the nearest available age. 
     filename = get_filename(age)
     
+    
     # if return only one file, no need interpolation. see get_filename()
-    if len(filename) == 1:
-        Cool_Struc = create_cooling_grid(age)
-        cooling = Cool_Struc['cooling']
-        heating = Cool_Struc['heating']
+    if isinstance(filename, list) ==  False:
+        log_ndens_arr, log_temp_arr, log_phi_arr, cool_cube, heat_cube = create_cubes(filename)
+    
     # if two files, then it means there is interpolation. This is the nearest higher/lower file
     else:
-        # pseudocode
-        age_lower, age_higher = filename
+        file_age_lower, file_age_higher = filename
         # values from higher and lower ages
-        Cool_Struc = create_cooling_grid(age_lower)
-        Cool_Struc_higher = create_cooling_grid(age_higher)
-        # get values
-        cooling_higherage = Cool_Struc_higher['cooling']
-        heating_higherage = Cool_Struc_higher['heating']
-        cooling_lowerage = Cool_Struc['cooling']
-        heating_lowerage = Cool_Struc['heating']
-        # create cooling and heating from dict if tney don't exist. 
-        def simple_linear_interpolation(x, xList, yList):
-            return yList[0] + (yList[1] - yList[0]) * (x - xList[0])/(xList[1] - xList[0])
+        log_ndens_arr, log_temp_arr, log_phi_arr,\
+            cool_cube_lower, heat_cube_lower = create_cubes(file_age_lower)
+        _, _, _,\
+            cool_cube_higher, heat_cube_higher = create_cubes(file_age_higher)    
         
-        cooling = simple_linear_interpolation(age, [age_lower, age_higher], [cooling_lowerage, cooling_higherage])
-        heating = simple_linear_interpolation(age, [age_lower, age_higher], [heating_lowerage, heating_higherage])
+        # create cooling and heating from dict if tney don't exist. 
+        # get ages
+        # returns i.e. '1.00e+06'.
+        age_lower = float(get_fileage(file_age_lower))
+        age_higher = float(get_fileage(file_age_higher))
+            
+        # Get cooling/heating values for fixed points/range for this particular age
+        def cube_linear_interpolate(x, ages, cubes):
+            # get values
+            ages_low, ages_high = ages
+            cubes_low, cubes_high = cubes
+            return cubes_low + (x - ages_low) * (cubes_high - cubes_low)/(ages_high - ages_low)
+
+        cool_cube = cube_linear_interpolate(age, [age_lower, age_higher], [cool_cube_lower, cool_cube_higher])
+        heat_cube = cube_linear_interpolate(age, [age_lower, age_higher], [heat_cube_lower, heat_cube_higher])
     
     # Create interpolation functions
-    phase_space = np.transpose(np.vstack(Cool_Struc['ndens'], Cool_Struc['temp'], Cool_Struc['phi']))
-    
-    # remember that these are in log
-    log_cooling_interpolation = LinearNDInterpolator(np.log10(phase_space), np.log10(cooling))
-    log_heating_interpolation = LinearNDInterpolator(np.log10(phase_space), np.log10(heating))
-    
-    # record
     # old code: create_onlycoolheat(), Cool_Struc['Cfunc'] = onlycoolfunc, Cool_Struc['Hfunc'] = onlyheatfunc
-    Cool_Struc['log_cooling_interpolation'] = log_cooling_interpolation
-    Cool_Struc['log_heating_interpolation'] = log_heating_interpolation
+    cooling_interpolation = RegularGridInterpolator((log_ndens_arr, log_temp_arr, log_phi_arr), np.log10(cool_cube),
+                                              method = 'linear')
+    heating_interpolation = RegularGridInterpolator((log_ndens_arr, log_temp_arr, log_phi_arr), np.log10(heat_cube),
+                                              method = 'linear')
     
-    return Cool_Struc
+    return cool_cube, heat_cube, cooling_interpolation, heating_interpolation
 
 
-def create_cooling_grid(filename):
+
+def create_cubes(filename):
     """
-    This function will take filename and return useful variables.
+    This function will take filename and return cooling/heating in the form of cubes.
 
     Parameters
     ----------
@@ -108,78 +110,107 @@ def create_cooling_grid(filename):
 
     Returns
     -------
-    Cool_Struc: A dictionary which inclues:
-        ndens: ion number density [cm-3] 
-        T: temperature [T]
-        phi: number flux of ionizing photons [cm-2s-1]
-        cooling:
-        heating:
-        log_n: modified ndens; written in log10, sorted, and removed any duplicates.
-        log_T: modified T; written in log10, sorted, and removed any duplicates. 
-        log_Phi: modified phi; written in log10, sorted, and removed any duplicates.
-        
+    These define the side of the cooling/heating cube.
+        log_ndens_arr: [cm-3] 
+            np.array of density ticks in log space. 
+        log_temp_arr: [T]
+            np.array of temperature ticks in log space. 
+        log_phi_arr: [cm-2s-1]
+            np.array of phi (number flux of ionizing photons) ticks in log space. 
+            
+     cool_cube:
+         Stores cooling value for any [ndens, temp, phi] triple. Some are NaN, because
+         they are not available in the cooling table (perhaps non-physical)
+     heat_cube:
+         Same as cool_cube, but for heating values. 
+    
     """
 
     # =============================================================================
     # Step1: read in file, perform some basic operations
     # =============================================================================
 
-    # read in the file 
+    # read file
     opiate_file = ascii.read(warpfield_params.path_cooling_nonCIE + filename)
+    
     # read in the columns
-    ndens = opiate_file['ndens']
-    temp = opiate_file['temp']
-    phi = opiate_file['phi']
+    ndens_data = opiate_file['ndens']
+    temp_data = opiate_file['temp']
+    phi_data = opiate_file['phi']
     # these are derived quantities in CLOUDY output
-    cooling = opiate_file['cool']
-    heating = opiate_file['heat']
+    cooling_data = opiate_file['cool']
+    heating_data = opiate_file['heat']
     # make sure signs in heating/cooling column are positive!
-    if np.sign(heating[0]) == -1:
-        heating = -1 * heating
-        print(f'\033[1m\033[94mHeating values have negative signs in {filename}. They are now changed to positive.\033[0m')
-    if np.sign(cooling[0]) == -1:
-        cooling = -1 * cooling
-        print(f'\033[1m\033[94mHeating values have negative signs in {filename}. They are now changed to positive.\033[0m')
-    # now, we can calculate the net cooling
-    netcooling = cooling - heating
+    if np.sign(heating_data[0]) == -1:
+        heating_data = -1 * heating_data
+        print(f'{cpr.WARN}Heating values have negative signs in {filename}. They are now changed to positive.{cpr.END}')
+    if np.sign(cooling_data[0]) == -1:
+        cooling_data = -1 * cooling_data
+        print(f'{cpr.WARN}Cooling values have negative signs in {filename}. They are now changed to positive.{cpr.END}')
     
     # =============================================================================
-    # Step2: create cooling structure  
+    # Step2: create cubes
     # =============================================================================
     
-    # full log values
-    # set it to avoid duplication, sort it, then take log10, then round it
-    # here is the function listed for readability. In reality this can easily be a one-liner. 
-    def convert(x):
-        x = np.array(list(set(x)))
-        x = np.sort(x)
-        x = np.log10(x)
-        x = np.round(x, decimals = 3)
-        return x
-    log_ndens = convert(ndens)
-    log_temp = convert(temp)
-    log_phi = convert(phi)
+    def create_limits(array):
+        # This function creates the lines for cuboid, for future interpolation.
+        # here is the function listed for readability. In reality this can easily be a one-liner.    
+        array = np.array(list(set(array)))
+        # sort array
+        array = np.sort(array)
+        # log array, because the original was created in log space. 
+        array = np.log10(array)
+        # round, because it makes things easier.
+        array = np.round(array, decimals = 3)
+        return array
     
-    # sanity check: make sure that the values are constantly spaced in log-space. 
-    # This should always be true, because this should be how it was defined in CLOUDY.
-    if len(set(np.diff(log_ndens))) != 1 or len(set(np.diff(log_temp))) != 1 or len(set(np.diff(log_phi))) != 1:
-        sys.exit('Structure of cooling table not recognised. Distance between grid points in log-space is not constant.')
-
+    # create lines for cube sides
+    log_ndens_arr = create_limits(ndens_data)
+    log_temp_arr = create_limits(temp_data)
+    log_phi_arr = create_limits(phi_data)
     
-    # return cooling data structure
-    Cool_Struc = {"ndens": ndens, "temp": temp, "phi": phi,
-                  "cooling": cooling, "heating": heating, "netcooling": netcooling,
-                  "log_n": log_ndens, "log_T": log_temp, "log_phi": log_phi, 
-                  }
-                      
+    # -----
+    # A) Cooling cube
+    # create rows of data
+    cool_table = np.transpose(np.vstack([ndens_data, temp_data, phi_data, cooling_data]))
+    # go from ndens, then T, then phi.
+    cool_cube = np.empty((len(log_ndens_arr), len(log_temp_arr),len(log_phi_arr)))
+    # size = (31, 21, 22), meaning 31 slices of (21x22) arrays
+    cool_cube[:] = np.nan
     
+    # fill in cooling cube
+    for (ndens_val, temp_val, phi_val, cooling_val) in cool_table:
+        # find which index these belong to
+        ndens_index = np.where(log_ndens_arr == np.round(np.log10(ndens_val), decimals = 5))[0][0]
+        temp_index = np.where(log_temp_arr == np.round(np.log10(temp_val), decimals = 5))[0][0]
+        phi_index = np.where(log_phi_arr == np.round(np.log10(phi_val), decimals = 5))[0][0]
+        # record into the cube
+        cool_cube[ndens_index, temp_index, phi_index] = cooling_val
+        
+    # -----
+    # B) Heating cube
+    # create rows of data
+    heat_table = np.transpose(np.vstack([ndens_data, temp_data, phi_data, heating_data]))
+    # go from ndens, then T, then phi.
+    heat_cube = np.empty((len(log_ndens_arr), len(log_temp_arr),len(log_phi_arr)))
+    heat_cube[:] = np.nan
     
-    return Cool_Struc
+    # fil in heating cube
+    for (ndens_val, temp_val, phi_val, heating_val) in heat_table:
+        # find which index these belong to
+        ndens_index = np.where(log_ndens_arr == np.round(np.log10(ndens_val), decimals = 3))[0][0]
+        temp_index = np.where(log_temp_arr == np.round(np.log10(temp_val), decimals = 3))[0][0]
+        phi_index = np.where(log_phi_arr == np.round(np.log10(phi_val), decimals = 3))[0][0]
+        # record into the cube
+        heat_cube[ndens_index, temp_index, phi_index] = heating_val
 
-
-
-# Remember, read_opiatetable returns UNMODULATED data. some interpolations with this.
-# whereas get_opiate_gridstruc returns modulated, logged data.
+    # =============================================================================
+    # Step 3: create an interpolation function. 
+    # Future TODO: If it fails, i.e., if it returns NaN because the values don't exist in the cooling
+    # table, we do further operations. 
+    # =============================================================================
+    
+    return log_ndens_arr, log_temp_arr, log_phi_arr, cool_cube, heat_cube
 
 
 def get_filename(age):
@@ -197,7 +228,6 @@ def get_filename(age):
         Filename corresponding to the parameters set.
 
     """
-
     # All filenames have the convention of opiate_cooling_[rotation]_Z[metallicity]_age[age].dat
     # Right now, only solar metallicity and rotation is considered. 
     try:
@@ -213,31 +243,33 @@ def get_filename(age):
         elif float(warpfield_params.metallicity) == 0.15:
             # 0.15 solar, Z = 0.002
             Z_str = '0.15'
-        # age? TODO
-        age_str = format(age, '.2e')
-            
+    
         # What are the available ages? If the given age is greater than the maximum or
         # is lower than the minimum, then use the max/min instead. Otherwise, do interpolation (in another function).
         # loop through the folder which contains all the data
         age_list = []
-        print(warpfield_params.path_cooling_nonCIE)
         for files in os.listdir(warpfield_params.path_cooling_nonCIE):
             # look for .dat
             if files[-4:] == '.dat':
-                # look for the numbers after 'age'. 
-                age_index_begins = files.find('age')
                 # returns i.e. '1.00e+06'.
-                age_list.append(float(files[age_index_begins+3:age_index_begins+3+8]))
-        print(age_list)
+                age_list.append(get_fileage(files))
         # array
         age_list = np.array(age_list)
+        # if in array, use the file.
+        if age in age_list:
+            age_str = format(age, '.2e')
+            # include brackets to check if there is one or two filenames
+            filename = 'opiate_cooling' + '_' + rot_str + '_' + 'Z' + Z_str + '_' + 'age' + age_str + '.dat'
+            return filename
         # for min/max age, use the max/min
-        if age >= max(age_list):
+        elif age >= max(age_list):
             age_str = format(max(age_list), '.2e')
+            # include brackets to check if there is one or two filenames
             filename = 'opiate_cooling' + '_' + rot_str + '_' + 'Z' + Z_str + '_' + 'age' + age_str + '.dat'
             return filename
         elif age <= min(age_list):
             age_str = format(min(age_list), '.2e')
+            # include brackets to check if there is one or two filenames
             filename = 'opiate_cooling' + '_' + rot_str + '_' + 'Z' + Z_str + '_' + 'age' + age_str + '.dat'
             return filename
         else:
@@ -252,7 +284,18 @@ def get_filename(age):
             return filename
     except:
         raise Exception("Opiate/CLOUDY file (non-CIE) for cooling curve not found. Make sure to double check parameters in the 'parameters for Starburst99 operations' and 'parameters for setting path' section.")
-    
+        
+
+def get_fileage(filename):
+    # look for the numbers after 'age'. 
+    age_index_begins = filename.find('age')
+    # returns i.e. '1.00e+06'.
+    return float(filename[age_index_begins+3:age_index_begins+3+8])
+
+
+
+
+
 
 
 

@@ -54,7 +54,9 @@ def start_expansion():
     
     from src.warpfield.cooling.non_CIE import read_cloudy
     
-    Cool_Struc = read_cloudy.get_coolingStructure(1e6)
+    # test cases
+    # Cool_Struc = read_cloudy.get_coolingStructure(1e6)
+    Cool_Struc = read_cloudy.get_coolingStructure(1.5e6)
     # print(logT)
     # print(logLambda)
     sys.exit()

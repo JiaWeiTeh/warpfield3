@@ -14,13 +14,13 @@ import scipy.interpolate
 import sys
 import scipy.optimize
 #--
-import src.warpfield.bubble_structure.get_bubbleParams as get_bubbleParams
-import src.warpfield.bubble_structure.bubble_structure as bubble_structure
-import src.warpfield.shell_structure.shell_structure as shell_structure
-import src.warpfield.cloud_properties.mass_profile as mass_profile
-import src.warpfield.phase1_energy.energy_phase_ODEs as energy_phase_ODEs
-import src.warpfield.functions.terminal_prints as terminal_prints
-from src.warpfield.functions.operations import find_nearest_lower, find_nearest_higher
+# import src.warpfield.bubble_structure.get_bubbleParams as get_bubbleParams
+# import src.warpfield.bubble_structure.bubble_structure as bubble_structure
+# import src.warpfield.shell_structure.shell_structure as shell_structure
+# import src.warpfield.cloud_properties.mass_profile as mass_profile
+# import src.warpfield.phase1_energy.energy_phase_ODEs as energy_phase_ODEs
+# import src.warpfield.functions.terminal_prints as terminal_prints
+# from src.warpfield.functions.operations import find_nearest_lower, find_nearest_higher
 
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()
