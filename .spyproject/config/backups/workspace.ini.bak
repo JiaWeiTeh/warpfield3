@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['src/warpfield/main.py', 'src/warpfield/bubble_structure/get_bubbleParams.py', 'src/warpfield/cooling/CIE/read_coolingcurve_old.py', 'src/warpfield/cooling/CIE/read_coolingcurve.py', 'src/warpfield/cooling/full_coolingcurve.py', 'src/warpfield/bubble_structure/bubble_luminosity.py', 'test.py', 'src/warpfield/cooling/non_CIE/read_opiate_old.py', 'src/warpfield/cooling/non_CIE/read_cloudy_test.py', 'src/warpfield/cooling/non_CIE/read_cloudy.py']
+recent_files = ['src/warpfield/main.py', 'src/warpfield/bubble_structure/get_bubbleParams.py', 'src/warpfield/bubble_structure/bubble_luminosity.py', 'example_plots/netcooling_curve.py', 'src/warpfield/cooling/net_coolingcurve.py']
 

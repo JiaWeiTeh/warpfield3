@@ -29,12 +29,10 @@ warpfield_params = get_param.get_param()
 
 def get_coolingStructure(age):
     """
-    Time-dependent cooling curve.
-    See create_cubes() for values contained in the variable `Cool_Struc`, and 
+    Time-dependent cooling curve, based on (ndens, temperature, phi) triplets.
+    See create_cubes() for values contained in the variable `cool_cubes`, and 
     what is available or should be contained in the cooling files. 
     
-    It's called a structure because it is a grid that depends on three parameters.
-
     Parameters
     ----------
     age : float
@@ -42,7 +40,10 @@ def get_coolingStructure(age):
 
     Returns
     -------
-    Cool_Struc:
+    cooling_data: A class which includes
+        .datacube: the cooling datacube. See create_cubes()
+        .interp: interpolation function for triplets in the cube
+        .(ndens, temp, phi): available values for the triplets (log_ndens_arr, log_temp_arr, log_phi_arr)
 
     """
     
@@ -95,7 +96,25 @@ def get_coolingStructure(age):
     heating_interpolation = RegularGridInterpolator((log_ndens_arr, log_temp_arr, log_phi_arr), np.log10(heat_cube),
                                               method = 'linear')
     
-    return cool_cube, heat_cube, cooling_interpolation, heating_interpolation
+    # create simple class
+    class cube: 
+        pass
+    # very simple classes
+    cooling_data = cube()
+    cooling_data.datacube = cool_cube
+    cooling_data.interp = cooling_interpolation
+    cooling_data.ndens = log_ndens_arr
+    cooling_data.temp = log_temp_arr
+    cooling_data.phi = log_phi_arr
+    #--
+    heating_data = cube()
+    heating_data.datacube = heat_cube
+    heating_data.interp = heating_interpolation
+    heating_data.ndens = log_ndens_arr
+    heating_data.temp = log_temp_arr
+    heating_data.phi = log_phi_arr    
+    
+    return cooling_data, heating_data
 
 
 

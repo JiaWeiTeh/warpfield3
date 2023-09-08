@@ -17,18 +17,18 @@ import yaml
 import os
 
 #--
-# from src.warpfield.phase0_init import (get_InitCloudProp, get_InitBubStruc,
-#                                         get_InitCloudyDens, get_InitPhaseParam)
-# from src.warpfield.phase_general import set_phase
-# from src.warpfield.sb99 import read_SB99
-# from src.warpfield.phase1_energy import run_energy_phase
-# from src.warpfield.phase1b_energy_implicit import run_energy_implicit_phase
-# from src.warpfield.phase1c_transition import run_transition_phase
-# from src.warpfield.phase2_momentum import run_momentum_phase
-# from src.warpfield.cloudy import __cloudy__
-# from src.warpfield.cooling import read_opiate
-# import src.warpfield.functions.terminal_prints as terminal_prints
-# import src.output_tools.write_outputs as write_outputs
+from warpfield.phase0_init import (get_InitCloudProp, get_InitBubStruc,
+                                        get_InitCloudyDens, get_InitPhaseParam)
+from src.warpfield.phase_general import set_phase
+from src.warpfield.sb99 import read_SB99
+from src.warpfield.phase1_energy import run_energy_phase
+from src.warpfield.phase1b_energy_implicit import run_energy_implicit_phase
+from src.warpfield.phase1c_transition import run_transition_phase
+from src.warpfield.phase2_momentum import run_momentum_phase
+from src.warpfield.cloudy import __cloudy__
+from src.warpfield.cooling import read_opiate
+import src.warpfield.functions.terminal_prints as terminal_prints
+import src.output_tools.write_outputs as write_outputs
 
 
 # get parameter
@@ -52,14 +52,28 @@ def start_expansion():
 
     """
     
-    from src.warpfield.cooling.non_CIE import read_cloudy
-    
+    # from src.warpfield.cooling.non_CIE import read_cloudy
+    # from src.warpfield.cooling.net_coolingcurve import get_dudt
+    # os.environ['PATH_TO_CONFIG'] = r'/Users/jwt/Documents/Code/warpfield3/outputs/example_pl/example_pl_config.yaml'
+
     # test cases
-    # Cool_Struc = read_cloudy.get_coolingStructure(1e6)
-    Cool_Struc = read_cloudy.get_coolingStructure(1.5e6)
+    # cooling_data, heating_data = read_cloudy.get_coolingStructure(1e6)
+    # cooling_data, heating_data = read_cloudy.get_coolingStructure(1.5e6)
+    # print(cooling_data.temp)
+    # print(cooling_data.interp([-1, 3.6, 2]))
+    # print(heating_data.ndens)
+    # print(heating_data.interp([-1, 3.6, 2]))    
     # print(logT)
     # print(logLambda)
-    sys.exit()
+    # 
+    # ndens = np.log10(506663.2212419483)
+    # T = 5.51
+    # # T = np.log10(294060.78931362595)
+    # phi = np.log10(1.5473355225629384e+16)
+    # dudt  = get_dudt(1e6, 10**ndens, 10**T, 10**phi)
+    # print(dudt)
+    
+    # sys.exit()
     
     # Note:
         # old code: expansion_main()
