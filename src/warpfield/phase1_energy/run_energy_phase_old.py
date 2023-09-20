@@ -330,9 +330,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         tStop_i = np.min([tmax,t0+np.min([dt_L,dt_Emax,dt_Lw])])
 
 
-
-
-
         # find nearest problematic neighbor of current stop time
         t_problem_hi = t_problem[t_problem > (t0 + 0.001*dt_Emin)]
         t_problem_nnhi = t_problem_hi[0] # the next problematic time

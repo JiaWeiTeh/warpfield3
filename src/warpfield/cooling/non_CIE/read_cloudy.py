@@ -12,14 +12,11 @@ Old code: coolnoeq.py
 
 
 import numpy as np
-import math 
-import sys
 import os
 from astropy.io import ascii
-from scipy.interpolate import LinearNDInterpolator, RegularGridInterpolator
-import warnings
+from scipy.interpolate import RegularGridInterpolator
+import astropy.units as u
 #--
-import src.warpfield.functions.operations as operations
 from src.warpfield.functions.terminal_prints import cprint as cpr
 
 # # get parameter
@@ -33,9 +30,11 @@ def get_coolingStructure(age):
     See create_cubes() for values contained in the variable `cool_cubes`, and 
     what is available or should be contained in the cooling files. 
     
+    Cooling rate is in units of [erg cm3 / s]
+    
     Parameters
     ----------
-    age : float
+    age : float [Myr]
         Current age.
 
     Returns
@@ -43,10 +42,11 @@ def get_coolingStructure(age):
     cooling_data: A class which includes
         .datacube: the cooling datacube. See create_cubes()
         .interp: interpolation function for triplets in the cube
-        .(ndens, temp, phi): available values for the triplets (log_ndens_arr, log_temp_arr, log_phi_arr)
+        .(ndens, temp, phi) [in astropy units]: available values for the triplets (log_ndens_arr, log_temp_arr, log_phi_arr)
 
     """
-    
+    # change from Myr to yr.
+    age = age.to(u.yr).value
     
     # =============================================================================
     # Step1: Time-dependent cooling curve: figure out which time!
@@ -59,6 +59,7 @@ def get_coolingStructure(age):
     # For given time (cluster age), find the nearest available age. 
     filename = get_filename(age)
     
+    # TODO: add option to immediately get saved cubes.
     
     # if return only one file, no need interpolation. see get_filename()
     if isinstance(filename, list) ==  False:
@@ -103,16 +104,16 @@ def get_coolingStructure(age):
     cooling_data = cube()
     cooling_data.datacube = cool_cube
     cooling_data.interp = cooling_interpolation
-    cooling_data.ndens = log_ndens_arr
-    cooling_data.temp = log_temp_arr
-    cooling_data.phi = log_phi_arr
+    cooling_data.ndens = log_ndens_arr / u.cm**3
+    cooling_data.temp = log_temp_arr * u.K
+    cooling_data.phi = log_phi_arr / u.cm**2 / u.s
     #--
     heating_data = cube()
     heating_data.datacube = heat_cube
     heating_data.interp = heating_interpolation
-    heating_data.ndens = log_ndens_arr
-    heating_data.temp = log_temp_arr
-    heating_data.phi = log_phi_arr    
+    heating_data.ndens = log_ndens_arr / u.cm**3 
+    heating_data.temp = log_temp_arr * u.K
+    heating_data.phi = log_phi_arr / u.cm**2 / u.s
     
     return cooling_data, heating_data
 
@@ -144,6 +145,12 @@ def create_cubes(filename):
          Same as cool_cube, but for heating values. 
     
     """
+
+    # Does the cube already exist?
+    cube_filename = warpfield_params.path_cooling_nonCIE + filename.rstrip('.dat') +'_cube.npy'
+    if os.path.exists(cube_filename):
+        log_ndens_arr, log_temp_arr, log_phi_arr, cool_cube, heat_cube = np.load(cube_filename, allow_pickle = True)
+        return log_ndens_arr, log_temp_arr, log_phi_arr, cool_cube, heat_cube
 
     # =============================================================================
     # Step1: read in file, perform some basic operations
@@ -228,6 +235,11 @@ def create_cubes(filename):
     # Future TODO: If it fails, i.e., if it returns NaN because the values don't exist in the cooling
     # table, we do further operations. 
     # =============================================================================
+        
+    # =============================================================================
+    # Final step: save into an array to save time in the future. 
+    # =============================================================================
+    np.save(cube_filename, [log_ndens_arr, log_temp_arr, log_phi_arr, cool_cube, heat_cube])
     
     return log_ndens_arr, log_temp_arr, log_phi_arr, cool_cube, heat_cube
 
@@ -238,7 +250,7 @@ def get_filename(age):
 
     Parameters
     ----------
-    age : float
+    age [yr]: float
         Current time.
 
     Returns
@@ -249,60 +261,60 @@ def get_filename(age):
     """
     # All filenames have the convention of opiate_cooling_[rotation]_Z[metallicity]_age[age].dat
     # Right now, only solar metallicity and rotation is considered. 
-    try:
-        # with rotation?
-        if warpfield_params.SB99_rotation == True:
-            rot_str = 'rot'
-        else:
-            rot_str = 'norot'
-        # metallicity?
-        if float(warpfield_params.metallicity) == 1.0:
-            # solar, Z = 0.014
-            Z_str = '1.00'        
-        elif float(warpfield_params.metallicity) == 0.15:
-            # 0.15 solar, Z = 0.002
-            Z_str = '0.15'
-    
-        # What are the available ages? If the given age is greater than the maximum or
-        # is lower than the minimum, then use the max/min instead. Otherwise, do interpolation (in another function).
-        # loop through the folder which contains all the data
-        age_list = []
-        for files in os.listdir(warpfield_params.path_cooling_nonCIE):
-            # look for .dat
-            if files[-4:] == '.dat':
-                # returns i.e. '1.00e+06'.
-                age_list.append(get_fileage(files))
-        # array
-        age_list = np.array(age_list)
-        # if in array, use the file.
-        if age in age_list:
-            age_str = format(age, '.2e')
-            # include brackets to check if there is one or two filenames
-            filename = 'opiate_cooling' + '_' + rot_str + '_' + 'Z' + Z_str + '_' + 'age' + age_str + '.dat'
-            return filename
-        # for min/max age, use the max/min
-        elif age >= max(age_list):
-            age_str = format(max(age_list), '.2e')
-            # include brackets to check if there is one or two filenames
-            filename = 'opiate_cooling' + '_' + rot_str + '_' + 'Z' + Z_str + '_' + 'age' + age_str + '.dat'
-            return filename
-        elif age <= min(age_list):
-            age_str = format(min(age_list), '.2e')
-            # include brackets to check if there is one or two filenames
-            filename = 'opiate_cooling' + '_' + rot_str + '_' + 'Z' + Z_str + '_' + 'age' + age_str + '.dat'
-            return filename
-        else:
-            # If age is between files, we find the nearest higher age and lower age neighbour, and do interpolation.
-            # e.g., if age = 2.3, do interpolation from 2 and 3. 
-            # This is o(n) time, but since the list is small this wouldn't matter much.
-            # No sorting is needed, otherwise it'd have become nlogn. 
-            higher_age = age_list[age_list > age].min()
-            lower_age = age_list[age_list < age].max()
-            # return both
-            filename = [get_filename(lower_age), get_filename(higher_age)]
-            return filename
-    except:
-        raise Exception("Opiate/CLOUDY file (non-CIE) for cooling curve not found. Make sure to double check parameters in the 'parameters for Starburst99 operations' and 'parameters for setting path' section.")
+    # try:
+    # with rotation?
+    if warpfield_params.SB99_rotation == True:
+        rot_str = 'rot'
+    else:
+        rot_str = 'norot'
+    # metallicity?
+    if float(warpfield_params.metallicity) == 1.0:
+        # solar, Z = 0.014
+        Z_str = '1.00'        
+    elif float(warpfield_params.metallicity) == 0.15:
+        # 0.15 solar, Z = 0.002
+        Z_str = '0.15'
+
+    # What are the available ages? If the given age is greater than the maximum or
+    # is lower than the minimum, then use the max/min instead. Otherwise, do interpolation (in another function).
+    # loop through the folder which contains all the data
+    age_list = []
+    for files in os.listdir(warpfield_params.path_cooling_nonCIE):
+        # look for .dat
+        if files[-4:] == '.dat':
+            # returns i.e. '1.00e+06'.
+            age_list.append(get_fileage(files))
+    # array
+    age_list = np.array(age_list)
+    # if in array, use the file.
+    if age in age_list:
+        age_str = format(age, '.2e')
+        # include brackets to check if there is one or two filenames
+        filename = 'opiate_cooling' + '_' + rot_str + '_' + 'Z' + Z_str + '_' + 'age' + age_str + '.dat'
+        return filename
+    # for min/max age, use the max/min
+    elif age >= max(age_list):
+        age_str = format(max(age_list), '.2e')
+        # include brackets to check if there is one or two filenames
+        filename = 'opiate_cooling' + '_' + rot_str + '_' + 'Z' + Z_str + '_' + 'age' + age_str + '.dat'
+        return filename
+    elif age <= min(age_list):
+        age_str = format(min(age_list), '.2e')
+        # include brackets to check if there is one or two filenames
+        filename = 'opiate_cooling' + '_' + rot_str + '_' + 'Z' + Z_str + '_' + 'age' + age_str + '.dat'
+        return filename
+    else:
+        # If age is between files, we find the nearest higher age and lower age neighbour, and do interpolation.
+        # e.g., if age = 2.3, do interpolation from 2 and 3. 
+        # This is o(n) time, but since the list is small this wouldn't matter much.
+        # No sorting is needed, otherwise it'd have become nlogn. 
+        higher_age = age_list[age_list > age].min()
+        lower_age = age_list[age_list < age].max()
+        # return both
+        filename = [get_filename(lower_age), get_filename(higher_age)]
+        return filename
+    # except:
+    #     raise Exception(f"{cpr.FAIL}Opiate/CLOUDY file (non-CIE) for cooling curve not found. Make sure to double check parameters in the 'parameters for Starburst99 operations' and 'parameters for setting path' section.{cpr.END}")
         
 
 def get_fileage(filename):

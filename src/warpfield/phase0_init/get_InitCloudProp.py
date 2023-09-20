@@ -50,18 +50,10 @@ def get_InitCloudProp():
 
     Returns
     -------
-    rCore : float
-        cloud radius (Units: pc). 
-        This value is only computed if power-law profile is selected.
     rCloud : float
         cloud core radius (Units: pc).
     nEdge : float
-        cloud edge density (Units: 1cm3).
-    mCloud_afterSF: float
-        cloud mass after cluster formation (Units: Msun).
-    mCluster: float 
-       cluster mass (Units: Msun).
-
+        cloud edge density (Units: 1/cm3).
     """
 
     # Note:
@@ -71,17 +63,14 @@ def get_InitCloudProp():
     # load parameters
     mu_n = warpfield_params.mu_n
     alpha = warpfield_params.dens_a_pL
+    mCloud = warpfield_params.mCloud 
     
     # Old code: get_cloud_Rn().
-    # converting to cgs
-    mCloud = warpfield_params.mCloud * u.M_sun.to(u.g)
-    
     # compute cloud radius
     # use core radius/density if there is a power law. If not, use average density.
     if alpha != 0:
         nCore = warpfield_params.nCore
         rCore = warpfield_params.rCore
-        rCore = rCore * u.pc.to(u.cm)
         rCloud = (
                     (
                         mCloud/(4 * np.pi * nCore * mu_n) - rCore**3/3
@@ -95,14 +84,11 @@ def get_InitCloudProp():
         rCloud = (3 * mCloud / 4 / np.pi / (nAvg * mu_n))**(1/3)
         # density at edge should just be the average density
         nEdge = nAvg
-        
-    # converting back
-    rCloud = rCloud * u.cm.to(u.pc)
     
-    # print('check for initials')
-    # print('rCore, mCloud, nEdge, nCore, rCloud')
-    # print( (rCore * u.cm.to(u.pc)), (mCloud/u.M_sun.to(u.g)), nEdge, nCore, rCloud)
-    # sys.exit()
+        # print('check for initials')
+        # print('mCloud, nEdge, rCloud')
+        # print((mCloud.to(u.M_sun)), nEdge.to(1/u.cm**3), rCloud.to(u.pc))
+        # sys.exit()
     
     # sanity check
     if nEdge < warpfield_params.nISM:
@@ -110,6 +96,6 @@ def get_InitCloudProp():
         sys.exit('"The density at the edge of the cloud is lower than the ISM; please consider increasing nCore."')
 
     # return
-    return rCloud, nEdge
+    return (rCloud).to(u.pc), nEdge.to(1/u.cm**3)
     
 

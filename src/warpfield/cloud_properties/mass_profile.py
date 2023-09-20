@@ -45,29 +45,22 @@ def get_mass_profile(r_arr,
     -------
     mGas [Msol]: array of float
         The mass profile. 
-    mGasdot: array of float. Only returned if return_mdot == True.
+    mGasdot [Msol/yr]: array of float. Only returned if return_mdot == True.
         The time-derivative mass profile dM/dt. 
 
     """
-    # convert to np.array
-    # array for easier operation
-    if hasattr(r_arr, '__len__'):
-        r_arr  = np.array(r_arr)
-    else:
-        r_arr = np.array([r_arr])
     
     # retrieve values
     alpha = warpfield_params.dens_a_pL
     rCore = warpfield_params.rCore
-    # Setting up values for mass density (from number density) and 
-    # change from g/cm3 to pc/Msol for further computation
-    rhoCore = warpfield_params.nCore * warpfield_params.mu_n * (u.g/u.cm**3).to(u.M_sun/u.pc**3)
-    rhoAvg = warpfield_params.dens_navg_pL * warpfield_params.mu_n * (u.g/u.cm**3).to(u.M_sun/u.pc**3)
-    rhoISM = warpfield_params.nISM * warpfield_params.mu_n * (u.g/u.cm**3).to(u.M_sun/u.pc**3)
+    # Setting up values for mass density (from number density) 
+    rhoCore = warpfield_params.nCore * warpfield_params.mu_n
+    rhoAvg = warpfield_params.dens_navg_pL * warpfield_params.mu_n
+    rhoISM = warpfield_params.nISM * warpfield_params.mu_n 
     
     # initialise arrays
-    mGas = r_arr * np.nan
-    mGasdot = r_arr * np.nan
+    mGas = r_arr.copy() * np.nan
+    mGasdot = r_arr.copy() * np.nan
 
     # ----
     # Case 1: The density profile is homogeneous, i.e., alpha = 0
@@ -86,11 +79,11 @@ def get_mass_profile(r_arr,
                 mGasdot[r_arr <= rCloud] = 4 * np.pi * rhoAvg * r_arr[r_arr <= rCloud]**2 * rdot_arr[r_arr <= rCloud]
                 mGasdot[r_arr > rCloud] = 4 * np.pi * rhoISM * r_arr[r_arr > rCloud]**2 * rdot_arr[r_arr > rCloud]
                 # return value
-                return mGas, mGasdot
+                return mGas.to(u.M_sun), mGasdot.to(u.M_sun/u.yr)
             except: 
                 raise Exception('Velocity array expected.')
         else:
-            return mGas
+            return mGas.to(u.M_sun)
         
     # ----
     # Case 2: The density profile has power-law profile (alpha)
@@ -98,7 +91,7 @@ def get_mass_profile(r_arr,
         # input values into mass array
         # inner sphere
         mGas[r_arr <= rCore] = 4 / 3 * np.pi * r_arr[r_arr <= rCore]**3 * rhoCore
-        # composite region, see Eq25 in WARPFIELD 2.0 (Rahååner et al 2018)
+        # composite region, see Eq25 in WARPFIELD 2.0 (Rahner et al 2018)
         # assume rho_cl \propto rho (r/rCore)**alpha
         mGas[r_arr > rCore] = 4. * np.pi * rhoCore * (
                        rCore**3/3. +\
@@ -119,7 +112,7 @@ def get_mass_profile(r_arr,
             mGasdot[r_arr <= rCore] = 4 * np.pi * rhoCore * r_arr[r_arr <= rCore]**2 * rdot_arr[r_arr <= rCore]
             mGasdot[r_arr > rCore] = 4 * np.pi * rhoCore * (r_arr[r_arr > rCore]**(2+alpha) / rCore**alpha) * rdot_arr[r_arr > rCore]
             mGasdot[r_arr > rCloud] = 4 * np.pi * rhoISM * r_arr[r_arr > rCloud]**2 * rdot_arr[r_arr > rCloud]
-            return mGas, mGasdot
+            return mGas.to(u.M_sun), mGasdot.to(u.M_sun/u.yr)
         else:
-            return mGas
+            return mGas.to(u.M_sun)
         

@@ -15,9 +15,11 @@ import datetime
 import sys
 import yaml
 import os
+import astropy.units as u
+import astropy.constants as c
 
 #--
-from warpfield.phase0_init import (get_InitCloudProp, get_InitBubStruc,
+from src.warpfield.phase0_init import (get_InitCloudProp, get_InitBubStruc,
                                         get_InitCloudyDens, get_InitPhaseParam)
 from src.warpfield.phase_general import set_phase
 from src.warpfield.sb99 import read_SB99
@@ -26,9 +28,9 @@ from src.warpfield.phase1b_energy_implicit import run_energy_implicit_phase
 from src.warpfield.phase1c_transition import run_transition_phase
 from src.warpfield.phase2_momentum import run_momentum_phase
 from src.warpfield.cloudy import __cloudy__
-from src.warpfield.cooling import read_opiate
 import src.warpfield.functions.terminal_prints as terminal_prints
 import src.output_tools.write_outputs as write_outputs
+import src.warpfield.bubble_structure.bubble_luminosity as bubble_luminosity
 
 
 # get parameter
@@ -75,6 +77,67 @@ def start_expansion():
     
     # sys.exit()
     
+    
+    # R2 = 1 * u.pc
+    # Lw = 1 * u.erg/ u.s
+    # Eb = 1 * u.erg
+    # vw = 1 * u.km/u.s
+    # t_now = 1 * u.yr
+    # press = 1 * u.g / u.m / u.s**2
+    
+    # dMdt = bubble_luminosity.get_dMdt(R2, Lw, Eb, vw, t_now, press)
+    # print(dMdt)
+    
+    # alpha = beta = delta = 1 
+    # T_goal = 1 * u.K
+    
+    # r, T, dTdr, v = bubble_luminosity.get_bubble_ODE_initial_conditions(dMdt, press, alpha,R2, T_goal, t_now)
+    # print(r, T, dTdr, v)
+    
+    # Qi = 1 / u.s
+    # t = 1 * u.yr
+    
+    # dvdr, dTdr, dTdrr = bubble_luminosity.get_bubble_ODE(t, 
+    #                alpha, beta, delta, 
+    #                r, T, dTdr, v, 
+    #                press,
+    #                # Qi is from SB99 interp
+    #                Qi)
+    
+    # print(dvdr, dTdr, dTdrr)
+    
+    
+    # a 4976.099527584466
+    # b 5213.056647945631
+    # c 6.2274324244100785e+25
+    # d 380571798.5188472
+    # e 3080.442564695146
+    # y0 [1003.9291826702926, 453898.8577997466, -1815595431198.9866]
+    
+    
+    
+    # r_inner =  0.14876975625376893 * u.pc
+    # R2 = 0.20207551764992493 * u.pc
+    # Qi = 1.6994584609226492e+67 / u.Myr
+    # t_now = 0.00012057636642393612 * u.Myr
+    # dMdt_init = 40416.890252523  * u.M_sun / u.Myr
+    # T_goal = 30000.0 * u.K
+    # pressure = 380571798.5188472 * u.M_sun / u.Myr**2 / u.pc
+    # alpha = 0.6
+    # beta = 0.8
+    # delta = -0.17142857142857143
+    
+    # dMdt = bubble_luminosity.get_dMdt(dMdt_init, 
+    #                                  t_now, T_goal,
+    #                                  r_inner, R2,
+    #                                  pressure, Qi,
+    #                                  alpha, beta, delta)
+    
+    # print(dMdt)
+    
+    # sys.exit()
+    
+    
     # Note:
         # old code: expansion_main()
     
@@ -100,23 +163,34 @@ def start_expansion():
     # output path
     # params_dict['out_dir']+params_dict['model_name']+'_summary.txt'
     # This prints '/Users/jwt/Documents/Code/warpfield3/outputs/example_run/'
-    path2output = warpfield_params.out_dir
+    # path2output = warpfield_params.out_dir
     
     # General setup
     # time where SF event happens
-    tSF = 0.
+    tSF = 0 * u.Myr
     # number of re-collapses (0 if only 1 cluster present)
     ii_coll = 0
     # time array
-    t = np.array([tSF])
+    t = np.array([tSF.value])
+    # # radius array
+    # r = np.array([1.e-7 * u.pc], dtype = object)
+    # # shell velocity array
+    # v = np.array([3000 * u.km/u.s], dtype = object)
+    # # energy of bubble/shell array
+    # E = np.array([1 * u.erg], dtype = object)
+    # # temperature array
+    # T = np.array([100. * u.K], dtype = object)
+    
+    # time array
+    t = np.array([tSF.value]) * u.Myr
     # radius array
-    r = np.array([1.e-7])
+    r = np.array([1.e-7]) * u.pc
     # shell velocity array
-    v = np.array([3000.])
+    v = np.array([3000]) * u.km/u.s
     # energy of bubble/shell array
-    E = np.array([1.])
+    E = np.array([1]) * u.erg
     # temperature array
-    T = np.array([100.])
+    T = np.array([100]) * u.K    
     
     # =============================================================================
     # A: Initialising cloud properties. 
@@ -126,32 +200,32 @@ def start_expansion():
     # note now that the parameter mCloud here is the cloud mass AFTER star formation.
     rCloud, nEdge = get_InitCloudProp.get_InitCloudProp()
     
+    print(f"Cloud radius is {rCloud.value}pc.")
+    
     # -----
     # Turn into dictionary
+    # Note: mCloud is after star formation. Use warpfield_params.mCloud_beforeSF if you wanted cloud mass before star formation. 
     ODEpar = {'mCloud': warpfield_params.mCloud,
               'nEdge': nEdge,
               'rCloud': rCloud,
-              'rCore': warpfield_params.rCore,
-              'mCluster': warpfield_params.mCluster,
-              't_dissolve': 1e30,
-              'Rsh_max': 0.,
+              't_dissolve': 1e30 * u.yr,
+              'Rsh_max': 0. * u.pc,
               }
     
     # Additional parameters
     # set the maximum shell radius achieved during this expansion to 0. (i.e. the shell has not started to expand yet)
     # set dissolution time to arbitrary high number (i.e. the shell has not yet dissolved)
     ODEpar['Rsh_max'] = 0.
-    ODEpar['tSF_list'] = np.array([tSF])
-    ODEpar['Mcluster_list'] = np.array([ODEpar['mCluster']])
-    ODEpar['tStop'] = warpfield_params.stop_t
-    ODEpar['mypath'] = path2output 
+    ODEpar['tSF_list'] = np.array([tSF], dtype = object)
+    ODEpar['Mcluster_list'] = np.array([warpfield_params.mCluster], dtype = object)
     
     #  ODEpar['density_specific_param'] added.
     #  ODEpar['gamma'] = myc.gamma removed.
+    #  ODEpar['tStop'] = warpfield_params.stop_t removed.
     #  ODEpar['Mcloud_au'] = Mcloud_au renamed to ODEpar['mCloud'] = mCloud
     #  ODEpar['Rcloud_au'] = rcloud_au renamed to ODEpar['rCloud'] = rCloud
-    #  ODEpar['Rcore_au'] = Rcore_au renamed to ODEpar['rCore'] = rCore
-    #  ODEpar['Mcluster_au'] = Mcluster_au renamed to ODEpar['mCluster'] = mCluster
+    #  ODEpar['Rcore_au'] = Rcore_au renamed to ODEpar['rCore'] = rCore. Removed. 
+    #  ODEpar['Mcluster_au'] = Mcluster_au renamed to ODEpar['mCluster'] = mCluster. Removed.
     #  ODEpar['nalpha'] = i.nalpha removed.
     #  ODEpar['SFE'] = SFE removed.
     #  ODEpar['rhocore_au'] = i.rhoa_au removed, because i.rhoa_au is rhoCore, and it can be calculated from scratch.
@@ -162,18 +236,22 @@ def start_expansion():
     # Step 2: Obtain parameters from Starburst99
     # Scaling factor for cluster masses. Though this might only be accurate for
     # high mass clusters (~>1e5) in which the IMF is fully sampled.
-    factor_feedback = ODEpar['mCluster'] / warpfield_params.SB99_mass
+    factor_feedback = warpfield_params.mCluster / warpfield_params.SB99_mass
     # Get SB99 data and interpolation functions.
     SB99_data = read_SB99.read_SB99(f_mass = factor_feedback)
     SB99f = read_SB99.get_interpolation(SB99_data)
     # if tSF != 0.: we would actually need to shift the feedback parameters by tSF
     
+    # =============================================================================
+    # These two are currently not being needed. 
+    # =============================================================================
     # create density law for cloudy
-    get_InitCloudyDens.get_InitCloudyDens(path2output,
-                                          ODEpar['rCloud'], ODEpar['mCloud'], 
+    get_InitCloudyDens.create_InitCloudyDens(warpfield_params.out_dir,
+                                          rCloud, warpfield_params.mCloud, 
                                           coll_counter = ii_coll)
     
     # get initial bubble structure and path to where the file is saved.
+    # TODO: currently the file is not being saved. 
     get_InitBubStruc.get_InitBubStruc()
 
     # =============================================================================
@@ -184,6 +262,14 @@ def start_expansion():
 
     # MAIN WARPFIELD CODE
     t1, r1, v1, E1, T1 = run_expansion(ODEpar, SB99_data, SB99f)
+    
+    # Checkout from here atm.
+    
+    
+    
+    
+    
+    
     t = np.append(t, t1)
     r = np.append(r, r1)
     v = np.append(v, v1)
@@ -244,16 +330,11 @@ def run_expansion(ODEpar, SB99_data, SB99f):
     :return:
     """
 
-    print('here we enter run_expansion.')
-    
-    
-    
-    
-    
     
     ii_coll = 0
     tcoll = [0.]
-    tStop = ODEpar['tStop']
+    # TODO: actually implement this.
+    tStop = warpfield_params.stop_t 
 
     ######## STEP A: energy-phase (explicit) ###########
     # t0 = start time for Weaver phase
@@ -262,33 +343,22 @@ def run_expansion(ODEpar, SB99_data, SB99f):
     # v0 = initial velocity (km/s)
     # E0 = initial energy (erg/s)
     # T0 = initial temperature (K)
-    t0, y0 = get_InitPhaseParam.get_y0(0., SB99f)
+    t0, y0 = get_InitPhaseParam.get_y0(0*u.Myr, SB99f)
     
     # print(t0)
-    # 6.506818386985495e-05
+    # # 2.0522259231733465e-05 Myr
     # print(y0)
-    # [0.23790232199299727, 3656.200432285518, 5722974.028981317, 67741779.55773313]
+    # # 0.07673766615320331 pc, 3656.200432285518 km / s, 3.596718555609108e+49 erg aka (old) 1891940.1286636114 pc2 solMass / Myr2, 94169393.9519478 K
     # sys.exit('stop')
     
-    # get cooling function
-    Cool_Struc = read_opiate.get_coolingStructure(t0 * 1e6)
-    
     shell_dissolved = False
-    t_shdis = 1e99
+    t_shdis = 1e99 * u.yr
 
-    dt_Estart = 0.0001
-    tfinal = t0 + 30. * dt_Estart
-    #print "tfinal:", tfinal
+    dt_Estart = 0.0001 * u.Myr
+    tfinal = t0 + 30. * dt_Estart 
 
-    [Dw, shell_dissolved, t_shdis] = run_energy_phase.run_energy(t0, y0, 
-                                                                 ODEpar['rCloud'],
-                                                                 ODEpar['mCloud'],
-                                                                 ODEpar['mCluster'],
-                                                                 ODEpar['nEdge'],
-                                                                 ODEpar['rCore'],
-                                                                 warpfield_params.sigma_d,
+    [Dw, shell_dissolved, t_shdis] = run_energy_phase.run_energy(t0, y0, ODEpar,
                                                                  tcoll, ii_coll,
-                                                                 Cool_Struc,
                                                                  shell_dissolved, t_shdis,
                                                                  SB99_data, SB99f,
                                                                  tfinal,

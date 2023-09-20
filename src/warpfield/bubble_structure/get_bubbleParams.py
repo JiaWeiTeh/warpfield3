@@ -19,7 +19,6 @@ import astropy.units as u
 import astropy.constants as c
 from astropy.table import Table
 #--
-import src.warpfield.cooling.get_coolingFunction as get_coolingFunction
 import src.warpfield.functions.operations as operations
 # get parameter
 from src.input_tools import get_param
@@ -266,12 +265,18 @@ def bubble_E2P(Eb, r2, r1, gamma = warpfield_params.gamma_adia):
         # old code: PfromE()
     
     # Avoid division by zero
-    r2 = r2 + (1e-10)
+    # Make sure units are in cgs
+    r2 = r2.to(u.pc) + (1e-10) * u.pc
+    r2 = r2.to(u.cm)
+    Eb = Eb.to(u.erg)
+    r1 = r1.to(u.cm)
+    
+    
     # pressure, see https://www.imprs-hd.mpg.de/399417/thesis_Rahner.pdf
     # pg71 Eq 6.
     Pb = (gamma - 1) * Eb / (r2**3 - r1**3) / (4 * np.pi / 3)
     # return
-    return Pb
+    return Pb.to(u.g/u.cm/u.s**2)
     
 def bubble_P2E(Pb, r2, r1, gamma = warpfield_params.gamma_adia):
     """
@@ -295,7 +300,13 @@ def bubble_P2E(Pb, r2, r1, gamma = warpfield_params.gamma_adia):
     # Note:
         # old code: EfromP()
     # see bubble_E2P()
-    return 4 * np.pi / 3 / (gamma - 1) * (r2**3 - r1**3)
+    # Make sure units are in cgs
+    r2 = r2.to(u.cm)
+    r1 = r1.to(u.cm)
+    Pb = Pb.to(u.g/u.cm/u.s**2)
+    Eb = 4 * np.pi / 3 / (gamma - 1) * (r2**3 - r1**3) * Pb
+    
+    return Eb.to(u.erg)
 
 def pRam(r, Lwind, vWind):
     """
@@ -574,6 +585,7 @@ def get_bubbleLuminosity(Data_struc,
               "press": press, "Cool_Struc": cool_struc, "path": path2bubble}
 
     # prepare wrapper (to skip 2 superflous calls in fsolve)
+    # Question: meaning this can actually be skipped and included in the main dMdt call to avoid confusion?
     bubble_params["dMdtx0"] = dMdt_guess
     bubble_params["dMdty0"] = compare_boundaryValues(dMdt_guess, bubble_params, warpfield_params)
 
@@ -935,15 +947,14 @@ def get_bubbleLuminosity(Data_struc,
 
 def get_r1(r1, params):
     """
-    Root of this equation sets r1 (see Weaver77, eq 55).
+    Root of this equation sets r1 (see Rahners thesis, eq 1.25).
     This is derived by balancing pressure.
     
     Parameters
     ----------
-    r1 : variable for solving the equation
+    r1 : variable for solving the equation [cm]
         The inner radius of the bubble.
-    params : TYPE
-        DESCRIPTION.
+    params : All units in cgs. 
 
     Returns
     -------
@@ -1100,6 +1111,7 @@ def get_dMdt(dMdt_guess, bubble_params, warpfield_params, factor_fsolve = 50., x
     # retrieve data
     countl = float(os.environ["COUNT"])
     dmdt_0l = float(os.environ["DMDT"])
+    
     # solve for dMdt
     dMdt = scipy.optimize.fsolve(compare_boundaryValues_wrapper, dMdt_guess, args=(bubble_params, warpfield_params), 
                                  factor = factor_fsolve, xtol = xtol, epsfcn = 0.1 * xtol)

@@ -12,7 +12,7 @@ This script contains functions that handle printing information in the terminal.
 def phase1():
     
     print('\n\t\t      --------------------------------------------------')
-    print('\t\t      Running phase 1 (energy-driven phase)')
+    print('\t\t      Entering phase 1 (energy-driven phase)')
     print('\t\t      --------------------------------------------------')
     
     return
@@ -21,7 +21,7 @@ def phase1():
 def phase0():
     
     print('\n\t\t      --------------------------------------------------')
-    print('\t\t      Creating initial bubble')
+    print('\t\t      Initialising bubble')
     print('\t\t      --------------------------------------------------')
     
     return
@@ -35,7 +35,8 @@ class cprint:
     # e.g., print(f'{cprint.BOLD}This text is bolded{cprint.END}  but this isnt.')
     
     # bolded text to signal that a file is being saved
-    BOLD = '\033[1m\033[96m'
+    symbol = '\u27B3 '
+    BOLD = symbol+'\033[1m\033[96m'
     # aliases
     SAVE = BOLD
     FILE = BOLD

@@ -75,7 +75,7 @@ rand_input    0
 # This parameter will be ignored, if rand_input is set to 1.
 # type: float
 # DEFAULT: 6.0
-log_mCloud    9.0
+log_mCloud    7.0
 
 # Is log_mCloud given as mass BEFORE or AFTER cluster formation?
 # Available values:
@@ -571,6 +571,10 @@ path_sps    def_dir
 # DEFAULT: 0.9
 xi_Tb    0.9
 
+# The integration for bubble ODEs are set at radius R2_prime, which is slightly 
+# lesser than R2. We define R2_prime by termperature at which T(R2') = T_r2Prime
+# DEFAULT: 3e4 K
+T_r2Prime    3e4
 
 # =============================================================================
 # parameters/constants for miscellaneous properties of cloud/ISM/simulation.
@@ -646,7 +650,7 @@ gamma_mag    1.3333333333333333
 log_BMW    -4.3125
 log_nMW    2.065
 
-# What the thermal confuction coefficient C? (units: cgs)
+# What the thermal confuction coefficient C? (units: erg/s/cm * K^-7/2)
 # C, where thermal conductivity k = C * T**(5/2), see Spitzer 1962. 
 # C is a weak function of temperature, but can be treated as constant.
 # Available values: 
@@ -659,7 +663,10 @@ c_therm    6e-7
 # Factor A, which is related to the rate at which mass evaporates from the shell into
 # the hot region (Region b in Weaver+77). See Equation 33 in the same paper. 
 # DEFAULT: 1.646
-dMdT_factor    1.646
+dMdt_factor    1.646
+
+
+
 
 
 

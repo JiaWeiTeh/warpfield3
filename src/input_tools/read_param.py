@@ -139,7 +139,8 @@ def read_param(path2file, write_summary = True):
                    'log_BMW': -4.3125,
                    'log_nMW': 2.065,
                    'c_therm': 1.2e-6,
-                   'dMdT_factor': 1.646
+                   'dMdt_factor': 1.646,
+                   'T_r2Prime': 3e4
                    }
     
     
@@ -381,10 +382,12 @@ def read_param(path2file, write_summary = True):
     # free-fall time. This may be used even if stop_t_unit is not in tff time, 
     # as it may be called if mult_SF = 2, where the second startburst is
     # characterised by the free-fall time.
-    tff = np.sqrt(3. * np.pi / (32. * c.G.cgs.value * params_dict['dens_navg_pL'] * params_dict['mu_n'])) / u.Myr.to(u.s)
+    tff = np.sqrt(3. * np.pi / (32. * c.G.cgs.value * params_dict['dens_navg_pL'] * params_dict['mu_n'])) * u.s.to(u.Myr)
     params_dict['tff'] = float(tff)
     if params_dict['stop_t_unit'] == 'tff':
         params_dict['stop_t'] = params_dict['stop_t'] * params_dict['tff']
+    elif params_dict['stop_t_unit'] == 'Myr':
+        params_dict['stop_t'] = params_dict['stop_t'] 
     # if params_dict['stop_t_unit'] == 'Myr', it is fine; Myr is also the 
     # unit in all other calculations.
     
@@ -399,6 +402,8 @@ def read_param(path2file, write_summary = True):
         mCloud = params_dict['mCloud']
     else:
         mCloud = params_dict['mCloud'] / (1 - params_dict['sfe'])
+    # cloud mass before SF. Saved as another parameter.
+    params_dict['mCloud_beforeSF'] = mCloud
     # cluster mass
     mCluster = mCloud * params_dict['sfe']
     # cloud mass after SF

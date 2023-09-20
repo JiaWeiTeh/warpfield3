@@ -22,9 +22,10 @@ def display():
     print(f'\t\t      '+prompt['Welcome to']+' \033[32m'+link('https://github.com/JiaWeiTeh/warpfield3', 'WARPFIELD')+'\033[0m!\n')
     print(f'\t\t      Notes:')
     print(f'\t\t         - Documentation can be found \033[32m'+link('https://warpfield3.readthedocs.io/en/latest/', 'here')+'\033[0m.')
-    print(f'\t\t         - {cpr.BOLD}Bolded text{cpr.END} highlights the designated')
-    print(f'\t\t           locations of saved files.')
-    print(f'\t\t         - {cpr.WARN}This is a warning message{cpr.END} but code runs still.\n')
+    print(f'\t\t         - \033[1m\033[96mBold text{cpr.END} indicates that a file is saved,')
+    print(f'\t\t           and shows where it is saved.')
+    print(f'\t\t         - {cpr.WARN}Warning message{cpr.END}. Code runs still.')
+    print(f'\t\t         - {cpr.FAIL}Error encountered.{cpr.END} Code terminates.\n')
     print(f'\t\t      '+prompt['[Version 3.0] 2022. All rights reserved.'])
     print(f'\t\t      --------------------------------------------------')
     # show initial parameters
@@ -67,9 +68,9 @@ def show_param():
     print(f'\tdensity profile: {warpfield_params.dens_profile}')
     # shorten
     relpath = os.path.relpath(warpfield_params.out_dir, os.getcwd())
-    print(f"\033[1m\033[96mSummary: {relpath}/{warpfield_params.model_name}{'_summary.txt'}\033[0m")
+    print(f"{cpr.FILE}Summary: {relpath}/{warpfield_params.model_name}{'_summary.txt'}{cpr.END}")
     filename =  relpath + '/' + warpfield_params.model_name+ '_config.yaml'
-    print(f'\033[1m\033[96mVerbose yaml: {filename}\033[0m')
+    print(f'{cpr.FILE}Verbose yaml: {filename}{cpr.END}')
 
     return
 

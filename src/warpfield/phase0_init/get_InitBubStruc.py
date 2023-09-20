@@ -37,8 +37,6 @@ def get_InitBubStruc():
     # Initialise this
     R1R2 = R2pR2 = np.array([0])
     
-    
-    
     # check if directory exists
     # dirstring = os.path.join(path, "BubDetails")
     # if not os.path.isdir(dirstring):
@@ -69,5 +67,6 @@ def get_InitBubStruc():
     # ??
     dic_res={'Lb': 0, 'Trgoal': 0, 'dMdt_factor': 0, 'Tavg': 0, 'beta': 0, 'delta': 0, 'residual': 0}
     os.environ["BD_res"]=str(dic_res)
+    
     # return
     return 0

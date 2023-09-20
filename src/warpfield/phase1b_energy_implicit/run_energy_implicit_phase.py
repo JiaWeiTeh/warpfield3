@@ -13,7 +13,6 @@ import sys
 #--
 import src.warpfield.phase_general.phase_events as phase_events
 import src.warpfield.phase_general.phase_ODEs as phase_ODEs
-import src.warpfield.cooling.read_opiate as read_opiate
 import src.warpfield.phase1b_energy_implicit.find_root_betadelta as find_root_betadelta
 
 

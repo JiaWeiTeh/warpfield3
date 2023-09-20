@@ -10,11 +10,7 @@ This script includes function that calculates the density profile.
 
 import numpy as np
 import astropy.units as u
-import astropy.constants as c
-import sys
-import scipy.integrate
 #--
-import src.warpfield.cloud_properties.bonnorEbert as bE
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()
 
@@ -45,12 +41,6 @@ def get_density_profile(r_arr,
     # Note:
         # old code: f_dens and f_densBE().
 
-    # array for easier operation
-    if hasattr(r_arr, '__len__'):
-        r_arr  = np.array(r_arr)
-    else:
-        r_arr  = np.array([r_arr])
-        
     # =============================================================================
     # For a power-law profile
     # =============================================================================
@@ -58,15 +48,22 @@ def get_density_profile(r_arr,
     alpha = warpfield_params.dens_a_pL
     nAvg = warpfield_params.dens_navg_pL
     rCore = warpfield_params.rCore
+    nISM = warpfield_params.nISM
+    nCore = warpfield_params.nCore
+    # make sure units are right for operations
+    rCore = rCore.to(u.pc)
+    rCloud = rCloud.to(u.pc)
+    r_arr = r_arr.to(u.pc)
+    
     # Initialise with power-law
     # for different alphas:
     if alpha == 0:
-        dens_arr = warpfield_params.nISM * r_arr ** alpha
+        dens_arr = nISM * r_arr ** alpha
         dens_arr[r_arr <= rCloud] = nAvg
     else:
-        dens_arr = warpfield_params.nCore * (r_arr/rCore)**alpha
-        dens_arr[r_arr <= warpfield_params.rCore] = warpfield_params.nCore
-        dens_arr[r_arr > rCloud] = warpfield_params.nISM
+        dens_arr = nCore * (r_arr/rCore)**alpha
+        dens_arr[r_arr <= rCore] = nCore
+        dens_arr[r_arr > rCloud] = nISM
     
     # return n(r)
     return dens_arr

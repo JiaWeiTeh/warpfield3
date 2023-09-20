@@ -28,11 +28,12 @@ def find_nearest_lower(array, value):
         2) closest to value.
     Elements in array need be monotonically increasing or decreasing!
     """
-    # check whether array is monotonically increasing (by only checking the first 2 elements)
-    if array[1] > array[0]:
-        mon_incr = True
-    else:
-        mon_incr = False
+    # check whether array is monotonic 
+    assert monotonic(array), "array has to be monotonic!"
+    
+    # is it increasing?
+    mon_incr = kindof_increasing(array)
+    
     # get index
     idx = find_nearest(array, value)
     #---
@@ -53,18 +54,31 @@ def find_nearest_lower(array, value):
     # return
     return idx
 
+#  kind of, because includes equal values like [1,2,3,3,4]
+def kindof_increasing(L):
+    return all(x<=y for x, y in zip(L, L[1:]))
+
+def kindof_decreasing(L):
+    return all(x>=y for x, y in zip(L, L[1:]))
+
+def monotonic(L):
+    return kindof_increasing(L) or kindof_decreasing(L)
+
+
 def find_nearest_higher(array, value):
     """
     This fucntion finds idx in array for which array[idx] satisfies:
-        1) smaller or equal to value; and
+        1) higher or equal to value; and
         2) closest to value.
     Elements in array need be monotonically increasing or decreasing!
     """
-    # check whether array is monotonically increasing (by only checking the first 2 elements)
-    if array[1] > array[0]:
-        mon_incr = True
-    else:
-        mon_incr = False
+    # check whether array is monotonic 
+    assert monotonic(array), "array has to be monotonic!"
+    
+    # is it increasing?
+    mon_incr = kindof_increasing(array)
+    
+    
     # get index
     idx = find_nearest(array, value)
     #---
@@ -84,15 +98,4 @@ def find_nearest_higher(array, value):
         idx = 0
     # return
     return idx
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 

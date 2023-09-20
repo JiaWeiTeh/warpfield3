@@ -14,33 +14,29 @@ import scipy.interpolate
 import sys
 import scipy.optimize
 #--
-# import src.warpfield.bubble_structure.get_bubbleParams as get_bubbleParams
-# import src.warpfield.bubble_structure.bubble_structure as bubble_structure
-# import src.warpfield.shell_structure.shell_structure as shell_structure
-# import src.warpfield.cloud_properties.mass_profile as mass_profile
-# import src.warpfield.phase1_energy.energy_phase_ODEs as energy_phase_ODEs
-# import src.warpfield.functions.terminal_prints as terminal_prints
-# from src.warpfield.functions.operations import find_nearest_lower, find_nearest_higher
+import src.warpfield.bubble_structure.get_bubbleParams as get_bubbleParams
+import src.warpfield.bubble_structure.bubble_structure as bubble_structure
+import src.warpfield.shell_structure.shell_structure as shell_structure
+import src.warpfield.cloud_properties.mass_profile as mass_profile
+import src.warpfield.phase1_energy.energy_phase_ODEs as energy_phase_ODEs
+import src.warpfield.functions.terminal_prints as terminal_prints
+from src.warpfield.functions.operations import find_nearest_lower, find_nearest_higher
+from src.warpfield.cooling.non_CIE import read_cloudy
+import src.warpfield.bubble_structure.bubble_luminosity as bubble_luminosity
 
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()
 
 def run_energy(t0, y0, #r0, v0, E0, T0
-        rCloud, 
-        mCloud, 
-        mCluster, 
-        nEdge, 
-        rCore, 
-        sigma_dust,
-        tcoll, coll_counter,
-        Cool_Struc,
-        shell_dissolved, t_shelldiss,
-        stellar_outputs, # old code: SB99_data
-        SB99f,
-        # TODO: change tfinal to depend on warpfield_param
-        # not only tfinal, but all others too.
-        tfinal = 50,
-        Tarr = [], Larr = [], 
+               ODEpar,
+                tcoll, coll_counter,
+                shell_dissolved, t_shelldiss,
+                stellar_outputs, # old code: SB99_data
+                SB99f,
+                # TODO: change tfinal to depend on warpfield_param
+                # not only tfinal, but all others too.
+                tfinal = 50,
+                Tarr = [], Larr = [], 
         
     # Note:
     # old code: Weaver_phase()
@@ -79,7 +75,8 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # constant rate instead of in an initial blast.
     # -----------
 
-
+    # get cooling cube
+    cooling_data, heating_data = read_cloudy.get_coolingStructure(t0)
 
     # =============================================================================
     # Now, we begin Energy-driven calculations (Phase 1)
@@ -88,7 +85,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     terminal_prints.phase1()
     
     mypath = warpfield_params.out_dir
-
 
     # -----------
     # Step1: Obtain initial values
@@ -113,22 +109,24 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     fpdot_evo = scipy.interpolate.interp1d(t_evo, pdot_evo, kind = 'linear')
 
     # mechanical luminosity at time t0 (erg)
-    Lw0 = fLw_evo(t0) 
+    Lw0 = fLw_evo(t0) * u.erg / u.s
     # momentum of stellar winds at time t0 (cgs)
-    pdot0 = fpdot_evo(t0) 
+    pdot0 = fpdot_evo(t0) * u.g * u.cm / u.s**2
     # terminal wind velocity at time t0 (km/s)
-    vterminal0 = 2. * Lw0 / pdot0 * u.cm.to(u.km)
+    vterminal0 = (2. * Lw0 / pdot0).to(u.km/u.s)
     
     # bubble parameter values at time t0 (radius, velocity, energy, temperature)
     # r0 (pc), v0 = vterminal0 (km/s), E0 (erg), T0 (K)
     r0, v0, E0, T0 = y0
     
+    # Some cloud properties 
+    rCloud = ODEpar['rCloud']
+    mCloud = ODEpar['mCloud']
     
     # print('\n\ncheckpoint1')
-    # print(tStop_i,"\n\n", dLwdt,"\n\n", abs_dLwdt,"\n\n",\
-    #       t_problem,"\n\n", Lw0,"\n\n", pdot0,"\n\n", vterminal0)
+    # print('Lw0, pdot0, vterminal0')
+    # print(Lw0.to(u.M_sun * u.pc**2 / u.Myr**3), pdot0.to(u.M_sun * u.pc / u.Myr**2), vterminal0)
     # sys.exit()
-
 
     # -----------
     # Solve equation for inner radius of the inner shock.
@@ -140,15 +138,16 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     #                                   vterminal0, 
     #                                   r0)
                                       
-    # initial radius of inner discontinuity
-    R1 = scipy.optimize.brentq(get_bubbleParams.get_r1, 
-                               1e-3 * r0 * u.pc.to(u.cm), r0 * u.pc.to(u.cm), 
-                               args=([Lw0, 
-                                      E0, 
-                                      vterminal0 * u.km.to(u.cm), 
-                                      r0 * u.pc.to(u.cm)
-                                      ])) * u.cm.to(u.pc) #back to pc
-    
+    # initial radius of inner discontinuity [pc]
+    R1 = (scipy.optimize.brentq(get_bubbleParams.get_r1, 
+                               1e-3 * r0.to(u.cm).value, r0.to(u.cm).value, 
+                               args=([Lw0.to(u.erg/u.s).value, 
+                                      E0.to(u.erg).value, 
+                                      vterminal0.to(u.cm/u.s).value, 
+                                      r0.to(u.cm).value
+                                      ])) * u.cm)\
+                                .to(u.pc)#back to pc
+    print(f'Inner discontinuity: {R1}.')
     
     # initial energy derivative
     # Question: why?
@@ -158,8 +157,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     r0m1 = 0.9*r0
     
     # print('\n\ncheckpoint2')
-    # print(fLi_evo, fQi_evo,\
-    #       fLn_evo, fLbol_evo, fLw_evo, fpdot_evo)
     # print(R1, E0m1, t0m1, r0m1)
     # sys.exit()
  
@@ -170,22 +167,88 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # The initial mass [Msol]
     Msh0 = mass_profile.get_mass_profile(r0, rCloud, mCloud, return_mdot = False)
     # The initial pressure [cgs - g/cm/s2, or dyn/cm2]
-    P0 = get_bubbleParams.bubble_E2P(E0, r0 * u.pc.to(u.cm) , R1 * u.pc.to(u.cm))
+    P0 = get_bubbleParams.bubble_E2P(E0, r0, R1)
     # How long to stay in Weaver phase? Until what radius?
     if warpfield_params.density_gradient == True:
-        rfinal = np.min([rCloud, rCore])
+        rfinal = np.min([rCloud.cgs.value, warpfield_params.rCore.cgs.value])
     else:
         rfinal = rCloud
-        
-    print('checkpoint3')
-    print(E0, Msh0, 
-          P0 * u.g.to(u.kg)/u.cm.to(u.m), #this would be in SI / Pa
-          rfinal)
-    sys.exit()
     
+    print(f'Initial bubble mass: {Msh0}')
+    print(f'Initial bubble pressure: {P0.to(u.M_sun/u.pc/u.Myr**2)}')
+    
+    
+    # print('checkpoint3')
+    # print(E0, Msh0, P0, rfinal)
+    # 3.596718555609108e+49 erg 0.5953786133541732 solMass 0.0012556410178208998 g / (cm s2) 90.91228527839561 pc
     
     
     # Calculate bubble structure
+    # preliminary - to be tested
+    # This should be something in bubble_structure.bubble_wrap(), which is being called in phase_solver2. 
+    
+    
+    alpha = 0.6
+    beta = 0.8
+    delta = -0.17142857142857143
+    Eb = 11858019.317814864 * u.M_sun * u.pc**2 / u.Myr**2
+    # Why is this 0.2?
+    # change back? in old code R2 = r0.
+    R2 = 90.0207551764992493 * u.pc
+    R2 = r0
+    print('r0', r0)
+    # 
+    t_now = 0.00012057636642393612 * u.Myr
+    Lw =  201648867747.70163 * u.M_sun * u.pc**2 / u.Myr**3
+    vw = 3810.2196532385897 * u.km / u.s
+    dMdt_factor = 1.646
+    Qi = 1.6994584609226492e+67 / u.Myr
+    v0 = 0.0 * u.km / u.s 
+    T_goal = 3e4 * u.K
+    r_inner = R1
+    rgoal = 0.18186796588493245 * u.pc
+
+
+    # {'v0': 0.0, 'cons': {'a': 4976.099527584466, 'b': 5213.056647945631,
+    #                      'c': 6.2274324244100785e+25, 'd': 380571798.5188472,
+    #                      'e': 3080.442564695146, 't_now': 0.00012057636642393612,
+    #                      'Qi': 1.6994584609226492e+67}, 'rgoal': 0.18186796588493245,
+    #  'Tgoal': 30000.0, 'R2': 0.20207551764992493, 'R_small': 0.14876975625376893,
+    #  'press': 380571798.5188472}
+
+    bubble_prop = bubble_luminosity.get_bubbleproperties(t_now, T_goal, rgoal,
+                                                         r_inner, R2,
+                                                         Qi, alpha, beta, delta,
+                                                         Lw, Eb, vw, v0,
+                                                         )
+    
+    
+    
+    
+    
+    
+    # Then, turn on cooling gradually. I.e., reduce the amount of cooling at very early times. 
+    
+    
+    
+    
+    
+    # Calculate shell structure.
+    # preliminary - to be tested
+    shell_prop = shell.shell_structure()
+    
+    
+    
+    
+    
+    # Calculate bubble mass
+    bubbble_mass = mass_profile.calc_mass()
+    
+    
+    
+    
+    # Get new values for next loop.
+    
     
     return
     

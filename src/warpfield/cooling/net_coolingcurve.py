@@ -12,15 +12,46 @@ old code: coolnoeq.cool_interp_master()
 """
 import scipy.interpolate
 import numpy as np
+import astropy.units as u
 
 import src.warpfield.cooling.CIE.read_coolingcurve as CIE
 # get_Lambda
 import src.warpfield.cooling.non_CIE.read_cloudy as non_CIE
 from src.warpfield.functions.terminal_prints import cprint as cpr
 
+
 def get_dudt(age, ndens, T, phi):
+    """
+    
+
+    Parameters
+    ----------
+    age [Myr]: TYPE
+        DESCRIPTION.
+    ndens : TYPE
+        DESCRIPTION.
+    T : TYPE
+        DESCRIPTION.
+    phi : TYPE
+        DESCRIPTION.
+
+    Raises
+    ------
+    Exception
+        DESCRIPTION.
+
+    Returns
+    -------
+    dudt is erg /cm3 /s, because cooling is in units of [erg cm3 / s]
+    TYPE
+        DESCRIPTION.
+
+    """
     
     # These value should not be logged!
+    # double checking units
+    ndens = ndens.to(1/u.cm**3)
+    phi = phi.to(1/u.cm**2/u.s)
     
     # New idea, since non-CIE curve is only up to 10^5.5K, which is exactly
     # what our threshold is, we create an if/else function that returns 
@@ -29,20 +60,21 @@ def get_dudt(age, ndens, T, phi):
     
     # import values from two cooling curves
     cooling_nonCIE, heating_nonCIE = non_CIE.get_coolingStructure(age)
-    Lambda_CIE, logT_CIE, logLambda_CIE = CIE.get_Lambda(T)
+    Lambda_CIE, logT_CIE, logLambda_CIE, _ = CIE.get_Lambda(T)
     
     # we take the cutoff at 10e5.5 K. 
+    # These are all in log-space. 
     # cutoff at which temperature above switches to CIE file:
-    nonCIE_Tcutoff = max(cooling_nonCIE.temp[cooling_nonCIE.temp <= 5.5])
+    nonCIE_Tcutoff = max(cooling_nonCIE.temp[cooling_nonCIE.temp.value <= 5.5])
     # cutoff at which temperature below switches to non-CIE file:
-    CIE_Tcutoff = min(logT_CIE[logT_CIE > 5.5])
+    CIE_Tcutoff = min(logT_CIE[logT_CIE.value > 5.5])
     # output
     # print(f'{cpr.WARN}Taking net-cooling curve from non-CIE condition at T <= {nonCIE_Tcutoff}K and CIE condition at T >= {CIE_Tcutoff}K.{cpr.END}')
     # if nonCIE_Tcutoff != CIE_Tcutoff:
         # print(f'{cpr.WARN}Net cooling for temperature values in-between will be interpolated{cpr.END}.')
 
     # if temperature is lower than the non-CIE temperature, use non-CIE
-    if np.log10(T) <= nonCIE_Tcutoff and np.log10(T) >= min(cooling_nonCIE.temp):
+    if np.log10(T.value) <= nonCIE_Tcutoff.value and np.log10(T.value) >= min(cooling_nonCIE.temp).value:
         # print(f'{cpr.WARN}Entering non-CIE regime...{cpr.END}')
         # All this does here is to interpolate for values of Lambda based on
         # T, dens and phi.
@@ -53,19 +85,19 @@ def get_dudt(age, ndens, T, phi):
         f_dudt = scipy.interpolate.RegularGridInterpolator((cooling_nonCIE.ndens, cooling_nonCIE.temp, cooling_nonCIE.phi), netcooling)
         # get net cooling rate
         # remember that these have to be logged!
-        dudt = f_dudt([np.log10(ndens), np.log10(T), np.log10(phi)])[0]
+        dudt = f_dudt([np.log10(ndens.value), np.log10(T.value), np.log10(phi.value)])[0] * u.erg / u.cm**3 / u.s
         # return in negative sign for convension (since the rate of change is negative due to net cooling)
         return -1 * dudt
         
     # if temperature is higher than the CIE curve, use CIE.
-    elif np.log10(T) >= CIE_Tcutoff:
+    elif np.log10(T.value) >= CIE_Tcutoff.value:
         # print(f'{cpr.WARN}Entering CIE regime...{cpr.END}')
         # get CIE cooling rate
         dudt = ndens**2 * Lambda_CIE
-        return -1 * dudt        
+        return -1 * dudt.to(u.erg / u.cm**3 / u.s)
         
     # if temperature is between, do interpolation
-    elif (np.log10(T) > nonCIE_Tcutoff) and (np.log10(T) < CIE_Tcutoff):
+    elif (np.log10(T.value) > nonCIE_Tcutoff.value) and (np.log10(T.value) < CIE_Tcutoff.value):
         # print(f'{cpr.WARN}Entering interpolation regime...{cpr.END}')
         # =============================================================================
         # This part is just for non-CIE, and slight-modification from above
@@ -76,24 +108,24 @@ def get_dudt(age, ndens, T, phi):
         # create interpolation function
         f_dudt = scipy.interpolate.RegularGridInterpolator((cooling_nonCIE.ndens, cooling_nonCIE.temp, cooling_nonCIE.phi), netcooling)
         # get net cooling rate
-        dudt_nonCIE = f_dudt([np.log10(ndens), nonCIE_Tcutoff, np.log10(phi)])[0]
+        dudt_nonCIE = f_dudt([np.log10(ndens.value), nonCIE_Tcutoff.value, np.log10(phi.value)])[0] * u.erg / u.cm**3 / u.s
         
         # =============================================================================
         # This part is just for CIE
         # =============================================================================
     
         # # get CIE cooling rate
-        Lambda, _, _= CIE.get_Lambda(10**CIE_Tcutoff)
-        dudt_CIE = ndens**2 * Lambda 
+        Lambda, _, _= CIE.get_Lambda(10**CIE_Tcutoff.value * u.K)
+        dudt_CIE = (ndens**2 * Lambda).to(u.erg / u.cm**3 / u.s)
         
         # =============================================================================
         # Do interpolation now
         # =============================================================================
         
         # print(np.log10(T), [nonCIE_Tcutoff, CIE_Tcutoff],[dudt_nonCIE, dudt_CIE])
-        dudt = np.interp(np.log10(T), [nonCIE_Tcutoff, CIE_Tcutoff],[dudt_nonCIE, dudt_CIE])
+        dudt = np.interp(np.log10(T.value), [nonCIE_Tcutoff.value, CIE_Tcutoff.value],[dudt_nonCIE.value, dudt_CIE.value])
     
-        return -1 * dudt
+        return -1 * dudt * u.erg / u.cm**3 / u.s
     
     
     # if temperature is lower than the available non-CIE curve, error (or better, provide some interpolation in the future?)
@@ -102,34 +134,3 @@ def get_dudt(age, ndens, T, phi):
         
     
     
-    
-
-
-
-    
-    # # THese if/else cases seem to be for T range for when to/not to use CIE cooling curves?
-    
-    # if (np.log10(point["T"]) > log_T_intermax) or (np.log10(point["T"]) < log_T_intermin):
-    #     Lambda = get_coolingFunction(point["T"], metallicity)
-    #     dudt = -1. * (point["n"]) ** 2 *  Lambda / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
-
-    # elif (np.log10(point["T"]) >= log_T_noeqmax):
-    #     dudt1 = -1. * (point["n"]) ** 2 * get_coolingFunction(point["T"], metallicity) / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
-    #     dudt0 = -1. * Interp3_dudt({"n": point["n"], "T": point["T"], "Phi": point["Phi"]}, Cool_Struc) / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
-    #     dudt = linear(np.log10(point["T"]), [log_T_noeqmax, log_T_intermax], [dudt0, dudt1])
-
-    # elif (np.log10(point["T"]) <= log_T_noeqmin):
-    #     dudt0 = -1. * (point["n"]) ** 2 * get_coolingFunction(point["T"], metallicity) / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
-    #     dudt1 = -1. * Interp3_dudt({"n": point["n"], "T": point["T"], "Phi": point["Phi"]}, Cool_Struc) / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
-    #     dudt = linear(np.log10(point["T"]), [log_T_intermin, log_T_noeqmin], [dudt0, dudt1])
-
-    # else:
-    #     dudt = -1. * Interp3_dudt({"n": point["n"], "T": point["T"], "Phi": point["Phi"]}, Cool_Struc) / (c.M_sun.cgs.value / (c.pc.cgs.value* u.Myr.to(u.s)**3))
-
-    # return dudt
-
-
-
-
-
-

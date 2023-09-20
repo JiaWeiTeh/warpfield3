@@ -11,33 +11,34 @@ write initial density profile to a txt. file.
 
 import numpy as np
 import astropy.constants as c
+import astropy.units as u
 import os
 import sys
 import src.warpfield.cloud_properties.density_profile as density_profile
+from src.warpfield.functions.terminal_prints import cprint as cpr
 
-def get_InitCloudyDens(path2output,
+def create_InitCloudyDens(path2output,
                        rCloud, mCloud,
                        coll_counter=0):
 
     # Note:
         # old code: __cloudy__.create_dlaw()
     
-    dx_small = 1e-4
+    dx_small = 1e-4 * u.pc
+    rLast = (rCloud - dx_small).to(u.pc)
     # last radius just outside cloud
     # TODO: shouldn't this be +dx_small then?
-    r = np.logspace(-1.,np.log10(rCloud - dx_small), endpoint=True, num=200) 
+    r = np.logspace(-1.,np.log10(rLast.value), endpoint=True, num=200) * u.pc
     # join with different endpoints
-    r = np.concatenate([[dx_small],r,[r[-1]+0.001], [r[-1]+5.0], [r[-1]+500.0]])
+    r = np.concatenate([[dx_small],r,[r[-1]+0.001 * u.pc], [r[-1]+5.0* u.pc], [r[-1]+500.0* u.pc]])
     # get density profile
-    
     n = density_profile.get_density_profile(r, rCloud)
     
     # print('Checking initial density')
     # print(n)
     # sys.exit()
-    
-    logn = np.log10(n)
-    logr = np.log10(r * c.pc.cgs.value)
+    logn = np.log10((n/u.cm**-3)) * u.cm**-3
+    logr = np.log10(r/u.pc) * u.pc
     
     # old: dlaw.txt
     # save into csv
@@ -49,4 +50,4 @@ def get_InitCloudyDens(path2output,
                header="Density [log10(n)],Radius [log10(r)]", comments='')
     
     # TODO: make this sound better, and also check if the logr is in correct unit.
-    return print(f'\033[1m\033[96mInitial density: {rel_path}\033[0m')
+    return print(f'{cpr.FILE}Density for CLOUDY: {rel_path}{cpr.END}')

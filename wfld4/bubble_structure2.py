@@ -120,7 +120,7 @@ def calc_cons(alpha,beta,delta,t_now, press, units = 'au'):
     d = press
     e = (beta+2.5*delta)/t_now
 
-    cons={"a":a, "b":b, "c":c, "d":d, "e":e}
+    cons={"a":a, "b":b, "c":c, "d":d, "e":e, 't_now': t_now}
 
     return cons
 
@@ -189,8 +189,34 @@ def bubble_struct(r, x, Data_Struc, units = 'au'):
         T = 10.**3.61
 
     # loss (or gain) of internal energy
-    dudt = coolnoeq.cool_interp_master({"n":ndens, "T":T, "Phi":Phi}, Cool_Struc, log_T_noeqmin=log_T_noeqmin, log_T_noeqmax=log_T_noeqmax, log_T_intermin=log_T_intermin, log_T_intermax=log_T_intermax)
-
+    # print('\n\n\nEntering dudt calculation. ')
+    # print(Data_Struc["cons"]["t_now"])
+    # print(ndens, T, Phi)
+    # np.save('cool_interp3dudtmyelement', Cool_Struc['Netcool'])
+    
+    # I think dudt is also in au units?
+    # print(ndens, T, Phi)
+    # sys.exit()
+    dudt = coolnoeq.cool_interp_master({"n":ndens, "T":T, "Phi":Phi, 't_now': Data_Struc["cons"]["t_now"]}, Cool_Struc, log_T_noeqmin=log_T_noeqmin, log_T_noeqmax=log_T_noeqmax, log_T_intermin=log_T_intermin, log_T_intermax=log_T_intermax)
+    # testing purpose
+    # dudt = 1
+    
+    # # =============================================================================
+    # # comment this out to check for cooling
+    # # =============================================================================
+    # T_arr = np.logspace(4, 8, 100)
+    # dudt_arr = []
+    # print('ndens', ndens, 'Phi', Phi, 't_now', Data_Struc["cons"]["t_now"])
+    # for T in T_arr:
+    #     dudt = coolnoeq.cool_interp_master({"n":ndens, "T":T, "Phi":Phi, 't_now': Data_Struc["cons"]["t_now"]}, Cool_Struc, log_T_noeqmin=log_T_noeqmin, log_T_noeqmax=log_T_noeqmax, log_T_intermin=log_T_intermin, log_T_intermax=log_T_intermax)
+    #     dudt_arr.append(dudt)
+    
+    # import matplotlib.pyplot as plt
+    # plt.plot(T_arr, dudt_arr)
+    # plt.vlines(10**(5.5), min(dudt_arr), max(dudt_arr), linestyle = '--')
+    # plt.xscale('log')
+    # plt.show()
+    # sys.exit()
     
     #end = time.time()
     #print(end - start)
@@ -229,6 +255,12 @@ def get_r_list(Rhi, Rlo, dx0, n_extra=0):
     r = top + dx0 - np.cumsum(dxlist)  # position vector on which ODE will be solved
     r = r[r > bot]  # for safety reasons
     r = np.append(r, bot)  # make sure the last element is exactly the bottom entry
+    # print('in get_r_list')
+    # print('Ndx', Ndx)
+    # print('top, bot', top, bot)
+    # print('dxmean', dxmean)
+    # print('r')
+    # sys.exit()
 
     # extend the radius a bit further to small values, i.e. calculate a bit more than necessary
     # if n_extra has been set to 0, no extra points will be used
@@ -250,7 +282,6 @@ def calc_bstruc_start(dMdt, params):
 
     # initiate integration at radius R2_prime slightly less than R2
     dR2 = (params["Tgoal"]**2.5)/(temp_au * dMdt / (4. * np.pi * params["R2"] ** 2.)) # spatial separation between R2 and the point where the ODE solver is initialized (cannot be exactly at R2)
-    
     
     path = params["path"]
     
@@ -355,11 +386,43 @@ def comp_bv_au(dMdt, params):
     # try to solve the ODE (might not have a solution)
     try:
         ############## Option1: call ODE solver "odeint" ###########################
-
+        
+        
+        
+        
         psoln = scipy.integrate.odeint(bubble_struct, y0, r, args=(Data_Struc,), tfirst=True)
-
         v = psoln[:, 0]
         T = psoln[:, 1]
+
+    #     print(    'a' , Data_Struc["cons"]["a"],
+    # '\nb' , Data_Struc["cons"]["b"],
+    # '\nc' , Data_Struc["cons"]["c"],
+    # '\nd' , Data_Struc["cons"]["d"],
+    # '\ne' , Data_Struc["cons"]["e"],
+    # '\nt_now' , Data_Struc["cons"]["t_now"],
+    # '\nQi' , Data_Struc["cons"]["Qi"],
+    # '\ny0', y0,
+    # '\nR2_prime', R2_prime, 
+    # '\nparams["R_small"]', params["R_small"],
+    # '\ndMdt', dMdt,
+    # '\nparams["R2"]', params["R2"],
+    # '\nparams["T_goal"]', params["Tgoal"],
+    # '\nparams["press"]', params["press"],
+    # '\nv', v,
+    # )
+    #     sys.exit()
+        # a 4976.099527584466
+        # b 5213.056647945631
+        # c 6.2274324244100785e+25
+        # d 380571798.5188472
+        # e 3080.442564695146
+        # t_now 0.00012057636642393612
+        # Qi 1.6994584609226492e+67
+        # y0 [1003.9291826702926, 453898.8577997466, -1815595431198.9866]
+        # R2_prime 0.20207541764992493
+        # params["R_small"] 0.14876975625376893
+        # dMdt 40416.890252523
+        # params["R2"] 0.20207551764992493
 
         ############################################################################
 
@@ -430,6 +493,8 @@ def comp_bv_au(dMdt, params):
 
 
     except:
+        print('here in bub2 but now is exiting.')
+        sys.exit()
         # this is the case when the ODE has no solution with chosen inital values
         print("giving a wrong residual here")
         if dTdrR2_prime < 0.:
@@ -524,7 +589,23 @@ def calc_Lb(data_struc, Cool_Struc, counter, rgoal_f=i.r_Tb, verbose=0, plot=0, 
     Qi = data_struc['Qi'] # current photon flux of ionizing photons
     v0 = 0.0 # velocity at r --> 0.
     #Cool_Struc = data_struc['Cool_Struc']
-
+    
+    
+    print('here are the parameters for calc_Lb. This can be used for debugging in new code.')
+    
+    print('\nalpha' , data_struc["alpha"])
+    print('beta' , data_struc["beta"])
+    print('delta' , data_struc["delta"])
+    print('Eb' , data_struc["Eb"])
+    print('R2' , data_struc["R2"])
+    print('t_now' , data_struc["t_now"])
+    print('Lw' , data_struc["Lw"])
+    print('vw' , data_struc["vw"])
+    print('dMdt_factor' , data_struc["dMdt_factor"])
+    print('Qi' , data_struc["Qi"])
+    print('v0' , v0)
+    sys.exit()
+          
     onlycoolfunc = Cool_Struc['Cfunc']
     onlyheatfunc = Cool_Struc['Hfunc']
 
@@ -560,7 +641,8 @@ def calc_Lb(data_struc, Cool_Struc, counter, rgoal_f=i.r_Tb, verbose=0, plot=0, 
     press = state_eq.PfromE(Eb, R2, R1)
     
     # print('pressure', press)
-
+    # print('constants', alpha, beta, delta, t_now, press)
+    # 0.6 0.8 -0.17142857142857143 0.00012057636642393612 380571798.5188472
     cons = calc_cons(alpha, beta, delta, t_now, press, units='au')
     cons["Qi"] = Qi
     
@@ -580,13 +662,18 @@ def calc_Lb(data_struc, Cool_Struc, counter, rgoal_f=i.r_Tb, verbose=0, plot=0, 
     path=os.environ["Bstrpath"]
     #MC,SFE,R1R2,R2pR2,dmdt,count=np.loadtxt(path, skiprows=1, delimiter='\t', usecols=(0,1,2,3,4,5), unpack=True)
     
+    
     R1R2,R2pR2=np.loadtxt(path, skiprows=1, delimiter='\t', usecols=(0,1), unpack=True)
+    
     
     rgoal_f=aux.calcr_Tb(R1R2,R2pR2)
 
+    # print('r1r2 here')
+    # print(R1R2, R2pR2, R1/R2)'
+    
+    
     R1R2=np.append(R1R2, R1/R2)
     R2pR2=np.append(R2pR2,0)
-   
     
     np.savetxt(path, np.c_[R1R2,R2pR2],delimiter='\t',header='R1/R2'+'\t'+'R2p/R2')  
 
@@ -648,6 +735,11 @@ def calc_Lb(data_struc, Cool_Struc, counter, rgoal_f=i.r_Tb, verbose=0, plot=0, 
             dMdt = find_dMdt(dMdt_guess, params, factor_fsolve=factor_fsolve, xtol=1e-3)
     else:
         dMdt = find_dMdt(dMdt_guess, params, factor_fsolve=factor_fsolve, xtol=1e-3) #1e-6
+        # print('\nhere is the dMdt estimate in bstructure2.py.\n')
+        # print('inputs')
+        # print(dMdt_guess, params, factor_fsolve)
+        # print(dMdt)
+        # sys.exit()
 
     # print("dMdt", dMdt_guess, dMdt)
 
@@ -1428,7 +1520,7 @@ def bubble_wrap(data, Cool_Struc, fit_len=5, fit_len_short = 5, verbose = 0):
     t0 = data['t0']
     E0 = data['E0']
     T0 = data['T0']
-    print(T0)
+    # print(T0)
     dt_L = data['dt_L']
     temp_counter = data['temp_counter']
     # Cool_Struc = data['Cool_Struc']
@@ -1481,6 +1573,7 @@ def bubble_wrap(data, Cool_Struc, fit_len=5, fit_len_short = 5, verbose = 0):
             """
             # if above 'fixpoint interation' did not converge, we need better (but more expensive) methods: use a root finder!
             if (use_root_finder is True):
+                print('entering use_root_finder == True')
                 #print("using root finder to estimate delta") # debugging
                 params = [data_struc_temp, Cool_Struc, t_10list, T_10list, fit_len, verbose]
 
@@ -1559,7 +1652,7 @@ def bubble_wrap(data, Cool_Struc, fit_len=5, fit_len_short = 5, verbose = 0):
                     try:
                         delta = scipy.optimize.brentq(delta_zero, delta_in_lo , delta_in_hi, args=(params), xtol=0.1*my_xtol, rtol=1e-9) # this might fail if no fixpoint exists in the given range
                     except:
-                        print(data_struc_temp, t_10list, T_10list, fit_len, verbose)
+                        # print(data_struc_temp, t_10list, T_10list, fit_len, verbose)
                         delta = delta0
                         bubble_check = 1 # something went wrong
 
@@ -1575,7 +1668,7 @@ def bubble_wrap(data, Cool_Struc, fit_len=5, fit_len_short = 5, verbose = 0):
             dt_L = fac * dt_L  # 3 per cent change
         # early on, use fixed initial delta
         else:
-            print(T0)
+            # print(T0)
             data_struc = {'alpha': alpha, 'beta': beta, 'delta': delta, 'R2': r0, 't_now': t0, 'Eb': E0, 'Lw': Lw, 'vw': vterminal, 'dMdt_factor': dMdt_factor, 'Qi':data['Qi'], 'mypath': data['mypath']}
             np.seterr(all='warn')
             [Lb, T0, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav] = calc_Lb(data_struc, Cool_Struc, temp_counter, rgoal_f=i.r_Tb, verbose=verbose,
@@ -1595,7 +1688,7 @@ def bubble_wrap(data, Cool_Struc, fit_len=5, fit_len_short = 5, verbose = 0):
         r_Phi = np.nan
         Phi_grav_r0b = np.nan
         f_grav = np.nan
-    # print("This is output")
+    print("This is output")
     # print([bubble_check, Lb, T0, alpha, beta, delta, dt_L, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav])
     return [bubble_check, Lb, T0, alpha, beta, delta, dt_L, Lb_b, Lb_cz, Lb3, dMdt_factor_out, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav]
 

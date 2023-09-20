@@ -1,6 +1,6 @@
 # =============================================================================
 # Summary of parameters in the 'example_pl' run.
-# Created at 08/09/2023 14:44:47.
+# Created at 20/09/2023 21:47:49.
 # =============================================================================
 
 model_name    example_pl
@@ -8,7 +8,7 @@ out_dir    /Users/jwt/Documents/Code/warpfield3/outputs/example_pl/
 verbose    2.0
 output_format    ASCII
 rand_input    0.0
-log_mCloud    9.0
+log_mCloud    7.0
 is_mCloud_beforeSF    1.0
 sfe    0.01
 nCore    10000.0
@@ -71,5 +71,6 @@ gamma_mag    1.3333333333333333
 log_BMW    -4.3125
 log_nMW    2.065
 c_therm    6e-07
-dMdT_factor    1.646
+dMdt_factor    1.646
+T_r2Prime    30000.0
 sigma_d    1.5e-21

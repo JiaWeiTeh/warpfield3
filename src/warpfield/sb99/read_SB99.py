@@ -12,6 +12,7 @@ This script contains functions that will help reading in Starburst99 data.
 import numpy as np
 import scipy
 import sys
+import astropy.units as u
 # get parameter
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()
@@ -61,15 +62,15 @@ def read_SB99(f_mass):
     # SB99_file = np.loadtxt(warpfield_params.path_sps + filename)
     SB99_file = np.loadtxt(path2sps + filename)
     # read columns
-    # in Myr
-    t = SB99_file[:,0]/1e6
+    # change to in Myr instead
+    t = SB99_file[:,0] /1e6 * u.Myr
     # the rest, translate to linear, then scale with actual cluster mass
-    Qi = 10**SB99_file[:,1] * f_mass
+    Qi = 10**SB99_file[:,1] * f_mass / u.s
     fi = 10**SB99_file[:,2]
-    Lbol = 10**SB99_file[:,3] * f_mass
-    Lmech = 10**SB99_file[:,4] * f_mass
-    pdot_W = 10**SB99_file[:,5] * f_mass
-    Lmech_W = 10**SB99_file[:,6] * f_mass
+    Lbol = 10**SB99_file[:,3] * f_mass * u.erg/u.s
+    Lmech = 10**SB99_file[:,4] * f_mass * u.erg/u.s
+    pdot_W = 10**SB99_file[:,5] * f_mass * u.g * u.cm/(u.s**2)
+    Lmech_W = 10**SB99_file[:,6] * f_mass * u.erg/u.s
 
     # =============================================================================
     # Step2: calculate other derived values
@@ -104,7 +105,7 @@ def read_SB99(f_mass):
     # first break down into mass loss and velocity
     # TODO: get time-dependent velocity, e.g. when mass of ejecta are known
     # convert to cgs
-    velocity_SN = warpfield_params.v_SN * 1e5
+    velocity_SN = warpfield_params.v_SN.cgs
     Mdot_SN = 2 * Lmech_SN / velocity_SN**2
     # Add fraction of mass injected into the cloud due to sweeping of cold material
     # from protostars and disks inside star clusters?
@@ -115,13 +116,12 @@ def read_SB99(f_mass):
     # convert back
     pdot_SN = Mdot_SN * velocity_SN
     Lmech_SN = 0.5 * Mdot_SN * velocity_SN**2
-    
     # =============================================================================
     # Final touchups
     # =============================================================================
     # total energy and momentum injection rate
     Lmech = Lmech_SN + Lmech_W
-    pdot = pdot_SN + pdot_W
+    pdot = pdot_SN.decompose(bases=u.cgs.bases) + pdot_W.decompose(bases=u.cgs.bases)
     
     # insert 1 element at t=0 for interpolation purposes
     t = np.insert(t, 0, 0.0)
@@ -153,7 +153,7 @@ def get_filename():
         def format_e(n):
             a = '%E' % n
             return a.split('E')[0].rstrip('0').rstrip('.') + 'e' + a.split('E')[1].strip('+').strip('0')
-        SBmass_str = format_e(warpfield_params.SB99_mass)
+        SBmass_str = format_e(warpfield_params.SB99_mass/u.M_sun)
         # with rotation?
         if warpfield_params.SB99_rotation == True:
             rot_str = 'rot'
@@ -167,10 +167,10 @@ def get_filename():
             # 0.15 solar
             z_str = 'Z0002'
         # what blackhole cutoff mass?
-        if int(warpfield_params.SB99_BHCUT) == 120:
+        if int(warpfield_params.SB99_BHCUT/u.M_sun) == 120:
             # solar
             BH_str = 'BH120'
-        elif int(warpfield_params.SB99_BHCUT) == 40:
+        elif int(warpfield_params.SB99_BHCUT/u.M_sun) == 40:
             # 0.15 solar
             BH_str = 'BH40'            
             
@@ -204,7 +204,7 @@ def get_interpolation(SB99, ftype = 'linear'):
     # obtain all SB99 values
     [t_Myr, Qi_cgs, Li_cgs, Ln_cgs, Lbol_cgs, Lw_cgs, pdot_cgs, pdot_SNe_cgs] = SB99
     # get interpolation functions
-    fQi_cgs = scipy.interpolate.interp1d(t_Myr, Qi_cgs, kind = ftype)
+    fQi_cgs = scipy.interpolate.interp1d(t_Myr, Qi_cgs, kind = ftype) 
     fLi_cgs = scipy.interpolate.interp1d(t_Myr, Li_cgs, kind = ftype)
     fLn_cgs = scipy.interpolate.interp1d(t_Myr, Ln_cgs, kind = ftype)
     fLbol_cgs = scipy.interpolate.interp1d(t_Myr, Lbol_cgs, kind = ftype)

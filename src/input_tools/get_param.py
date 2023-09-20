@@ -10,6 +10,7 @@ This script retrieves the parameters.
 
 import os
 import yaml
+from src.input_tools.append_units import append_units 
 
 def get_param():
     # load
@@ -22,7 +23,9 @@ def get_param():
         def __init__(self, dictionary):
             for k, v in dictionary.items():
                 setattr(self, k, v)
-    
+    # dictionary
+    warpfield_params = Dict2Class(warpfield_params)
+    # Add astropy units
+    warpfield_params = append_units(warpfield_params)
     # return
-    return Dict2Class(warpfield_params)
-
+    return warpfield_params
