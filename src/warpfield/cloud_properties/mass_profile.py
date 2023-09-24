@@ -12,6 +12,7 @@ import astropy.units as u
 import numpy as np
 import sys 
 
+# get parameters
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()
 

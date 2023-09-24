@@ -357,12 +357,12 @@ def run_expansion(ODEpar, SB99_data, SB99f):
     dt_Estart = 0.0001 * u.Myr
     tfinal = t0 + 30. * dt_Estart 
 
-    [Dw, shell_dissolved, t_shdis] = run_energy_phase.run_energy(t0, y0, ODEpar,
-                                                                 tcoll, ii_coll,
-                                                                 shell_dissolved, t_shdis,
-                                                                 SB99_data, SB99f,
-                                                                 tfinal,
-                                                                 )
+    shell_prop = run_energy_phase.run_energy(t0, y0, ODEpar,
+                                            tcoll, ii_coll,
+                                            shell_dissolved, t_shdis,
+                                            SB99_data, SB99f,
+                                            tfinal,
+                                            )
                                                                  
     ######## STEP B: energy-phase (implicit) ################
     # if (aux.check_continue(Dw['t_end'], Dw['r_end'], Dw['v_end']) == ph.cont):

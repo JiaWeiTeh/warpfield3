@@ -13,6 +13,10 @@ optical depth (tau) of the shell.
 import numpy as np
 import sys
 import astropy.constants as c
+import astropy.units as u
+
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
 
 def get_shellODE(y, 
                  r, 
@@ -25,34 +29,24 @@ def get_shellODE(y,
     fraction of ionizing photons that reaches a surface with radius r (phi), and the
     optical depth of dust (tau) of the shell.
     
-    This function works in units of cgs.
-
+    This routine assumes cgs
+    
     Parameters
     ----------
     y : list
         A list of ODE variable, including:
-        # nShell : float
+        # nShell [1/cm3]: float
             the number density of the shell.
-        # phi : float
+        # phi [unitless]: float
             fraction of ionizing photons that reaches a surface with radius r.
-        # tau : float
+        # tau [unitless]]: float
             the optical depth of dust in the shell.               
-    r : list
+    r [pc]: list
         An array of radii where y is evaluated.
     cons : list
         A list of constants used in the ODE, including:
-        # sigma_dust : float
-            Dust cross-section (scaled!).
-        # mu_n : float (units: g)
-            Mean mass per nucleus
-        # mu_p : float (units: g)
-            Mean mass per particle
-        # t_ion : float
-            Temperature of ionised region.
-        # t_neu : float
-            Temperature of neutral region.
-        # alpha_B : float
-            Case B recombination coefficient.
+            Ln, Li and Qi. In erg/s and 1/s
+                
     f_cover: float, 0 < f_cover <= 1
             The fraction of shell that remained after fragmentation process.
             f_cover = 1: all remained.
@@ -62,35 +56,29 @@ def get_shellODE(y,
 
     Returns
     -------
-    dndr : ODE
-    dphidr : ODE (only in ionised region)
-    dtaudr : ODE
+    dndr [1/cm4]: ODE 
+    dphidr [1/cm]: ODE (only in ionised region)
+    dtaudr [1/cm]: ODE
 
     """
-    # print('these are the entries for get_shellODE')
-    # print('y, r, cons, f_cover, is_ionised')
-    # print(y, r, cons, f_cover, is_ionised)
+    
+    sigma_dust = warpfield_params.sigma_d 
+    mu_n = warpfield_params.mu_n 
+    mu_p = warpfield_params.mu_p
+    t_ion = warpfield_params.t_ion
+    t_neu = warpfield_params.t_neu
+    alpha_B = warpfield_params.alpha_B
+    # UNITS
+    r *= u.cm
     # TODO: Add f_cover
-    
-    # [4.42250702e+07 1.00000000e+00 0.00000000e+00] 
-    # 7.340898615585324e+17 
-    # [array(1.51501543e+43), array(1.93642196e+43), array(5.39510623e+53), 
-    #  1.5e-21, 2.1287915392418182e-24, 1.0181176926808696e-24, 
-    #  10000.0, 2.59e-13] 1 True
-    
-    
-    # [4.43513726e+07 1.00000000e+00 0.00000000e+00] 
-    # 7.340898615585322e+17 
-    # [array(1.51501543e+43), array(1.93642196e+43), array(5.39510623e+53), 
-    # 1.5e-21  1.0169528260869563e-24 2.125362090909091e-24 
-    # 10000.0, 2.59e-13] 1
     
     # Is this region of the shell ionised?
     # If yes:
     if is_ionised:
-        # unravel
+        # unravel, and make sure they are in the right units
         nShell, phi, tau = y
-        Ln, Li, Qi, sigma_dust, mu_n, mu_p, t_ion, alpha_B = cons
+        nShell *= (1/u.cm**3)
+        Ln, Li, Qi = cons
         
         # prevent underflow for very large tau values
         if tau > 700:
@@ -98,25 +86,27 @@ def get_shellODE(y,
         else:
             neg_exp_tau = np.exp(-tau)
             
+        
         # number density
-        dndr = mu_p/mu_n/(c.k_B.cgs.value * t_ion) * (
-            nShell * sigma_dust / (4 * np.pi * r**2 * c.c.cgs.value) * (Ln * neg_exp_tau + Li * phi) +\
-                nShell**2 * alpha_B * Li / Qi / c.c.cgs.value
+        dndr = mu_p/mu_n/(c.k_B.cgs * t_ion) * (
+            nShell * sigma_dust / (4 * np.pi * r**2 * c.c.cgs) * (Ln * neg_exp_tau + Li * phi)\
+                + nShell**2 * alpha_B * Li / Qi / c.c.cgs
             )
-        # ionising fraction
-        dphidr = - 4 * np.pi * r**2 / Qi * alpha_B * nShell**2 -\
-                    nShell * sigma_dust * phi
+    
+        dphidr = - 4 * np.pi * r**2 * alpha_B * nShell**2 / Qi - nShell * sigma_dust * phi
         # optical depth
         dtaudr = nShell * sigma_dust * f_cover
+        
         # return
-        # print(dndr, dphidr, dtaudr)
-        print(dndr)
-        return dndr, dphidr, dtaudr
+        return dndr.to(1/u.cm**4).value, dphidr.to(1/u.cm).value, dtaudr.to(1/u.cm).value
+    
+    
     # If not, omit ionised paramters such as Li and phi.
     else:
         # unravel
         nShell, tau = y
-        Ln, Qi, sigma_dust, t_neu, alpha_B = cons
+        nShell *= (1/u.cm**3)
+        Ln, Qi = cons
         
         # prevent underflow for very large tau values
         if tau > 700:
@@ -125,56 +115,13 @@ def get_shellODE(y,
             neg_exp_tau = np.exp(-tau)        
             
         # number density
-        dndr = 1/(c.k_B.cgs.value * t_neu) * (
-            nShell * sigma_dust / (4 * np.pi * r**2 * c.c.cgs.value) * (Ln * neg_exp_tau) 
+        dndr = 1/(c.k_B.cgs * t_neu) * (
+            nShell * sigma_dust / (4 * np.pi * r**2 * c.c.cgs) * (Ln * neg_exp_tau) 
             )
         # optical depth
         dtaudr = nShell * sigma_dust
         # return
-        return dndr, dtaudr            
-
-
-# # Uncomment to plot
-# #%%
-
-# import matplotlib.pyplot as plt
-# import scipy.integrate
-
-# r = np.arange(1.292570882476065e+18, 1.2929396129227028e+18, 368730446637.824)
-# y0 = [16401152.8251588, 1.0, 0.0,
-#       ]
-# cons = [1.515015429411944e+43, 1.9364219639465924e+43, 5.395106225151267e+53,
-#       1.5e-21,
-#       2.1287915392418182e-24,
-#       1.0181176926808696e-24,
-#       1e4,
-#       2.59e-13]
-# f_cover = 1
-# is_ionised = True
-
-# sol = scipy.integrate.odeint(get_shellODE, y0, r,
-#                              args=(cons, f_cover, is_ionised),
-#                              rtol=1e-3, hmin=1e-7)
-# dndr, dphidr, dtaudr = zip(*sol)
-# print(dndr[~0], dphidr[~0], dtaudr[~0])
-# ################################## non-ionised region ##################################
-# r = np.arange(3.6440984789239613e+18, 3.644165172647624e+18, 66693723663.00373)
-# y0 = [982704385.1169335, 1.6896779448838628]
-# cons = [1.51501543e+43, 5.39510623e+53,
-#       1.5e-21,
-#       1e2,
-#       2.59e-13]
-# is_ionised = False
-
-# sol = scipy.integrate.odeint(get_shellODE, y0, r,
-#                              args=(cons, f_cover, is_ionised),
-#                              rtol=1e-3, hmin=1e-7)
-# dndr, dtaudr = zip(*sol)
-# print(dndr[~0], dtaudr[~0])
-
-
-
-
+        return dndr.to(1/u.cm**4).value, dtaudr.to(1/u.cm).value
 
 
 

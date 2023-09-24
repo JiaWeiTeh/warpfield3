@@ -643,7 +643,6 @@ alpha_B    2.59e-13
 #       in the absence of dynamo action or magnetic reconnection. (sphere)
 # See Henney et al 2005 Apped C: https://ui.adsabs.harvard.edu/abs/2005ApJ...621..328H/abstract
 # DEFAULT: 4/3
-gamma_mag    1.3333333333333333
 
 # BMW, nMW
 # TODO

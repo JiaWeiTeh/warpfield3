@@ -278,9 +278,6 @@ def get_bubbleproperties(
 
     #---------------- 2. Conduction zone. High resolution region, 10**4 < T < 10**5.5 K. 
     
-    index_cooling_switch = 0
-    index_CIE_switch = 10
-    
     # it is possible that index_cooling_switch = index_CIE_switch = 0 if the shock front is very steep.
     if index_cooling_switch != index_CIE_switch:
         # if this zone is not well resolved, solve ODE again with high resolution (IMPROVE BY ALWAYS INTERPOLATING)
@@ -334,14 +331,15 @@ def get_bubbleproperties(
     # assert R2_coolingswitch < r_array[index_cooling_switch], "Hmm? in region 3 of bubble_luminosity"
     # interpolate between R2_prime and R2_1e4, important because the cooling function varies a lot between 1e4 and 1e5K (R2_prime is above 1e4)
     fT_interp_intermediate = interp1d(np.array([r_array[index_cooling_switch].value, R2_coolingswitch.value]), 
-                                      np.array([T_array[index_cooling_switch.value], _coolingswitch.value]), kind = 'linear')
+                                      np.array([T_array[index_cooling_switch].value, _coolingswitch.value]), kind = 'linear')
     # get values
     r_intermediate = np.linspace(r_array[index_cooling_switch].value, R2_coolingswitch.value, num = 1000, endpoint=True) * u.pc
     T_intermediate = fT_interp_intermediate(r_intermediate) * u.K
     n_intermediate =  (press/((warpfield_params.mu_n/warpfield_params.mu_p) * c.k_B.cgs * T_intermediate)).to(1/u.cm**3)
     phi_intermediate = (Qi / (4 * np.pi * r_intermediate**2)).to(1/u.s/u.cm**2)
     # get cooling, taking into account for both CIE and non-CIE regimes
-    regime_mask = {'non-CIE': T_intermediate < _coolingswitch, 'CIE': T_intermediate >= _coolingswitch}
+    # print(T_intermediate, _coolingswitch, (T_intermediate < _coolingswitch))
+    regime_mask = {'non-CIE': T_intermediate < _CIEswitch, 'CIE': T_intermediate >= _CIEswitch}
     L_intermediate = {}
     for regime in ['non-CIE', 'CIE']:
         # masks
@@ -351,23 +349,25 @@ def get_bubbleproperties(
             # import values from cooling curves
             cooling_nonCIE, heating_nonCIE = non_CIE.get_coolingStructure(t_now)
             # cooling rate
-            cooling_intermediate = 10 ** cooling_nonCIE.interp(np.transpose(np.log10([n_intermediate[mask], T_intermediate[mask], phi_intermediate[mask]])))
-            heating_intermediate = 10 ** heating_nonCIE.interp(np.transpose(np.log10([n_intermediate[mask], T_intermediate[mask], phi_intermediate[mask]])))
+            cooling_intermediate = 10 ** cooling_nonCIE.interp(np.transpose(np.log10([n_intermediate[mask].value, T_intermediate[mask].value, phi_intermediate[mask].value])))
+            heating_intermediate = 10 ** heating_nonCIE.interp(np.transpose(np.log10([n_intermediate[mask].value, T_intermediate[mask].value, phi_intermediate[mask].value])))
             dudt_intermediate = (heating_intermediate - cooling_intermediate) * u.erg / u.s / u.cm**3
-            integrand_intermediate = dudt_intermediate * 4 * np.pi * r_intermediate**2
+            integrand_intermediate = dudt_intermediate * 4 * np.pi * r_intermediate[mask]**2
         elif regime == 'CIE':
             # import values from cooling curves
             # value T chosen here is not important, since we want the interpolation only
             _, _, _, cooling_CIE_interpolation = CIE.get_Lambda(T_bubble[1])
-            Lambda_intermediate = 10**(cooling_CIE_interpolation(np.log10(T_intermediate[mask]))) * u.erg * u.cm**3 /u.s
+            Lambda_intermediate = 10**(cooling_CIE_interpolation(np.log10(T_intermediate[mask].value))) * u.erg * u.cm**3 /u.s
             integrand_intermediate = n_intermediate[mask]**2 * Lambda_intermediate * 4 * np.pi * r_intermediate[mask]**2
         # calculate power loss due to cooling
         L_intermediate[regime] = (np.abs(np.trapz(integrand_intermediate, x = r_intermediate[mask]))).to(u.erg/u.s)
         
     # sum for both regions
-    L_intermediate = Lambda_intermediate['non-CIE'] + Lambda_intermediate['CIE']
+    L_intermediate = L_intermediate['non-CIE'] + L_intermediate['CIE']
     # intermediate result for calculation of average temperature
     Tavg_intermediate =  (np.abs(np.trapz(r_intermediate**2 * T_intermediate,  x = r_intermediate))).to(u.K * u.pc**3)
+
+    print('Third zone done.')
 
     #---------------- 4. Finally, sum up across all regions. Calculate the average temeprature.
     # this was Lb in old code
@@ -384,23 +384,26 @@ def get_bubbleproperties(
         Tavg = 3. * ( Tavg_bubble / (r_bubble[0]**3 - r_bubble[-1]**3) +\
                      Tavg_intermediate / (r_intermediate[0]**3 - r_intermediate[-1]**3))
 
-
     # TODO: what is rgoal?
     # get temperature inside bubble at fixed scaled radius
     # temperature T at rgoal
+    print(rgoal)
+    print(r_array[index_cooling_switch])
     if rgoal > r_array[index_cooling_switch]: # assumes that r_cz runs from high to low values (so in fact I am looking for the highest element in r_cz)
         T_rgoal = fT_interp_intermediate(rgoal)
     elif rgoal > r_array[index_CIE_switch]: # assumes that r_cz runs from high to low values (so in fact I am looking for the smallest element in r_cz)
-        idx = operations.find_nearest(r_conduction, rgoal)
+        idx = operations.find_nearest(r_conduction.value, rgoal.value)
         T_rgoal = T_conduction[idx] + dTdr_conduction[idx]*(rgoal - r_conduction[idx])
     else:
-        idx = operations.find_nearest(r_bubble, rgoal)
+        idx = operations.find_nearest(r_bubble.value, rgoal.value)
         T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
         
     # new factor for dMdt (used in next time step to get a good initial guess for dMdt)
     dMdt_factor_out = warpfield_params.dMdt_factor * dMdt / dMdt_init
     
-    return L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg,
+    print('Completed calculation of bubble luminosity.')
+    
+    return L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg
 
     # TODO: original code also return these.
      # Mbubble, r_Phi, Phi_grav_r0b, f_grav

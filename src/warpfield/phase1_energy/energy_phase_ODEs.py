@@ -15,9 +15,15 @@ import scipy.optimize
 import sys 
 
 
+# get parameters
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
+
+
 def get_ODE_Edot(y, t, params):
     """
-    general energy-driven phase including stellar winds, gravity, power law density profiles, cooling, radiation pressure
+    general energy-driven phase including stellar winds, gravity, power law density profiles, cooling, radiation pressure/
+    This set of ODEs solve for
     :param y: [r,v,E]: shell radius (R2), shell velocity (v2), bubble energy (Eb)
     :param t: time (since the ODE is autonomous, t does not appear. The ODE solver still expects it though)
     :param params: (see below)
@@ -35,11 +41,12 @@ def get_ODE_Edot(y, t, params):
     
     # Note: 
     # old code: fE_gen()
-    r, v, E = y  # unpack current values of y (r, rdot, E)
-    LW, PWDOT, GAM, MCLOUD, RHOA, RCORE, A_EXP, MSTAR, LB, FRAD, FABSi,\
-        RCLOUD, density_specific_param, warpfield_params,\
-            tSF, tFRAG, tSCR, CS, SFE  = params  # unpack parameters
-    VW = 2.*LW/PWDOT
+    rShell, vShell, E_bubble = y  # unpack current values of y (r, rdot, E)
+    L_wind, pdot_wind, _, mCloud, _, rCore, _, mCluster, L_bubble, FRAD, FABSi,\
+        rCloud, _,\
+            tSF, tFRAG, tSCR, CS, _  = params  # unpack parameters
+            
+    v_wind = 2.*L_wind/pdot_wind
     
     # calculate shell mass and time derivative of shell mass
     
@@ -49,16 +56,10 @@ def get_ODE_Edot(y, t, params):
     #                                 RCLOUD, MCLOUD,\
     #                                     v)
 
-    Msh, Msh_dot = mass_profile.get_mass_profile(r, density_specific_param, RCLOUD, MCLOUD, rdot_arr = v, return_rdot = True)
-    # sys.exit()
-    # print("We are now in energy_phase_ODEs.get_ODE_Edot() to check for the values of Msh")
-    # print('Msh',Msh)
-    # print('Msh_dot',Msh_dot)
+    mShell, mShell_dot = mass_profile.get_mass_profile(rShell, rCloud, mCloud, return_mdot = True, rdot_arr = vShell)
+
     
-    # print("r, density_specific_param, RCLOUD, MCLOUD,", r, density_specific_param, RCLOUD, MCLOUD)
-    # print("Msh, Msh_dot", Msh, Msh_dot)
-    
-    def calc_ionpress(r, rcore, rcloud, alpha, rhoa):
+    def calc_ionpress(r, rcore, rcloud):
         """
         calculates pressure from photoionized part of cloud at radius r
         by default assume units (Msun, Myr, pc) but in order to use cgs, just change mykboltz
@@ -72,35 +73,36 @@ def get_ODE_Edot(y, t, params):
         """
         # old code: ODE.calc_ionpress()
         
+        rhoa = warpfield_params.nCore * warpfield_params.mu_n
+
         if r < rcore:
             rho_r = rhoa
         elif ((r >= rcore) and (r < rcloud)):
-            rho_r = rhoa * (r/rcore)**alpha
+            rho_r = rhoa * (r/rcore)**warpfield_params.dens_a_pL
         else:
-            rho_r = warpfield_params.nISM * warpfield_params.mu_n * (u.g/u.cm**3).to(u.M_sun/u.pc**3)
+            rho_r = warpfield_params.nISM * warpfield_params.mu_n 
         # n_r: total number density of particles (H+, He++, electrons)
-        n_r = rho_r/(warpfield_params.mu_p/c.M_sun.cgs.value) 
+        n_r = rho_r/warpfield_params.mu_p
         # boltzmann constant in astronomical units
-        kboltz_au = c.k_B.cgs.value * u.g.to(u.Msun) * u.cm.to(u.pc)**2 / u.s.to(u.Myr)**2
-        P_ion = n_r * kboltz_au * warpfield_params.t_ion
+        P_ion = n_r * c.k_B * warpfield_params.t_ion
         # return
         return P_ion
 
     # calc inward pressure from photoionized gas outside the shell (is zero if no ionizing radiation escapes the shell)
     if FABSi < 1.0:
-        PHII = calc_ionpress(r, RCORE, RCLOUD, A_EXP, RHOA)
+        press_HII = calc_ionpress(rShell, rCore, rCloud)
     else:
-        PHII = 0.0
+        press_HII = 0.0
         
     
     # gravity correction (self-gravity and gravity between shell and star cluster)
-    GRAV = c.G.to(u.pc**3/u.M_sun/u.Myr**2).value * warpfield_params.inc_grav  # if you don't want gravity, set to zero
-    Fgrav = GRAV*Msh/r**2 * (MSTAR + Msh/2.)
+    # if you don't want gravity, set .inc_grav to zero
+    F_grav = c.G * mShell / rShell**2 * (mCluster + mShell/2)  * warpfield_params.inc_grav
     
     
     # get pressure from energy
     # radius of inner discontinuity
-    R1 = scipy.optimize.brentq(get_bubbleParams.get_r1, 0.0, r, args=([LW, E, VW, r]))
+    R1 = scipy.optimize.brentq(get_bubbleParams.get_r1, 0.0, rShell, args=([L_wind, E_bubble, v_wind, rShell]))
     
 
     # the following if-clause needs to be rethought. for now, this prevents negative energies at very early times
@@ -109,19 +111,21 @@ def get_ODE_Edot(y, t, params):
     tmin = dt_switchon
     if (t > tmin + tSF):
         # equation of state
-        Pb = get_bubbleParams.bubble_E2P(E,r,R1,GAM)
+        press_bubble = get_bubbleParams.bubble_E2P(E_bubble, rShell, R1)
     elif (t <= tmin + tSF):
         R1_tmp = (t-tSF)/tmin * R1
-        Pb = get_bubbleParams.bubble_E2P(E, r, R1_tmp,GAM)
+        press_bubble = get_bubbleParams.bubble_E2P(E_bubble, rShell, R1_tmp)
     #else: #case pure momentum driving
     #    # ram pressure from winds
-    #    Pb = state_eq.Pram(r,LW,VW)
+    #    press_bubble = state_eq.Pram(r,LW,VW)
 
     def calc_coveringf(t,tFRAG,ts):
         """
         estimate covering fraction cf (assume that after fragmentation, during 1 sound crossing time cf goes from 1 to 0)
         if the shell covers the whole sphere: cf = 1
         if there is no shell: cf = 0
+        
+        Note: since we set tFRAG ultra high, that means cf will almost always be 1. 
         """
         cfmin = 0.4
         cf = 1. - ((t - tFRAG) / ts)**1.
@@ -136,14 +140,14 @@ def get_ODE_Edot(y, t, params):
     if hasattr(cf, "__len__"): cf = cf[0] 
     # leaked luminosity
     if cf < 1:
-        L_leak = (1. - cf)  * 4. * np.pi * r ** 2 * Pb * CS / (GAM - 1.)
+        L_leak = (1. - cf)  * 4. * np.pi * rShell ** 2 * press_bubble * CS / (warpfield_params.gamma_adia - 1.)
     else:
         L_leak = 0
     # time derivatives￼￼
-    rd = v
-    vd = (4.*np.pi*r**2.*(Pb-PHII) - Msh_dot*v - Fgrav + FRAD)/Msh
+    rd = vShell
+    vd = (4.*np.pi*rShell**2.*(press_bubble-press_HII) - mShell_dot * vShell - F_grav + FRAD)/mShell
     # factor cf for debugging
-    Ed = (LW - LB) - (4.*np.pi*r**2.*Pb) * v - L_leak 
+    Ed = (L_wind - L_bubble) - (4.*np.pi*rShell**2.*press_bubble) * vShell - L_leak 
     # list of dy/dt=f functions
     derivs = [rd, vd, Ed]    
     # return

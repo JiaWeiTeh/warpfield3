@@ -55,7 +55,7 @@ def append_units(wp):
     
     wp.phase_Emin *= u.erg
     
-    wp.sigma0 /= u.cm**2
+    wp.sigma0 *= u.cm**2
     
     wp.mu_n *= u.g
     
@@ -73,7 +73,7 @@ def append_units(wp):
     
     wp.c_therm *= u.erg / u.cm / u.s * u.K**(-7/2)
     
-    wp.sigma_d /= u.cm**2
+    wp.sigma_d *= u.cm**2
     
     wp.tff *= u.Myr
     

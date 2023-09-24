@@ -18,6 +18,15 @@ def phase1():
     return
 
 
+def bubble():
+    
+    print('\n\t\t      --------------------------------------------------')
+    print('\t\t      Calculating bubble structure')
+    print('\t\t      --------------------------------------------------')
+    
+    return
+
+
 def phase0():
     
     print('\n\t\t      --------------------------------------------------')
@@ -27,7 +36,13 @@ def phase0():
     return
 
 
-
+def shell():
+    
+    print('\n\t\t      --------------------------------------------------')
+    print('\t\t      Calculating shell structure')
+    print('\t\t      --------------------------------------------------')
+    
+    return
 
 
 class cprint:

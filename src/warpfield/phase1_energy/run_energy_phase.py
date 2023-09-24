@@ -191,36 +191,32 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     alpha = 0.6
     beta = 0.8
     delta = -0.17142857142857143
-    Eb = 11858019.317814864 * u.M_sun * u.pc**2 / u.Myr**2
+    Eb = 94346.55799234606 * u.M_sun * u.pc**2 / u.Myr**2
     # Why is this 0.2?
     # change back? in old code R2 = r0.
-    R2 = 90.0207551764992493 * u.pc
-    R2 = r0
-    print('r0', r0)
+    # R2 = 90.0207551764992493 * u.pc
+    R2 = 0.07083553197734 * u.pc
+    # R2 = r0
+    # print('r0', r0)
     # 
-    t_now = 0.00012057636642393612 * u.Myr
-    Lw =  201648867747.70163 * u.M_sun * u.pc**2 / u.Myr**3
-    vw = 3810.2196532385897 * u.km / u.s
+    t_now = 0.00010205763664239359 * u.Myr
+    Lw =  2016488677.477017 * u.M_sun * u.pc**2 / u.Myr**3
+    vw = 3810.21965323859 * u.km / u.s
     dMdt_factor = 1.646
-    Qi = 1.6994584609226492e+67 / u.Myr
+    Qi = 1.6994584609226495e+65 / u.Myr
     v0 = 0.0 * u.km / u.s 
     T_goal = 3e4 * u.K
-    r_inner = R1
-    rgoal = 0.18186796588493245 * u.pc
+    # r_inner = R1
+    r_inner = 0.04032342117274968 * u.pc
+    rgoal = 0.06375197877960599 * u.pc
 
 
-    # {'v0': 0.0, 'cons': {'a': 4976.099527584466, 'b': 5213.056647945631,
-    #                      'c': 6.2274324244100785e+25, 'd': 380571798.5188472,
-    #                      'e': 3080.442564695146, 't_now': 0.00012057636642393612,
-    #                      'Qi': 1.6994584609226492e+67}, 'rgoal': 0.18186796588493245,
-    #  'Tgoal': 30000.0, 'R2': 0.20207551764992493, 'R_small': 0.14876975625376893,
-    #  'press': 380571798.5188472}
 
-    bubble_prop = bubble_luminosity.get_bubbleproperties(t_now, T_goal, rgoal,
-                                                         r_inner, R2,
-                                                         Qi, alpha, beta, delta,
-                                                         Lw, Eb, vw, v0,
-                                                         )
+    # L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg = bubble_luminosity.get_bubbleproperties(t_now, T_goal, rgoal,
+    #                                                                                      r_inner, R2,
+    #                                                                                      Qi, alpha, beta, delta,
+    #                                                                                      Lw, Eb, vw, v0,
+    #                                                                                      )
     
     
     
@@ -229,26 +225,115 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     
     # Then, turn on cooling gradually. I.e., reduce the amount of cooling at very early times. 
     
-    
-    
+    r0 = 0.07083553197734 * u.pc
+    P0 = 51802552.6048532 * u.M_sun / u.pc / u.Myr**2
+    Ln = 1.5150154294119439e41 * u.erg / u.s
+    Li = 1.9364219639465926e+41 * u.erg / u.s
+    Qi = 5.395106225151268e+51 / u.s
+    Msh0 = 0.46740340439142747 * u.M_sun
+    Mbubble = 2.641734919254874e+32  * u.g
+    countbubble = 1
+    thalf = 0.00015205763664239482 * u.Myr
+    f_cover = 1
+
+    # header
+    terminal_prints.shell()
     
     
     # Calculate shell structure.
     # preliminary - to be tested
-    shell_prop = shell.shell_structure()
+    shell_prop = shell_structure.shell_structure(r0, 
+                                                P0,
+                                                Mbubble, 
+                                                Ln, Li, Qi,
+                                                Msh0,
+                                                f_cover,
+                                                )
     
     
+    # return f_absorbed_ion, f_absorbed_neu, f_absorbed, f_ionised_dust, is_fullyIonised, shellThickness, nShell_max, tau_kappa_IR, grav_r, grav_phi, grav_force_m
+    
+    print('Shell structure calculated.')
     
     
+   # shell.shell_structure2(r0, P0, fLn_evo(thalf), fLi_evo(thalf),
+               # fQi_evo(thalf), Msh0, 1, ploton = make_cloudy_model, 
+               # plotpath = filename_shell, Minterior = Mbubble*c.Msun)
+
+
     
     # Calculate bubble mass
-    bubbble_mass = mass_profile.calc_mass()
+    # bubbble_mass = mass_profile.calc_mass()
     
     
     
     
     # Get new values for next loop.
     
+    # These will be used. For now, we comment to debug.
+    # now solve eq. of motion
+    # this part of the routine assumes astro-units
+
+    # PWDOT = pdot
+    # GAM = c.gamma
+
+    # RCORE = rcore_au
+    # MSTAR = Mcluster_au
+    # LB = Lb # astro units!!
+    # FRAD = fabs * Lbol/c.clight_au # astro units
+    # CS = cs_avg
+
+
+
+    # y0 = [r0, v0, E0]
+
+    # bundle parameters for ODE solver
+    # params = [Lw, PWDOT, Mcloud_au, RHOA, RCORE, A_EXP, MSTAR, LB, FRAD, fabs_i, rcloud_au, phase0, tcoll[coll_counter], t_frag, tscr, CS, SFE]
+    # print('\n\n\n')
+    # print("y0", y0)
+    # print('\n\n\n')
+    # aux.printl(("params", params), verbose=1)
+    # print('\n\n\n')
+    # print('t',t)
+
+
+    r0 = 0.07083553197734 * u.pc
+    v0 = 412.7226637916362 * u.km / u.s
+    E0 = 94346.55799234606 * u.M_sun * u.pc**2 / u.Myr**2
+    y0 = [r0.value, v0.value, E0.value]
+
+    Lw = 2016488677.477017 * u.M_sun * u.pc**2 / u.Myr**3
+    PWDOT = 1058463.2178688452 * u.M_sun * u.pc / u.Myr**2 
+    GAM = 1.6666666666666667
+    Mcloud_au = 9900000.0 * u.M_sun
+    RHOA = 313.94226159698525 * u.M_sun / u.pc**2
+    RCORE = 0.099 * u.pc
+    A_EXP = 0
+    MSTAR = 100000 * u.M_sun
+    LB = 31084257.266749237 * u.M_sun * u.pc**2 / u.Myr**3
+    FRAD = 1431661.1440950811
+    fabs_i = 0.8540091033365051
+    rcloud_au = 19.59892574924841 * u.pc
+    phase0 = 1
+    tcoll = 0
+    t_frag = 1e99 * u.yr
+    tscr = 1e99 * u.yr
+    CS = 968.3051163156159 
+    SFE = 0.01
+    t = np.arange(0.00010206, 0.00020206, 0.0000001) # think this is in Myr
+    
+    params = [Lw, PWDOT, GAM, Mcloud_au, RHOA, RCORE, A_EXP, MSTAR, LB, FRAD, fabs_i, rcloud_au, phase0, tcoll, t_frag, tscr, CS, SFE]
+
+    # call ODE solver
+    psoln = scipy.integrate.odeint(energy_phase_ODEs.get_ODE_Edot, y0, t, args=(params,))
+        
+    # get r, rdot and rdotdot
+    r = psoln[:,0]
+    rd = psoln[:, 1]
+    Eb = psoln[:, 2]
+
+    # Msh = mass_profile.calc_mass_BE(r, i.rhoa_au, T_BE, i.rho_intercl_au, rcloud_au, Mcloud_au)
+        
     
     return
     
