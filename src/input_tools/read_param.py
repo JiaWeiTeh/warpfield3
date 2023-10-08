@@ -186,9 +186,6 @@ def read_param(path2file, write_summary = True):
     # give warning if parameter does not make sense
     # input_warnings.input_warnings(params_dict)
     
-    print(params_dict['rCore'])
-            
-
     # =============================================================================
     # Here we deal with additional parameters that will be recorded in summary.txt.
     # For those that are not recorded, scroll down to the final section of this 
