@@ -9,6 +9,11 @@ This script contains useful functions that help compute stuffs
 """
 
 import numpy as np
+import astropy.units as u
+import astropy.constants as c
+# get parameters
+from src.input_tools import get_param
+warpfield_params = get_param.get_param()
 
 def find_nearest(array, value):
     """
@@ -99,4 +104,25 @@ def find_nearest_higher(array, value):
     # return
     return idx
 
+def get_soundspeed(T):
+    """
+    This function computes the isothermal soundspeed, c_s, given temperature
+    T and mean molecular weight mu.
+
+    Parameters
+    ----------
+    T : float (Units: K)
+        Temperature of the gas.
+
+    Returns
+    -------
+    The isothermal soundspeed c_s (Units: km/s)
+
+    """    
+    if T.value > 1e3:
+        mu = warpfield_params.mu_p
+    else:
+        mu = warpfield_params.mu_n
+    
+    return  np.sqrt(warpfield_params.gamma_adia * c.k_B * T / mu ).to(u.km/u.s)
 

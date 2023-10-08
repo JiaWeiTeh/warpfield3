@@ -37,7 +37,6 @@ import src.warpfield.bubble_structure.bubble_luminosity as bubble_luminosity
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()
 
-
 def start_expansion():
     """
     This wrapper takes in the parameters and feed them into smaller

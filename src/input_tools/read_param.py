@@ -185,6 +185,8 @@ def read_param(path2file, write_summary = True):
     # TODO
     # give warning if parameter does not make sense
     # input_warnings.input_warnings(params_dict)
+    
+    print(params_dict['rCore'])
             
 
     # =============================================================================

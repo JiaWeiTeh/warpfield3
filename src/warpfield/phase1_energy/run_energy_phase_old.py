@@ -118,6 +118,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     pdot0 = fpdot_evo(t0) 
     # terminal wind velocity at time t0 (km/s)
     vterminal0 = 2. * Lw0 / pdot0 * u.cm.to(u.km)
+    print('vterminal0', vterminal0)
     
     # bubble parameter values at time t0 (radius, velocity, energy, temperature)
     # r0 (pc), v0 = vterminal0 (km/s), E0 (erg), T0 (K)
@@ -217,7 +218,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     first_frag = True
     Lw_old = Lw0
     delta_old = delta
-    cf0 = 1.0
+    # cf0 = 1.0
     frag_value0 = 0.
     dfragdt = 0.
     was_close_to_frag = False
@@ -234,7 +235,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     fit_len_max = 13
     fit_len_min = 7
     lum_error = 0.005
-    lum_error2 = 0.005
+    # lum_error2 = 0.005
     delta_error = 0.03
     dt_switchon = 0.001
 
@@ -271,6 +272,12 @@ def run_energy(t0, y0, #r0, v0, E0, T0
 
         # print("here",fit_len_max,dt_real,dt_Emin,fit_len_min ,dt_Emin, dt_Emax)
 
+        #---------------------------------------------------------------------------------
+
+        # apparently dt_real = de_start
+        # But also, I think this is not so important for us yet. We use these in bubble_wrap()
+        #   which calls use_root_finder is True for debugging. 
+
         fit_len_interp = fit_len_max + (np.log(dt_real) - np.log(dt_Emin)) * (fit_len_min - fit_len_max) / (np.log(dt_Emax) - np.log(dt_Emin))
         # used for delta, and in the beginning also for alpha, beta (min 3, max 10 or so)
         fit_len = int(np.round(np.min([fit_len_max, fit_len + 1, np.max([fit_len_min, fit_len_interp])])))  
@@ -295,11 +302,15 @@ def run_energy(t0, y0, #r0, v0, E0, T0
             # is shifted 1 time step
             T_10list = del_append(T_10list, T0, maxlen=fit_len - 1)  
 
+
+
         # for early time (1st Myr) use a small cloudy dt
-        if (t0 - tcoll[coll_counter]) < 1:
-            my_cloudy_dt = 0.1 # 0.1 Myr
-        else:
-            my_cloudy_dt = 0.5 # 0.5 Myr
+        # if (t0 - tcoll[coll_counter]) < 1:
+        #     my_cloudy_dt = 0.1 # 0.1 Myr
+        # else:
+        #     my_cloudy_dt = 0.5 # 0.5 Myr
+            
+        #---------------------------------------------------------------------------------
             
             
         # print('cp4')    
@@ -309,8 +320,9 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         
 # False 0 0.0001 13.0 13 [6.50681839e-05] [0.23790232] [1.97308704e+08] [] 0.1
 
-        t_cloudy = np.ceil(t0/my_cloudy_dt) * my_cloudy_dt
+        # t_cloudy = np.ceil(t0/my_cloudy_dt) * my_cloudy_dt
         # set tmax for this time step according to cloudy dump time
+        #tmax = set_tmax(i.write_cloudy, t0, t_cloudy, my_cloudy_dt,tInc_tmp)
         tmax = tfinal
         # calculate time step
         # in the very beginning (and around first SNe) decrease tCheck because fabs varys a lot
@@ -327,6 +339,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         # if (i.write_cloudy == True):
         #     tStop_i = np.min([tmax,t0+np.min([dt_L,my_cloudy_dt,dt_Emax,dt_Lw])]) # this is the stop time for this time step
         # else:
+            
         tStop_i = np.min([tmax,t0+np.min([dt_L,dt_Emax,dt_Lw])])
 
 
@@ -341,13 +354,15 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         if ((frag_value > frag_stop) and (frag_value < 1.0)):
             tStop_i = t0 + dt_Emin
 
+        # t0 changes at the end of this loop.
         dt_real = tStop_i - t0
 
-        if (temp_counter == 2. * fit_len): dt_real = dt_Emin
+        if (temp_counter == 2. * fit_len):
+            dt_real = dt_Emin
 
         # correct (?) calculation of beta
-        beta_temp = -t0 / P0 * 1. / (2. * np.pi) * (Ebd0 / (r0 ** 3 - R1 ** 3) - 3. * E0 * v0 * r0 ** 2 / (r0 ** 3 - R1 ** 3) ** 2.)
-        alpha_temp = t0 / r0 * v0
+        # beta_temp = -t0 / P0 * 1. / (2. * np.pi) * (Ebd0 / (r0 ** 3 - R1 ** 3) - 3. * E0 * v0 * r0 ** 2 / (r0 ** 3 - R1 ** 3) ** 2.)
+        # alpha_temp = t0 / r0 * v0
             
             
         # print('cp5')    
@@ -386,12 +401,10 @@ def run_energy(t0, y0, #r0, v0, E0, T0
 
             # convert cgs to astro units (Myr, Msun, pc)
             Lw = fLw_evo(thalf)  *(u.g.to(u.Msun) * u.cm.to(u.pc)**2/u.s.to(u.Myr)**3)
-            Lw_temp = fLw_evo(tStop_i)  *(u.g.to(u.Msun) * u.cm.to(u.pc)**2/u
-                                          .s.to(u.Myr)**3)
+            Lw_temp = fLw_evo(tStop_i)  *(u.g.to(u.Msun) * u.cm.to(u.pc)**2/u.s.to(u.Myr)**3)
             Lbol = fLbol_evo(thalf)  *(u.g.to(u.Msun) * u.cm.to(u.pc)**2/u.s.to(u.Myr)**3)
             pdot= fpdot_evo(thalf) * (u.g.to(u.Msun) * u.cm.to(u.km) / u.s.to(u.Myr))
             vterminal = 2. * Lw / pdot
-            
             
             # print('cp6')
             # print(t_inc, t_temp, val, thalf, Lw, Lw_temp,  Lbol, pdot,vterminal)
@@ -404,43 +417,48 @@ def run_energy(t0, y0, #r0, v0, E0, T0
             if (((abs(Lw_temp - Lw_old) < lum_error*Lw_old) and (abs(Lw - Lw_old) < lum_error*Lw_old)) or (dt_real < 2*dt_Emin)):
                 # if mechanical luminosity does not change much, check how much delta would change
 
-                if temp_counter < 1e30*fit_len: # 2.*fit_len
-                    # TODO uncomment for more info
-                    # aux.printl("entering old bubble_wrap...", verbose=1)
-                    structure_bubble = (structure_switch and not mom_phase)
-                    bubble_wrap_struc = {'structure_switch': structure_bubble, 'alpha': alpha, 'beta': beta, 'delta': delta,
-                                         'Lres0': Lres0, 't_10list': t_10list, 'r_10list': r_10list, 'P_10list': P_10list,
-                                         'T_10list': T_10list, 'Lw': Lw, 'vterminal': vterminal, 'r0': r0,
-                                         't0': t0 - tcoll[coll_counter], 'E0': E0,
-                                         'T0': T0, 'dt_L': dt_real, 'temp_counter': temp_counter, 'dMdt_factor': dMdt_factor,
-                                         'Qi': fQi_evo(thalf)*u.Myr.to(u.s), 'mypath': mypath}
-                    
-                    # bubble_wrap_struc is correct
-                    # it's important to use the time since the last restarting expansion, not the time since the start of the simulation
-                    # calculate bubble structure
-                    bubbleFailed, Lb, T0, alpha, beta,\
-                        delta, dt_L, Lb_b, Lb_cz, Lb3, dMdt_factor,\
-                            Tavg, Mbubble, r_Phi_b, Phi_grav_r0b,\
-                                f_grav_b = bubble_structure.get_bubbleStructure(bubble_wrap_struc, Cool_Struc, fit_len=fit_len, fit_len_short=fit_len)
-                else:
-                    print("entering delta_new_root...")
-                    alpha = alpha_temp
-                    beta = beta_temp
-                    # temporary ###########
-                    param1 = {'alpha': alpha, 'beta': beta, 'Eb': E0, 'R2': r0, 't_now': t0, 'Lw': Lw, 'vw': vterminal, 'dMdt_factor': dMdt_factor, 'Qi': fQi_evo(thalf) * u.Myr.to(u.s), 'mypath': mypath}
-                    param0 = {'alpha': alpha, 'beta': beta, 'Eb': E0m1, 'R2': r0m1, 't_now': t0m1, 'Lw': Lw, 'vw': vterminal, 'dMdt_factor': dMdt_factor, 'Qi': fQi_evo(thalf) * u.Myr.to(u.s), 'mypath': mypath}
-                    dzero_params = [param0, param1, Cool_Struc]
-                    delta, bubbleFailed = get_bubbleParams.get_delta_new(delta, dzero_params)
-                    param1["delta"] = delta
-                    Lb, T_rgoal, Lb_b, Lb_cz, Lb3, dMdt_factor, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav = bubble_structure.calc_Lb(param1, Cool_Struc, temp_counter)
-                    # new time step
-                    Lres_temp = Lw - Lb
-                    fac = np.max([np.min([lum_error2 / (np.abs(Lres_temp - Lres0) / Lw), 1.42]), 0.1])
-                    dt_L = fac * dt_L  # 3 per cent change
-                    param1['dt_L'] = dt_L
-                    param1['T0'] = T_rgoal
-                    param1['temp_counter'] = temp_counter
-                    param1['Lres0'] = Lw - Lb
+                # if temp_counter < 1e30*fit_len: # 2.*fit_len
+                # TODO uncomment for more info
+                # aux.printl("entering old bubble_wrap...", verbose=1)
+                structure_bubble = (structure_switch and not mom_phase)
+                bubble_wrap_struc = {'structure_switch': structure_bubble, 'alpha': alpha, 'beta': beta, 'delta': delta,
+                                     'Lres0': Lres0, 't_10list': t_10list, 'r_10list': r_10list, 'P_10list': P_10list,
+                                     'T_10list': T_10list, 'Lw': Lw, 'vterminal': vterminal, 'r0': r0,
+                                     't0': t0 - tcoll[coll_counter], 'E0': E0,
+                                     'T0': T0, 'dt_L': dt_real, 'temp_counter': temp_counter, 'dMdt_factor': dMdt_factor,
+                                     'Qi': fQi_evo(thalf)*u.Myr.to(u.s), 'mypath': mypath}
+                
+                # bubble_wrap_struc is correct
+                # it's important to use the time since the last restarting expansion, not the time since the start of the simulation
+                # calculate bubble structure
+                bubbleFailed, Lb, T0, alpha, beta,\
+                    delta, dt_L, Lb_b, Lb_cz, Lb3, dMdt_factor,\
+                        Tavg, Mbubble, r_Phi_b, Phi_grav_r0b,\
+                            f_grav_b = bubble_structure.get_bubbleStructure(bubble_wrap_struc, Cool_Struc, fit_len=fit_len, fit_len_short=fit_len)
+               
+                # THS IS COMMENTED OUT BECAUSE I THINK THIS IS NOT USED AT ALL
+               
+                # else:
+                #     # this should never need to be used. 
+                #     print("entering delta_new_root...")
+                #     sys.exit()
+                #     alpha = alpha_temp
+                #     beta = beta_temp
+                #     # temporary ###########
+                #     param1 = {'alpha': alpha, 'beta': beta, 'Eb': E0, 'R2': r0, 't_now': t0, 'Lw': Lw, 'vw': vterminal, 'dMdt_factor': dMdt_factor, 'Qi': fQi_evo(thalf) * u.Myr.to(u.s), 'mypath': mypath}
+                #     param0 = {'alpha': alpha, 'beta': beta, 'Eb': E0m1, 'R2': r0m1, 't_now': t0m1, 'Lw': Lw, 'vw': vterminal, 'dMdt_factor': dMdt_factor, 'Qi': fQi_evo(thalf) * u.Myr.to(u.s), 'mypath': mypath}
+                #     dzero_params = [param0, param1, Cool_Struc]
+                #     delta, bubbleFailed = get_bubbleParams.get_delta_new(delta, dzero_params)
+                #     param1["delta"] = delta
+                #     Lb, T_rgoal, Lb_b, Lb_cz, Lb3, dMdt_factor, Tavg, Mbubble, r_Phi, Phi_grav_r0b, f_grav = bubble_structure.calc_Lb(param1, Cool_Struc, temp_counter)
+                #     # new time step
+                #     Lres_temp = Lw - Lb
+                #     fac = np.max([np.min([lum_error2 / (np.abs(Lres_temp - Lres0) / Lw), 1.42]), 0.1])
+                #     dt_L = fac * dt_L  # 3 per cent change
+                #     param1['dt_L'] = dt_L
+                #     param1['T0'] = T_rgoal
+                #     param1['temp_counter'] = temp_counter
+                #     param1['Lres0'] = Lw - Lb
 
                 # average sound speed in bubble
                 k_B = c.k_B.cgs.value * u.g.to(u.Msun) * u.cm.to(u.pc)**2 / u.s.to(u.Myr)**2
@@ -574,7 +592,8 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         # bundle parameters for ODE solver
         params = [LW, PWDOT, GAM, mCloud, RHOA, RCORE, A_EXP,
                   MSTAR, LB, FRAD, fabs_i, rCloud, 
-                  density_specific_param, warpfield_params,
+                  # density_specific_param, 
+                  warpfield_params,
                   tcoll[coll_counter], t_frag, tscr, CS, warpfield_params.sfe]
 
         # print('\n\n\n')
@@ -590,7 +609,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
             psoln = scipy.integrate.odeint(energy_phase_ODEs.get_ODE_Edot, y0, t, args=(params,))
         except:
             sys.exit("ODE solver not working in run_energy_phase")
-        # get r, rdot and rdotdot
+        # get r, rdot and Eb
         r = psoln[:,0]
         rd = psoln[:, 1]
         Eb = psoln[:, 2]
@@ -610,7 +629,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         # print('\n\n\n')
         
         # get mass
-        Msh, _ = mass_profile.get_mass_profile(r, density_specific_param, rCloud, mCloud)
+        Msh, _ = mass_profile.get_mass_profile(r, rCloud, mCloud)
 
         """
         ################ CLOUDY #############################################################################################
@@ -845,7 +864,8 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         dfragdt = (frag_value - frag_value0)/(t[-1]-t[0])
         frag_value0 = frag_value
 
-        if idx_val >= len(t): idx_val = -2
+        if idx_val >= len(t): 
+            idx_val = -2
 
         t0m1 = t[idx_val]
         r0m1 = r[idx_val]

@@ -59,30 +59,38 @@ def get_mass_profile(r_arr,
     rhoAvg = warpfield_params.dens_navg_pL * warpfield_params.mu_n
     rhoISM = warpfield_params.nISM * warpfield_params.mu_n 
     
+    # make sure units are correct
+    r_arr = r_arr.to(u.pc)
+    rCloud = rCloud.to(u.pc)
+    mCloud = mCloud.to(u.M_sun)
+    
     # initialise arrays
-    mGas = r_arr.copy() * np.nan
-    mGasdot = r_arr.copy() * np.nan
+    # is this necessary??
+    mGas = np.empty_like(r_arr.value) * u.M_sun
+    mGasdot = np.empty_like(r_arr.value) * u.M_sun / u.yr
 
     # ----
     # Case 1: The density profile is homogeneous, i.e., alpha = 0
     if alpha == 0:
         # sphere
-        mGas =  4 / 3 * np.pi * r_arr**3 * rhoAvg
+        mGas =  (4 / 3 * np.pi * r_arr**3 * rhoAvg).to(u.M_sun)
         # outer region
-        mGas[r_arr > rCloud] =  mCloud + 4. / 3. * np.pi * rhoISM * (r_arr[r_arr > rCloud]**3 - rCloud**3)
+        mGas[r_arr.value > rCloud.value] =  mCloud + 4. / 3. * np.pi * rhoISM * (r_arr[r_arr > rCloud]**3 - rCloud**3)
         
         # if computing mdot is desired
         if return_mdot:
-            try:
+            # try:
                 # try to retrieve velocity array
                 rdot_arr = kwargs.pop('rdot_arr')
-                mGasdot = rdot_arr
-                mGasdot[r_arr <= rCloud] = 4 * np.pi * rhoAvg * r_arr[r_arr <= rCloud]**2 * rdot_arr[r_arr <= rCloud]
-                mGasdot[r_arr > rCloud] = 4 * np.pi * rhoISM * r_arr[r_arr > rCloud]**2 * rdot_arr[r_arr > rCloud]
+                # check unit
+                rdot_arr = rdot_arr.to(u.km/u.s)
+                inside_cloud = r_arr.value <= rCloud.value
+                mGasdot[inside_cloud] = 4 * np.pi * rhoAvg * r_arr[inside_cloud]**2 * rdot_arr[inside_cloud]
+                mGasdot[~inside_cloud] = 4 * np.pi * rhoISM * r_arr[~inside_cloud]**2 * rdot_arr[~inside_cloud]
                 # return value
                 return mGas.to(u.M_sun), mGasdot.to(u.M_sun/u.yr)
-            except: 
-                raise Exception('Velocity array expected.')
+            # except: 
+            #     raise Exception('Velocity array expected.')
         else:
             return mGas.to(u.M_sun)
         

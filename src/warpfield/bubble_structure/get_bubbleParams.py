@@ -327,7 +327,7 @@ def pRam(r, Lwind, vWind):
     """
     # Note:
         # old code: Pram()
-    return Lwind / (2 * np.pi * r**2 * vWind)
+    return (Lwind / (2 * np.pi * r**2 * vWind)).to(u.g/u.cm/u.s**2)
 
 
 # =============================================================================

@@ -24,7 +24,7 @@ def append_units(wp):
     
     wp.nCore /= u.cm**3
     
-    wp.rCore *= wp.rCore * u.pc
+    wp.rCore *= u.pc
 
     wp.rand_log_mCloud *= u.M_sun
     
@@ -38,7 +38,7 @@ def append_units(wp):
     
     wp.SB99_age_min *=  u.yr  
     
-    wp.v_SN *= wp.v_SN * u.km/u.s
+    wp.v_SN *= u.km/u.s
     
     wp.dens_navg_pL /= u.cm**3
       

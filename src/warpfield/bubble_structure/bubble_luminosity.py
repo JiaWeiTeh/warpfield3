@@ -43,17 +43,25 @@ warpfield_params = get_param.get_param()
 
 def get_bubbleproperties(
         t_now,
-        T_goal, rgoal,
-        r_inner, R2, 
+        rgoal,
+        R2, 
         Qi, alpha, beta, delta,
-        Lw, Eb, vw, v0,
+        Lw, Eb, vw,
         ):
+    
+    # R2 is r0
     
     # old code: get_bubbleLuminosity
     
     # =============================================================================
     # Step 1: Get necessary parameters, such as 
     # =============================================================================
+    
+    # velocity at r ---> 0.
+    v0 = 0.0 
+    
+    
+    
     
     # TODO: make warpfield run this to see if there is actually need to call this twice both in 
     
@@ -389,6 +397,8 @@ def get_bubbleproperties(
     # temperature T at rgoal
     print(rgoal)
     print(r_array[index_cooling_switch])
+    
+    
     if rgoal > r_array[index_cooling_switch]: # assumes that r_cz runs from high to low values (so in fact I am looking for the highest element in r_cz)
         T_rgoal = fT_interp_intermediate(rgoal)
     elif rgoal > r_array[index_CIE_switch]: # assumes that r_cz runs from high to low values (so in fact I am looking for the smallest element in r_cz)

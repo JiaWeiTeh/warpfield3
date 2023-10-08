@@ -29,6 +29,7 @@ args = parser.parse_args()
 # Get class and write summary file
 params = read_param.read_param(args.path2param, write_summary = True)
 
+print(params['rCore'])
 
 from src.warpfield.functions import header
 header.display()
