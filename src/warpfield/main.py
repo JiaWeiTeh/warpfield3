@@ -28,7 +28,7 @@ from src.warpfield.phase1b_energy_implicit import run_energy_implicit_phase
 from src.warpfield.phase1c_transition import run_transition_phase
 from src.warpfield.phase2_momentum import run_momentum_phase
 from src.warpfield.cloudy import __cloudy__
-import src.warpfield.functions.terminal_prints as terminal_prints
+import src.output_tools.terminal_prints as terminal_prints
 import src.output_tools.write_outputs as write_outputs
 import src.warpfield.bubble_structure.bubble_luminosity as bubble_luminosity
 
@@ -334,8 +334,10 @@ def run_expansion(ODEpar, SB99_data, SB99f):
     tcoll = [0.]
     # TODO: actually implement this.
     tStop = warpfield_params.stop_t 
-
-    ######## STEP A: energy-phase (explicit) ###########
+    
+    # =============================================================================
+    # Prep for phases
+    # =============================================================================
     # t0 = start time for Weaver phase
     # y0 = [r0, v0, E0, T0]
     # r0 = initial separation (pc)
@@ -344,24 +346,39 @@ def run_expansion(ODEpar, SB99_data, SB99f):
     # T0 = initial temperature (K)
     t0, y0 = get_InitPhaseParam.get_y0(0*u.Myr, SB99f)
     
-    # print(t0)
-    # # 2.0522259231733465e-05 Myr
-    # print(y0)
-    # # 0.07673766615320331 pc, 3656.200432285518 km / s, 3.596718555609108e+49 erg aka (old) 1891940.1286636114 pc2 solMass / Myr2, 94169393.9519478 K
-    # sys.exit('stop')
-    
     shell_dissolved = False
     t_shdis = 1e99 * u.yr
 
     dt_Estart = 0.0001 * u.Myr
     tfinal = t0 + 30. * dt_Estart 
+    
 
-    shell_prop = run_energy_phase.run_energy(t0, y0, ODEpar,
+    # =============================================================================
+    # Phase 1: Energy driven phase.
+    # =============================================================================
+
+    phase1_params = run_energy_phase.run_energy(t0, y0, ODEpar,
                                             tcoll, ii_coll,
                                             shell_dissolved, t_shdis,
                                             SB99_data, SB99f,
                                             tfinal,
                                             )
+    write_outputs.write_evolution(phase1_params)
+    sys.exit('Done with weaver')
+    #----- prep for next phase
+    
+    
+    
+    
+    # =============================================================================
+    # Phase 1b: implicit energy phase
+    # =============================================================================
+    
+    psoln_energy, params = run_energy_implicit_phase.run_phase_energy(params, ODEpar, SB99f)
+    
+    
+    
+    
                                                                  
     ######## STEP B: energy-phase (implicit) ################
     # if (aux.check_continue(Dw['t_end'], Dw['r_end'], Dw['v_end']) == ph.cont):

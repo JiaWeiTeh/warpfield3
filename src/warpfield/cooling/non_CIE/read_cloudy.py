@@ -17,7 +17,7 @@ from astropy.io import ascii
 from scipy.interpolate import RegularGridInterpolator
 import astropy.units as u
 #--
-from src.warpfield.functions.terminal_prints import cprint as cpr
+from src.output_tools.terminal_prints import cprint as cpr
 
 # # get parameter
 from src.input_tools import get_param

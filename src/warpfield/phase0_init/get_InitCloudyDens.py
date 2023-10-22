@@ -15,7 +15,7 @@ import astropy.units as u
 import os
 import sys
 import src.warpfield.cloud_properties.density_profile as density_profile
-from src.warpfield.functions.terminal_prints import cprint as cpr
+from src.output_tools.terminal_prints import cprint as cpr
 
 def create_InitCloudyDens(path2output,
                        rCloud, mCloud,

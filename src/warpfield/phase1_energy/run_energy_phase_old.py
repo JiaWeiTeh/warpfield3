@@ -118,7 +118,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     pdot0 = fpdot_evo(t0) 
     # terminal wind velocity at time t0 (km/s)
     vterminal0 = 2. * Lw0 / pdot0 * u.cm.to(u.km)
-    print('vterminal0', vterminal0)
     
     # bubble parameter values at time t0 (radius, velocity, energy, temperature)
     # r0 (pc), v0 = vterminal0 (km/s), E0 (erg), T0 (K)

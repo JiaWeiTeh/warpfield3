@@ -19,7 +19,7 @@ import src.warpfield.bubble_structure.bubble_structure as bubble_structure
 import src.warpfield.shell_structure.shell_structure as shell_structure
 import src.warpfield.cloud_properties.mass_profile as mass_profile
 import src.warpfield.phase1_energy.energy_phase_ODEs as energy_phase_ODEs
-import src.warpfield.functions.terminal_prints as terminal_prints
+import src.output_tools.terminal_prints as terminal_prints
 from src.warpfield.cooling.non_CIE import read_cloudy
 import src.warpfield.bubble_structure.bubble_luminosity as bubble_luminosity
 import src.warpfield.functions.operations as operations
@@ -251,9 +251,41 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # how many times had the main loop being ran?
     # old code: temp_counter
     loop_count = 0
+    
+    
+# These seems to be the most important ones. Others are thrown away.
+# t_end = tweaver_end = t[-1]
+# r_end =  rweaver_end = r[-1]
+# E_end = Eweaver_end = Eb[-1]
+# v_end = vweaver_end = Eb[-1]
 
+    
+    # =============================================================================
+    # Initialise arrays to record values
+    # =============================================================================
+    
+    # tSweaver, rSweaver, vSweaver, ESweaver
+    # time, inner shell radius, shell velocity, shell energy
+    weaver_tShell = [] * u.Myr; weaver_rShell = [] * u.pc; weaver_vShell = [] * u.km / u.s; weaver_EShell = [] * u.erg
+    
+    # shellmass
+    weaver_mShell = [] * u.M_sun
+    
+    # Lbweaver, Lbbweaver, Lbczweaver, Lb3weaver
+    weaver_L_total = [] * u.erg/u.s; weaver_L_bubble = [] * u.erg/u.s; weaver_L_conduction = [] * u.erg/u.s; weaver_L_intermediate = []* u.erg/u.s
+    
+    # fraction of absorbed photons
+    weaver_f_absorbed_ion = []; weaver_f_absorbed_neu = []; weaver_f_absorbed = []; weaver_f_ionised_dust = []
+    
+    # fabsweaver = []; fabs_i_weaver = []; fabs_n_weaver = []; ionshweaver = []; Mshell_weaver = []
+    # FSgrav_weaver = []; FSwind_weaver = []; FSradp_weaver = []; FSsne_weaver = []; FSIR_weaver = []; dRs_weaver = []; nmax_weaver = []
+    # n0weaver = []; n0_cloudyweaver = []; logMcluster_weaver = []; logMcloud_weaver = []; phase_weaver = []; R1weaver = []; Ebweaver = []; Pbweaver = []
+    # Lbweaver = []; Lwweaver = []; Tbweaver = []; alphaweaver = []; betaweaver = []; deltaweaver = []
+    # fragweaver = [];
 
     while all([r0 < rfinal, (tfinal - t0) > dt_Emin, continueWeaver]):
+        
+        print(f'loop {loop_count}, r0: {r0}.')
         
         # calculate bubble structure and shell structure?
         # no need to calculate them at very early times, since we say that no bubble or shell is being
@@ -386,6 +418,18 @@ def run_energy(t0, y0, #r0, v0, E0, T0
                                                                     )
                     # restate just for clarity
                     L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg = output
+                    
+                    print('L_total', L_total.to(u.M_sun*u.pc**2/u.Myr**3))
+                    print('T_rgoal', T_rgoal)
+                    print('L_bubble', L_bubble.to(u.M_sun*u.pc**2/u.Myr**3))
+                    print('L_conduction', L_conduction.to(u.M_sun*u.pc**2/u.Myr**3))
+                    print('L_intermediate', L_intermediate.to(u.M_sun*u.pc**2/u.Myr**3))
+                    print('dMdt_factor_out', dMdt_factor_out)
+                    print('Tavg', Tavg)
+                    # sys.exit()
+                    
+                    
+                    
                 elif not calculate_bubble_shell:
                     L_total = 0 * u.erg / u.s
                     L_bubble =  0 * u.erg / u.s
@@ -418,7 +462,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
             # put this here to signify ending of loop
             pass
 
-
+    
         # gradually switch on cooling (i.e. reduce the amount of cooling at very early times)
         if (t0-tcoll[coll_counter] < dt_switchon):
             reduce_factor = np.max([0.,np.min([1.,(t0-tcoll[coll_counter])/dt_switchon])])
@@ -442,29 +486,41 @@ def run_energy(t0, y0, #r0, v0, E0, T0
                                                         f_cover = 1,
                                                         )
             
+            f_absorbed_ion, f_absorbed_neu, f_absorbed,\
+                f_ionised_dust, is_fullyIonised, shellThickness,\
+                    nShell_max, tau_kappa_IR, grav_r, grav_phi, grav_force_m = shell_prop
+
+
         elif not calculate_bubble_shell:
-            f_abs = 0.0
             f_absorbed_ion = 0.0
             f_absorbed_neu = 0.0
-            ionsh = False
-            dRs = 0.0
-            nmax = 1e5  / u.cm**3
-            n0 = warpfield_params.nCore
-            n0_cloudy = n0
-            Lb = 0 * u.erg / u.s
+            f_absorbed = 0.0
+            f_ionised_dust = 0
+            is_fullyIonised = False
+            shellThickness = 0.0
+            nShell_max = 1e5  / u.cm**3
+            tau_kappa_IR = 0
+            grav_r = 0 
+            grav_phi = 0 
+            grav_force_m = 0
             
 
         # =============================================================================
         # call ODE solver to solve for equation of motion (r, v (rdot), Eb). 
         # =============================================================================
-        F_rad = f_abs - Lbol / c.c
+        F_rad = f_absorbed_ion * Lbol / c.c
+        
         params = [Lw, pdot, mCloud, warpfield_params.rCore, warpfield_params.mCluster, L_total, F_rad, f_absorbed_ion, rCloud, tcoll, t_frag, t_sound, cs_avg]
         
         
         y0 = [r0.to(u.cm).value, v0.to(u.cm/u.s).value, E0.to(u.erg).value]
+        
+        # print('y0', y0)
+        # print('t_arr', t_arr)
+        
         # call ODE solver
         # remember that the output is in cgs
-        psoln = scipy.integrate.odeint(energy_phase_ODEs.get_ODE_Edot, y0, t_arr.value, args=(params,))
+        psoln = scipy.integrate.odeint(energy_phase_ODEs.get_ODE_Edot, y0, t_arr.to(u.s).value, args=(params,))
         
         
         r_arr = psoln[:,0] * u.cm
@@ -472,9 +528,10 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         v_arr = psoln[:, 1] * u.cm/u.s
         Eb_arr = psoln[:, 2] * u.erg
 
-        print(r_arr)
-        print(v_arr)
-        print(Eb_arr)
+        # print('\n\nhere are the results for the ODE\n\n')
+        # print(r_arr.to(u.pc))
+        # print(v_arr)
+        # print(Eb_arr)
 
         # =============================================================================
         # calculate bubble mass
@@ -482,6 +539,8 @@ def run_energy(t0, y0, #r0, v0, E0, T0
 
         # get shell mass
         mShell_arr = mass_profile.get_mass_profile(r_arr, rCloud, mCloud, return_mdot = False)
+        
+        # print(mShell_arr)
     
         # print(mShell_arr)
         # sys.exit()
@@ -492,34 +551,35 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         # =============================================================================
         # Here, we perform checks to see if we should continue the branch (i.e., increasing steps)
         # =============================================================================
-        
+        # TODO: 
         #----------------------------
         # 1. Stop calculating when radius threshold is reached
         #----------------------------
         # TODO: old code contains adabaticOnlyCore
         # TODO: 
-        if r_arr[-1].to(u.pc).value > rCloud.to(u.pc).value:
-            # if r values reach beyond the cloud radius, mask away, and stop the branch.
-            continue_branch = False
-            mask = r_arr.to(u.pc).value < rCloud.to(u.pc).value
-            t_arr = t_arr[mask]
-            r_arr = r_arr[mask]
-            v_arr = v_arr[mask]
-            Eb_arr = Eb_arr[mask]
-            mShell_arr = mShell_arr[mask]
+        # if r_arr[-1].to(u.pc).value > rCloud.to(u.pc).value:
+        #     # if r values reach beyond the cloud radius, mask away, and stop the branch.
+        #     continue_branch = False
+        #     mask = r_arr.to(u.pc).value < rCloud.to(u.pc).value
+        #     t_arr = t_arr[mask]
+        #     r_arr = r_arr[mask]
+        #     v_arr = v_arr[mask]
+        #     Eb_arr = Eb_arr[mask]
+        #     mShell_arr = mShell_arr[mask]
             
-        else:
-            print(warpfield_params.rCore)
-            print(r_arr.to(u.pc).value)
-            print(r_arr[r_arr.to(u.pc).value >= warpfield_params.rCore.to(u.pc).value][0])
-            # if r values are still within the cloud, 
-            continue_branch = True
-            mask = r_arr.to(u.pc).value <= r_arr[r_arr.to(u.pc).value >= warpfield_params.rCore.to(u.pc).value][0]
-            t_arr = t_arr[mask]
-            r_arr = r_arr[mask]
-            v_arr = v_arr[mask]
-            Eb_arr = Eb_arr[mask]
-            mShell_arr = mShell_arr[mask]
+        # else:
+        #     print('\n\nhere in else\n\n')
+        #     print(warpfield_params.rCore)
+        #     print(r_arr.to(u.pc).value)
+        #     print(r_arr[r_arr.to(u.pc).value >= warpfield_params.rCore.to(u.pc).value][0])
+        #     # if r values are still within the cloud, 
+        #     continue_branch = True
+        #     mask = r_arr.to(u.pc).value <= r_arr[r_arr.to(u.pc).value >= warpfield_params.rCore.to(u.pc).value][0]
+        #     t_arr = t_arr[mask]
+        #     r_arr = r_arr[mask]
+        #     v_arr = v_arr[mask]
+        #     Eb_arr = Eb_arr[mask]
+        #     mShell_arr = mShell_arr[mask]
             
         #----------------------------
         # 2. When does fragmentation occur?
@@ -567,11 +627,41 @@ def run_energy(t0, y0, #r0, v0, E0, T0
             # OPTION 2 for switching to mom-driving: if i.immediate_leak is set to False, when covering fraction drops below 50%, switch to momentum driving
     
         
-     
-        
-        
-        
-        
+        # record values
+        # Idea: for each t0, record also all r or n values in r0. Need shell/bubble to return them
+        # so we can make movies.
+        weaver_tShell = np.concatenate([weaver_tShell, [t0]])
+        weaver_rShell = np.concatenate([weaver_rShell, [r0]])
+        weaver_vShell = np.concatenate([weaver_vShell, [v0]])
+        weaver_EShell = np.concatenate([weaver_EShell, [E0]])
+        # mass
+        weaver_mShell = np.concatenate([weaver_mShell, [Msh0]])
+        # luminosity properties
+        weaver_L_total = np.concatenate([weaver_L_total, [L_total]])
+        weaver_L_bubble = np.concatenate([weaver_L_bubble, [L_bubble]])
+        weaver_L_conduction = np.concatenate([weaver_L_conduction, [L_conduction]])
+        weaver_L_intermediate = np.concatenate([weaver_L_intermediate, [L_intermediate]])
+        # absorbed photons 
+        weaver_f_absorbed_ion = np.concatenate([weaver_f_absorbed_ion, [f_absorbed_ion]])
+        weaver_f_absorbed_neu = np.concatenate([weaver_f_absorbed_ion, [f_absorbed_ion]])
+        weaver_f_absorbed = np.concatenate([weaver_f_absorbed_ion, [f_absorbed_ion]])
+    
+  
+        weaver_data = {'t':weaver_tShell, 'r':weaver_rShell, 'v':weaver_vShell, 'E':weaver_EShell, 
+                  't_end': weaver_tShell[-1], 'r_end':weaver_rShell[-1], 'v_end':weaver_vShell[-1], 'E_end':weaver_EShell[-1],
+                  'logMshell':np.log10(weaver_mShell.to(u.M_sun).value) * u.M_sun,
+                  # I think these are not important for the code, but still worth tracking.
+                  'fabs':weaver_f_absorbed, 'fabs_n': weaver_f_absorbed_neu, 'fabs_i':weaver_f_absorbed_ion,
+                  'Lcool':weaver_L_total, 'Lbb':weaver_L_bubble, 'Lbcz':weaver_L_conduction, 'Lb3':weaver_L_intermediate,
+                  }
+          
+          
+          # 'Fgrav':FSgrav_weaver, 'Fwind':FSwind_weaver, 'Fradp_dir':FSradp_weaver, 'FSN':FSsne_weaver, 'Fradp_IR':FSIR_weaver,
+          # 'dRs':dRs_weaver, 'logMshell':np.log10(Mshell_weaver), 'nmax':nmax_weaver, 'logMcluster':logMcluster_weaver, 'logMcloud':logMcloud_weaver,
+          # 'phase': phase_weaver, 'R1':R1weaver, 'Eb':Ebweaver, 'Pb':Pbweaver, 'Lmech':Lwweaver, 'Lcool':Lbweaver, 'Tb':Tbweaver,
+          # 'alpha':alphaweaver, 'beta':betaweaver,'delta':deltaweaver, 'Lbb':Lbbweaver, 'Lbcz':Lbczweaver, 'Lb3':Lb3weaver, 'frag':fragweaver, 'dMdt_factor_end': dMdt_factor}
+
+
     
         # =============================================================================
         # Prepare for next loop
@@ -579,13 +669,13 @@ def run_energy(t0, y0, #r0, v0, E0, T0
 
         # new initial values
         # time
-        t0 = t_arr[-1]
+        t0 = t_arr[-1].to(u.Myr)
         # shell radius
-        r0 = r_arr[-1]
+        r0 = r_arr[-1].to(u.pc)
         # shell velocity
-        v0 = v_arr[-1]
+        v0 = v_arr[-1].to(u.km/u.s)
         # bubble energy
-        E0 = Eb_arr[-1]
+        E0 = Eb_arr[-1].to(u.erg)
         # wind velocity = 2 * wind Luminosity / pdot
         vterminal0 = (2 * (fLw_evo(t0) * u.erg / u.s) / (fpdot_evo(t0) * u.g * u.cm / u.s**2)).to(u.km/u.s)
         
@@ -609,7 +699,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
             P0 = get_bubbleParams.bubble_E2P(E0, r0, R1)
             
             
-            
         Msh0 = mShell_arr[-1] # shell mass
         
         
@@ -628,13 +717,14 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         # update loop counter
         loop_count += 1
     
+        # break
         pass
 
 
 
 
 
-    return
+    return weaver_data
     
     
     # here is testing region.

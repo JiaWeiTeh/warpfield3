@@ -28,7 +28,7 @@ import src.warpfield.bubble_structure.bubble_structure as bubble_structure
 import src.warpfield.shell_structure.shell_structure as shell_structure
 import src.warpfield.cloud_properties.mass_profile as mass_profile
 import src.warpfield.phase1_energy.energy_phase_ODEs as energy_phase_ODEs
-import src.warpfield.functions.terminal_prints as terminal_prints
+import src.output_tools.terminal_prints as terminal_prints
 from src.warpfield.functions.operations import find_nearest_lower, find_nearest_higher
 from src.warpfield.cooling import net_coolingcurve
 import src.warpfield.cooling.CIE.read_coolingcurve as CIE
@@ -43,7 +43,6 @@ warpfield_params = get_param.get_param()
 
 def get_bubbleproperties(
         t_now,
-        rgoal,
         R2, 
         Qi, alpha, beta, delta,
         Lw, Eb, vw,
@@ -58,9 +57,20 @@ def get_bubbleproperties(
     # =============================================================================
     
     # velocity at r ---> 0.
-    v0 = 0.0 
+    v0 = 0.0 * u.km / u.s
     
-    
+        
+    print('t_now', t_now)
+    print('R2', R2)
+    print('Qi', Qi.to(1/u.Myr))
+    print('t_now', t_now)
+    print('alpha', alpha)
+    print('beta', beta)
+    print('delta', delta)
+    print('Lw', Lw.to(u.M_sun*u.pc**2/u.Myr**3))
+    print('Eb', Eb.to(u.M_sun*u.pc**2/u.Myr**2))
+    print('vw', vw)
+        
     
     
     # TODO: make warpfield run this to see if there is actually need to call this twice both in 
@@ -85,7 +95,7 @@ def get_bubbleproperties(
     # 11858019.317814864 0.20207551764992493 0.14876975625376893
     # 11858019.317814864 pc2 solMass / yr2 0.20207551764992493 pc 0.2020754412666312 pc
     print('this is pressure')
-    print(press, 'or', press.to(u.M_sun/u.pc/u.Myr**2))
+    print(press.to(u.M_sun/u.pc/u.Myr**2))
     # 0.00024352944352531002 g / (cm s2) or 376360507.4418777 solMass / (Myr2 pc)
     # 'press': 380571798.5188472
     # sys.exit()
@@ -124,6 +134,8 @@ def get_bubbleproperties(
     # for now, use single value to check debug.
     #--------------
     # fix this
+    rgoal = (warpfield_params.xi_Tb * R2).to(u.pc)
+    
     # def calcr_Tb(l1,l2):
     # rTb=i.r_Tb
     
@@ -282,7 +294,7 @@ def get_bubbleproperties(
     # intermediate result for calculation of average temperature [K pc3]
     Tavg_bubble = np.abs(np.trapz(r_bubble**2 * T_bubble, x = r_bubble)).to(u.K * u.pc**3)
     
-    print('1st zone done')
+    # print('1st zone done')
 
     #---------------- 2. Conduction zone. High resolution region, 10**4 < T < 10**5.5 K. 
     
@@ -327,10 +339,10 @@ def get_bubbleproperties(
     # if there is no conduction; i.e., the shock front is very steep. 
     elif index_cooling_switch == 0 and index_CIE_switch == 0:
         # the power loss due to cooling in this region will simply be zero. 
-        L_conduction = 0.        
+        L_conduction = 0 * u.erg/ u.s   
         dTdR_coolingswitch = dTdr_bubble[0]
         
-    print(f'Second zone done. index_cooling_switch = {index_cooling_switch} and index_CIE_switch = {index_CIE_switch}.')
+    # print(f'Second zone done. index_cooling_switch = {index_cooling_switch} and index_CIE_switch = {index_CIE_switch}.')
             
     #---------------- 3. Region between 1e4 K and T_array[index_cooling_switch]
     
@@ -375,7 +387,7 @@ def get_bubbleproperties(
     # intermediate result for calculation of average temperature
     Tavg_intermediate =  (np.abs(np.trapz(r_intermediate**2 * T_intermediate,  x = r_intermediate))).to(u.K * u.pc**3)
 
-    print('Third zone done.')
+    # print('Third zone done.')
 
     #---------------- 4. Finally, sum up across all regions. Calculate the average temeprature.
     # this was Lb in old code
@@ -395,8 +407,8 @@ def get_bubbleproperties(
     # TODO: what is rgoal?
     # get temperature inside bubble at fixed scaled radius
     # temperature T at rgoal
-    print(rgoal)
-    print(r_array[index_cooling_switch])
+    # print(rgoal)
+    # print(r_array[index_cooling_switch])
     
     
     if rgoal > r_array[index_cooling_switch]: # assumes that r_cz runs from high to low values (so in fact I am looking for the highest element in r_cz)
@@ -411,7 +423,7 @@ def get_bubbleproperties(
     # new factor for dMdt (used in next time step to get a good initial guess for dMdt)
     dMdt_factor_out = warpfield_params.dMdt_factor * dMdt / dMdt_init
     
-    print('Completed calculation of bubble luminosity.')
+    # print('Completed calculation of bubble luminosity.')
     
     return L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg
 

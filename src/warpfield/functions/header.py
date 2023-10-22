@@ -9,7 +9,7 @@ import time
 import os
 import sys
 from src.warpfield.functions.dictionary import prompt
-from src.warpfield.functions.terminal_prints import cprint as cpr
+from src.output_tools.terminal_prints import cprint as cpr
 # get parameter
 from src.input_tools import get_param
 warpfield_params = get_param.get_param()

@@ -49,15 +49,57 @@ def run_phase_energy(params, ODEpar, SB99f,rtole = rtol):
 
     # define ODE which shall be solved
     ODE_fun = lambda t, y: fE_tot(t, y, params, ODEpar, SB99f)
+    
+    # stop integration when:
+    #--- 1) Stopping time reached.
+    def _stop(t, y, tStop):
+        return t - tStop
+    
+    event_stop = lambda t, y: _stop(t, y, tmax)
+    event_stop.terminal = True 
+    
+    #--- 2) Small radius reached during recollapse. 
+    def _smallRadius(t, y):
+        r, v, _, _ = y
+        # happens only during recollapse, i.e. v < 0.
+        if v < 0:
+            return r - warpfield_params.r_coll
+        # otherwise just return an arbritrary number that doesn't mean anything, as long as it is not zero. 
+        else:
+            return 100
+    event_smallRadius = lambda t, y: _smallRadius(t, y)
+    event_smallRadius.terminal = True
+    event_smallRadius.direction = -1.0 
+    
+    #--- 3) Large radius reached during expansion.
+    def _largeRadius(t, y):
+        r, _, _, _ = y
+        return r - warpfield_params.stop_r
+    
+    event_largeRadius = lambda t, y: _largeRadius(t, y)
+    event_largeRadius.terminal = True 
+    
+    #--- 4) When velocity crosses from + to - (re-collapse) or the other way (re-expand)
+    def _velocity(t, y):
+        _, v, _, _ = y
+        return v
+
+    event_velocity = lambda t, y: _velocity(t, y)
+    # do not switch off, but smaller time steps
+    event_velocity.terminal = False
+    event_velocity.direction = -1.0 
+
+    #--- 5)
+
+
+
+
+    event_fun4 = lambda t, y: phase_events.event_grav_frag(t,y,ODEpar,SB99f); event_fun4.terminal = True # graviational fragmentation
+
 
     # list of events which will cause the solver to terminate (see my_events.py to see what they are)
-    event_fun1 = lambda t, y: phase_events.event_StopTime(t, y, ODEpar['tStop']); event_fun1.terminal = True # End time reached
-    event_fun2 = lambda t, y: phase_events.event_Radius1(t, y); event_fun2.terminal = True; event_fun2.direction = -1.0 # Small radius (rcoll) reached and collapsing
-    event_fun3 = lambda t, y: phase_events.event_Radius1000(t, y); event_fun3.terminal = True # Large radius (rstop) reached
-    event_fun4 = lambda t, y: phase_events.event_grav_frag(t,y,ODEpar,SB99f); event_fun4.terminal = True # graviational fragmentation
     event_fun5 = lambda t, y: phase_events.event_RTinstab(t, y, ODEpar, SB99f); event_fun5.terminal = True; event_fun5.direction = 1.0 # Rayleigh-Taylor instability
     event_fun6 = lambda t, y: phase_events.event_inhom_frag(t, y, ODEpar); event_fun6.terminal = True # fragmentation due to density inhomogeneities
-    event_fun7 = lambda t, y: phase_events.event_vel0(t, y); event_fun7.terminal = False; event_fun7.direction = -1.0 # velocity switches from + to -, i.e. onset of collapse (no termination but small time steps)
     event_fun8 = lambda t, y: phase_events.event_dissolution(t, y, ODEpar); event_fun8.terminal = True # shell dissolves into ambient ISM
     
     event_fun9 = lambda t, y: phase_events.event_density_gradient(t, y, ODEpar); event_fun9.terminal = True; # radius reached where density profile is stepper than r**(-2)

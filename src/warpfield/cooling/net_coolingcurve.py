@@ -17,7 +17,7 @@ import astropy.units as u
 import src.warpfield.cooling.CIE.read_coolingcurve as CIE
 # get_Lambda
 import src.warpfield.cooling.non_CIE.read_cloudy as non_CIE
-from src.warpfield.functions.terminal_prints import cprint as cpr
+from src.output_tools.terminal_prints import cprint as cpr
 
 
 def get_dudt(age, ndens, T, phi):

@@ -264,13 +264,7 @@ def event_Radius1(t, y):
     return residual
 
 def event_StopTime(t, y, tStop):
-    """
-    event of End Time of simulation reached
-    :param t:
-    :param y:
-    :param tStop:
-    :return:
-    """
+    # End of simulation time.
     residual = t - tStop
 
     return residual

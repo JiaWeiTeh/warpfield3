@@ -55,30 +55,30 @@ def get_ODE_Edot(y, t, params):
     E_bubble *= u.erg
     t *= u.s
     
-    print(warpfield_params.rCore)
     
     L_wind, pdot_wind, mCloud, rCore, mCluster, L_bubble, FRAD, FABSi,\
         rCloud,\
             tSF, tFRAG, tSCR, CS  = params  # unpack parameters
             
-    params = [L_wind.to(u.M_sun*u.pc**2/u.Myr**3), pdot_wind.to(u.pc * u.M_sun / u.Myr**2),\
-              warpfield_params.gamma_adia, mCloud, (warpfield_params.nCore * warpfield_params.mu_n).to(u.M_sun/u.pc**3),\
-                  rCore.to(u.pc), warpfield_params.dens_a_pL,\
-              mCluster, L_bubble.to(u.M_sun*u.pc**2/u.Myr**3), FRAD, FABSi, rCloud, 1.0, tSF,\
-                  tFRAG, tSCR, CS, warpfield_params.sfe]  # unpack parameters
+    # params = [L_wind.to(u.M_sun*u.pc**2/u.Myr**3), pdot_wind.to(u.pc * u.M_sun / u.Myr**2),\
+    #           warpfield_params.gamma_adia, mCloud, (warpfield_params.nCore * warpfield_params.mu_n).to(u.M_sun/u.pc**3),\
+    #               rCore.to(u.pc), warpfield_params.dens_a_pL,\
+    #           mCluster, L_bubble.to(u.M_sun*u.pc**2/u.Myr**3), FRAD, FABSi, rCloud, 1.0, tSF,\
+    #               tFRAG, tSCR, CS, warpfield_params.sfe]  # unpack parameters
             
-    print('params', params)
-    sys.exit()
+    # print('params', params)
+    # sys.exit()
             
             
     v_wind = (2.*L_wind/pdot_wind).to(u.cm/u.s)
     
     # print('v_wind', v_wind)
+    # sys.exit()
     
     # calculate shell mass and time derivative of shell mass
     mShell, mShell_dot = mass_profile.get_mass_profile(rShell, rCloud, mCloud, return_mdot = True, rdot_arr = vShell)
     
-    # print('mShell, mShell_dot', mShell, mShell_dot)
+    # print('mShell, mShell_dot', mShell, mShell_dot.to(u.M_sun/u.Myr))
     
     def get_press_ion(r, rcloud):
         """
@@ -90,6 +90,9 @@ def get_ODE_Edot(y, t, params):
         # n_r: total number density of particles (H+, He++, electrons)
         n_r = density_profile.get_density_profile(r, rcloud)
         P_ion = n_r * c.k_B * warpfield_params.t_ion
+        # print('pression')
+        # print(n_r.to(1/u.pc**3))
+        # print(P_ion.to(u.M_sun/u.pc/u.Myr**2))
         # return
         return P_ion
 
@@ -115,19 +118,15 @@ def get_ODE_Edot(y, t, params):
     tmin = dt_switchon
     if (t.to(u.yr).value > (tmin + tSF).to(u.yr).value):
         # equation of state
-        press_bubble = get_bubbleParams.bubble_E2P(E_bubble, rShell, R1)
+        press_bubble = get_bubbleParams.bubble_E2P(E_bubble, rShell, R1)[0]
     elif (t.to(u.yr).value <= (tmin + tSF).to(u.yr).value):
         R1_tmp = (t-tSF)/tmin * R1
-        press_bubble = get_bubbleParams.bubble_E2P(E_bubble, rShell, R1_tmp)
+        press_bubble = get_bubbleParams.bubble_E2P(E_bubble, rShell, R1_tmp)[0]
     #else: #case pure momentum driving
     #    # ram pressure from winds
     #    press_bubble = state_eq.Pram(r,LW,VW)
     
-    
     # print('R1, tmin, Pb', R1.to(u.pc), tmin, press_bubble.to(u.M_sun/u.pc/u.Myr**2))
-    # sys.exit()
-
-
 
     def calc_coveringf(t,tFRAG,ts):
         """
@@ -148,6 +147,9 @@ def get_ODE_Edot(y, t, params):
     # calculate covering fraction
     cf = calc_coveringf(np.array([t.value])*u.s,tFRAG,tSCR)
     
+    # print('cf', cf)
+    # sys.exit()
+    
     # transform to float if necessary
     if hasattr(cf, "__len__"): 
         cf = cf[0] 
@@ -155,22 +157,44 @@ def get_ODE_Edot(y, t, params):
     if cf < 1:
         L_leak = (1. - cf)  * 4. * np.pi * rShell ** 2 * press_bubble * CS / (warpfield_params.gamma_adia - 1.)
     else:
-        L_leak = 0
-        
+        L_leak = 0 * u.erg / u.s
         
     # time derivatives￼￼
     rd = vShell
     vd = (4.*np.pi*rShell**2.*(press_bubble-press_HII) - mShell_dot * vShell - F_grav + FRAD)/mShell
     # factor cf for debugging
     Ed = (L_wind - L_bubble) - (4.*np.pi*rShell**2.*press_bubble) * vShell - L_leak 
+
+    # print('\nbegin\n')
+    # print(rShell.to(u.pc), press_bubble.to(u.M_sun / u.pc / u.Myr**2), press_HII.to((u.M_sun / u.pc / u.Myr**2)))
+    # print((4.*np.pi*rShell**2.*(press_bubble-press_HII)).to(u.pc*u.M_sun/u.Myr**2))
+    
+    # # this
+    # print((mShell_dot * vShell).to(u.pc*u.M_sun/u.Myr**2))
+    
+    # print((F_grav).to(u.pc*u.M_sun/u.Myr**2))
+    # print((FRAD).to(u.pc*u.M_sun/u.Myr**2)) 
+    # print((mShell).to(u.M_sun))
+    # print((L_wind - L_bubble).to(u.M_sun*u.pc**2/u.Myr**3))
+    # print(((4.*np.pi*rShell**2.*press_bubble) * vShell).to(u.M_sun*u.pc**2/u.Myr**3))
+    # print((L_leak).to(u.M_sun*u.pc**2/u.Myr**3))
+    # sys.exit()    
     
     
+    
+    # print('rd, vd, Ed', rd.to(u.km/u.s).value, vd.to(u.pc/u.Myr**2), Ed.to(u.M_sun/u.Myr**3*u.pc**2))
+    # sys.exit()
+
     # list of dy/dt=f functions
     derivs = [rd.to(u.cm/u.s).value, vd.to(u.cm/u.s**2).value, Ed.to(u.erg/u.s).value]
     # return
     return derivs
 
 
+    # # time derivatives
+    # rd = v
+    # vd = (4.*np.pi*r**2.*(Pb-PHII) - Msh_dot*v - Fgrav + FRAD)/Msh
+    # Ed = (LW - LB) - (4.*np.pi*r**2.*Pb) * v - L_leak # factor cf for debugging
 
 
 
