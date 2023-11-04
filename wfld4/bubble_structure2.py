@@ -1005,7 +1005,6 @@ def calc_Lb(data_struc, Cool_Struc, counter, rgoal_f=i.r_Tb, verbose=0, plot=0, 
 
         ######################### 2) high resolution region (conduction zone, 1e4K - 3e5K) #######################
 
-
         # there are 2 possibilities:
         # 1. the conduction zone extends to temperatures below 1e4K (unphysical, photoionization!)
         # 2. the conduction zone extends to temperatures above 1e4K
@@ -1171,6 +1170,13 @@ def calc_Lb(data_struc, Cool_Struc, counter, rgoal_f=i.r_Tb, verbose=0, plot=0, 
 
         # mass of material inside bubble (in solar masses)
         Mbubble = Mcum_tmp[-1]/myc.Msun
+        """
+
+        """
+        :param r_Phi: list-like np.array of radii at which Phi has already been evaluated (shell and possibly bubble)
+        :param Phi_grav_r0: normalization of grav. potential (integral from r0 to rsh_out over r*rho(r);
+                                                              integral from rsh_out to r_infinity will be done here)
+        :param f_grav: spatial derivative of potential (force per unit mass)
         """
 
         #end = time.time()

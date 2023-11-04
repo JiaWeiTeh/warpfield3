@@ -115,7 +115,7 @@ def get_dudt(age, ndens, T, phi):
         # =============================================================================
     
         # # get CIE cooling rate
-        Lambda, _, _= CIE.get_Lambda(10**CIE_Tcutoff.value * u.K)
+        Lambda, _, _, _= CIE.get_Lambda(10**CIE_Tcutoff.value * u.K)
         dudt_CIE = (ndens**2 * Lambda).to(u.erg / u.cm**3 / u.s)
         
         # =============================================================================

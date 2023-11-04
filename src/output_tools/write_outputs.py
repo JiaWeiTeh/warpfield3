@@ -101,24 +101,32 @@ def write_evolution(data):
     # D                        double precision float (64-bit) 8
 
     # evolution
-    cols.append(fits.Column(name="Time", format='1D', 
+    # Time
+    cols.append(fits.Column(name="t", format='1D', 
                             unit='Myr', array = data['t']))
-    cols.append(fits.Column(name="Shell radius", format='1D', 
+    # Shell_radius 
+    cols.append(fits.Column(name="r", format='1D', 
                             unit='pc', array = data['r']))
-    cols.append(fits.Column(name="Shell velocity", format='1D', 
+    # Shell_velocity
+    cols.append(fits.Column(name="v", format='1D', 
                             unit='km/s', array = data['v']))
-    cols.append(fits.Column(name="Bubble energy", format='1D', 
+    # Bubble energy
+    cols.append(fits.Column(name="Eb", format='1D', 
                             unit='erg', array = data['E']))
-
-    cols.append(fits.Column(name="Shell mass", format='1D', 
+    # Shell_mass
+    cols.append(fits.Column(name="M", format='1D', 
                             unit='Msun', array = data['logMshell']))
-    cols.append(fits.Column(name="Bubble cooling luminosity - total", format='1D', 
+    # Total cooling luminosity
+    cols.append(fits.Column(name="LumC_t", format='1D', 
                             unit='erg/s', array = data['Lcool']))    
-    cols.append(fits.Column(name="Bubble cooling luminosity - inner bubble", format='1D', 
+    # Bubble cooling luminosity - inner bubble
+    cols.append(fits.Column(name="LumC_b", format='1D', 
                             unit='erg/s', array = data['Lbb']))    
-    cols.append(fits.Column(name="Bubble cooling luminosity - conduction zone", format='1D', 
-                            unit='erg/s', array = data['Lbcz']))    
-    cols.append(fits.Column(name="Bubble cooling luminosity - intermediate zone", format='1D', 
+    # Bubble cooling luminosity - conduction zone
+    cols.append(fits.Column(name="LumC_c", format='1D', 
+                            unit='erg/s', array = data['Lbcz']))   
+    # Bubble cooling luminosity - intermediate zone
+    cols.append(fits.Column(name="LumC_i", format='1D', 
                             unit='erg/s', array = data['Lb3']))    
         
     fitscols = fits.ColDefs(cols)
@@ -131,7 +139,7 @@ def write_evolution(data):
 
     # Create HDU list and write to file
     hdulist = fits.HDUList([prihdu, tbhdu])
-    hdulist.writeto(warpfield_params.model_name+'_evolution.fits',
+    hdulist.writeto(warpfield_params.out_dir + '/' + warpfield_params.model_name+'_evolution.fits',
                     overwrite=True)
             
     return 

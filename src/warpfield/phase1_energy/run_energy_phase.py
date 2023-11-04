@@ -19,7 +19,7 @@ import src.warpfield.bubble_structure.bubble_structure as bubble_structure
 import src.warpfield.shell_structure.shell_structure as shell_structure
 import src.warpfield.cloud_properties.mass_profile as mass_profile
 import src.warpfield.phase1_energy.energy_phase_ODEs as energy_phase_ODEs
-import src.output_tools.terminal_prints as terminal_prints
+from src.output_tools import terminal_prints, verbosity
 from src.warpfield.cooling.non_CIE import read_cloudy
 import src.warpfield.bubble_structure.bubble_luminosity as bubble_luminosity
 import src.warpfield.functions.operations as operations
@@ -84,6 +84,10 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # header
     terminal_prints.phase1()
     
+    # test only
+    # verbosity.test()
+    # sys.exit('Demo done.')
+    
     mypath = warpfield_params.out_dir
 
     # -----------
@@ -111,7 +115,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     pdot0 = fpdot_evo(t0) * u.g * u.cm / u.s**2
     # terminal wind velocity at time t0 (km/s)
     vterminal0 = (2. * Lw0 / pdot0).to(u.km/u.s)
-    print('vterminal0', vterminal0)
+    # print('vterminal0', vterminal0)
 
     
     # Identify potentially troublesome timestep; i.e., when change in mechanical luminosity is morre than 300% per Myr
@@ -132,10 +136,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     rCloud = ODEpar['rCloud']
     mCloud = ODEpar['mCloud']
     
-    # print('\n\ncheckpoint1')
-    # print('Lw0, pdot0, vterminal0')
-    # print(Lw0.to(u.M_sun * u.pc**2 / u.Myr**3), pdot0.to(u.M_sun * u.pc / u.Myr**2), vterminal0)
-    # sys.exit()
 
     # -----------
     # Solve equation for inner radius of the inner shock.
@@ -156,7 +156,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
                                       r0.to(u.cm).value
                                       ])) * u.cm)\
                                 .to(u.pc)#back to pc
-    print(f'Inner discontinuity: {R1}.')
     
     # initial energy derivative
     # Question: why?
@@ -166,10 +165,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     t0m1 = 0.9*t0
     r0m1 = 0.9*r0
     
-    # print('\n\ncheckpoint2')
-    # print(R1, E0m1, t0m1, r0m1)
-    # sys.exit()
- 
     # -----------
     # Solve equation for mass and pressure within bubble (r0)
     # -----------
@@ -184,13 +179,13 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     else:
         rfinal = rCloud
     
+    print(f'Inner discontinuity: {R1}.')
     print(f'Initial bubble mass: {Msh0}')
     print(f'Initial bubble pressure: {P0.to(u.M_sun/u.pc/u.Myr**2)}')
-    
-    
-    # print('checkpoint3')
-    # print(E0, Msh0, P0, rfinal)
-    # 3.596718555609108e+49 erg 0.5953786133541732 solMass 0.0012556410178208998 g / (cm s2) 90.91228527839561 pc
+    print(f'rfinal: {rfinal}')
+    print(f'Lw0: {Lw0.to(u.M_sun * u.pc**2 / u.Myr**3)}')
+    print(f'pdot0: {pdot0.to(u.M_sun * u.pc / u.Myr**2)}')
+    print(f'vterminal0: {vterminal0}')
     
     
     # Calculate bubble structure
@@ -285,7 +280,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
 
     while all([r0 < rfinal, (tfinal - t0) > dt_Emin, continueWeaver]):
         
-        print(f'loop {loop_count}, r0: {r0}.')
         
         # calculate bubble structure and shell structure?
         # no need to calculate them at very early times, since we say that no bubble or shell is being
@@ -332,6 +326,10 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         
         
         
+        print(f'\n\nloop {loop_count}, r0: {r0}.\n\n')
+        print(f'dt_Emin: {dt_Emin}')
+        print(f'tStop_i: {tStop_i}')
+        print(f'dt_real: {dt_real}') 
         
         # t0 will increase bit by bit in this main loop
 
@@ -408,7 +406,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
                 # =============================================================================
                 
                 if calculate_bubble_shell:
-                    print('here')
+                    
                     output = bubble_luminosity.get_bubbleproperties(t0 - tcoll[coll_counter],
                                                                     # T_goal, rgoal,
                                                                     # R2 is r0 in old code
@@ -417,16 +415,16 @@ def run_energy(t0, y0, #r0, v0, E0, T0
                                                                     Lw, E0, vterminal,
                                                                     )
                     # restate just for clarity
-                    L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg = output
+                    L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg, mBubble = output
                     
-                    print('L_total', L_total.to(u.M_sun*u.pc**2/u.Myr**3))
-                    print('T_rgoal', T_rgoal)
-                    print('L_bubble', L_bubble.to(u.M_sun*u.pc**2/u.Myr**3))
-                    print('L_conduction', L_conduction.to(u.M_sun*u.pc**2/u.Myr**3))
-                    print('L_intermediate', L_intermediate.to(u.M_sun*u.pc**2/u.Myr**3))
-                    print('dMdt_factor_out', dMdt_factor_out)
-                    print('Tavg', Tavg)
-                    # sys.exit()
+                    print('\n\nFinish bubble\n\n')
+                    # print('L_total', L_total.to(u.M_sun*u.pc**2/u.Myr**3))
+                    # print('T_rgoal', T_rgoal)
+                    # print('L_bubble', L_bubble.to(u.M_sun*u.pc**2/u.Myr**3))
+                    # print('L_conduction', L_conduction.to(u.M_sun*u.pc**2/u.Myr**3))
+                    # print('L_intermediate', L_intermediate.to(u.M_sun*u.pc**2/u.Myr**3))
+                    # print('dMdt_factor_out', dMdt_factor_out)
+                    # print('Tavg', Tavg)
                     
                     
                     
@@ -438,7 +436,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
                     dMdt_factor_out = 1.646 # as in classical Weaver
                     Tavg = T0
                     
-                    Mbubble = np.nan
+                    mBubble = np.nan
                     r_Phi = np.nan
                     Phi_grav_r0b = np.nan
                     f_grav = np.nan
@@ -476,11 +474,33 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         # Calculate shell structure
         # =============================================================================
         
+        # PROBLEM: Where is Mbubble in previous code? Why does it only appear once in else case?
+        
+        
         if calculate_bubble_shell:
-            print('here calculate_bubble_shell')
+            
+            
+            print('\n\nhere calculate_bubble_shell\n\n')
+            
+            
+            # print(r0)
+            # print(P0)
+            # print(Mbubble)
+            # print(Ln, Li, Qi,)
+            # print(Msh0)
+            
+            # print('debugging here')
+            # r0 = 0.24900205367057132 * u.pc
+            # P0 = 4.329788040892236e-06 * u.g / (u.cm * u.s**2)
+            # Mbubble = np.nan * u.M_sun
+            # Ln = 1.5150154294119439e41 * u.erg / u.s 
+            # Li = 1.9364219639465926e+41 *  u.erg / u.s 
+            # Qi = 5.395106225151268e+51 / u.s
+            # Msh0 = 20.341185347035363 * u.M_sun
+
             shell_prop = shell_structure.shell_structure(r0, 
                                                         P0,
-                                                        Mbubble, 
+                                                        mBubble, 
                                                         Ln, Li, Qi,
                                                         Msh0,
                                                         f_cover = 1,
@@ -716,12 +736,18 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         
         # update loop counter
         loop_count += 1
+        
+        # verbosity.print_parameter(weaver_data)
     
         # break
         pass
 
 
+    # TODO: debug.
 
+    # Problem that seems to behappening: the velocity drops way too quickly. 
+    # it goes from 3656 to 400, then quickly to 150. 
+    # Also, the M was negative at first. The radius then is stuck at 0.249pc. Why?
 
 
     return weaver_data

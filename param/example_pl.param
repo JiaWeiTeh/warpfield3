@@ -332,7 +332,7 @@ dens_a_pL    0
 # of the cloud. (unit: 1/cm3)
 # type: float
 # DEFAULT: 100
-dens_navg_pL    10000
+dens_navg_pL    1e4
 
 # =============================================================================
 # parameters for fragmentation of cloud

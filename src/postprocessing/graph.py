@@ -5,22 +5,16 @@ Created on Tue Oct 17 15:07:00 2023
 
 @author: Jia Wei Teh
 
-
 graph.py input 'x', 'y' savefile
 """
 
-
-
-import os
 import argparse
-import numpy as np
-import yaml
-import pandas as pd
-import sys
-import csv
 import matplotlib.pyplot as plt
+import read_data 
 import cmasher as cmr
+from astropy.io import fits
 from matplotlib.ticker import AutoMinorLocator, MultipleLocator, ScalarFormatter
+
 
 # =============================================================================
 # Read in parameter files
@@ -28,39 +22,24 @@ from matplotlib.ticker import AutoMinorLocator, MultipleLocator, ScalarFormatter
 # parser
 parser = argparse.ArgumentParser()
 # Add option to read in file
-parser.add_argument('model_name', help = 'name of model')
+parser.add_argument('file', help = 'accepts PATH or model name. When PATH is given, it searches accordingly. If a model name is provided, it looks for a matching folder.')
 parser.add_argument('x_axis', default = None, help = 'x-axis of the plot')
 parser.add_argument('y_axis', default = None, help = 'y-axis of the plot')
-parser.add_argument('-s', '--savefig', default = None, help = 'filename to save to directory where .csv file is stored', default=argparse.SUPPRESS)
-
+parser.add_argument('-s', '--savefig',
+                    help = 'PATH for saving in the directory. If only the filename is given, the plot is saved in a folder with the same model name.', 
+                    default=argparse.SUPPRESS)
 # grab argument
 args = parser.parse_args()
 
 # =============================================================================
 # Read table
 # =============================================================================
-assert os.path.isdir('outputs/'+args.model_name+'/'), f"no such directory \'{args.model_name}\'"
-assert os.path.exists(r'outputs/'+args.model_name+'/evo.csv'), f"unable to find \'evo.csv\' in \'{r'outputs/'+args.model_name+'/'}\'"
 
-# paths
-path2csv = r'outputs/'+args.model_name+'/evo.csv'
-# data
-csv_file = open(path2csv)
-reader = csv.reader(csv_file, delimiter='\t')
-header = np.array(next(reader))
-data = np.array(list(reader))
-# check columns
-if args.x_axis not in header:
-    raise Exception(f'\'{args.x_axis}\' is not a column name in {path2csv}')
-if args.y_axis not in header:
-    raise Exception(f'\'{args.y_axis}\' is not a column name in {path2csv}')
+x_array, y_array = read_data.read_data(args.file, args.x_axis, args.y_axis)
 
 # =============================================================================
 # Plot
 # =============================================================================
-# x and y values
-x_array = np.array(data[:, np.where(header == args.x_axis)[0][0]]).astype(float)
-y_array = np.array(data[:, np.where(header == args.y_axis)[0][0]]).astype(float)
 # plot parameters
 plt.rc('text', usetex=True)
 plt.rc('font', family='sans-serif', size=12)
@@ -77,11 +56,13 @@ plt.gca().xaxis.set_ticks_position('both')
 plt.xlabel(args.x_axis, font = 'Times New Roman', size = 20) 
 plt.ylabel(args.y_axis, font = 'Times New Roman', size = 20) 
 # save?
-if 'savefig' in args:
-    plt.savefig('outputs/'+args.model_name+'/'+args.savefig)
-    print(f'figure saved to {path2csv[:-7]}')
+# if 'savefig' in args:
+#     plt.savefig('outputs/'+args.file+'/'+args.savefig)
+#     print(f'figure saved to {path2csv[:-7]}')
 
 plt.show()
+
+
 
 
 

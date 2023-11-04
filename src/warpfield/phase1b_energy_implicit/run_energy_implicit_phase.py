@@ -46,9 +46,6 @@ def run_phase_energy(params, ODEpar, SB99f,rtole = rtol):
     tmin = params["t_now"]
     tmax = ODEpar['tStop']
     y0 = [params["R2"], params["v2"], params["Eb"], params["T0"]]
-
-    # define ODE which shall be solved
-    ODE_fun = lambda t, y: fE_tot(t, y, params, ODEpar, SB99f)
     
     # stop integration when:
     #--- 1) Stopping time reached.
@@ -122,6 +119,11 @@ def run_phase_energy(params, ODEpar, SB99f,rtole = rtol):
 
     # call ODE solver
     print('call ode energy')
+    
+    
+    # define ODE which shall be solved
+    ODE_fun = lambda t, y: fE_tot(t, y, params, ODEpar, SB99f)
+    
     psoln = scipy.integrate.solve_ivp(ODE_fun, [tmin, tmax], y0, method='LSODA', events=event_fun_list, min_step=10**(-7),rtol=rtole) #atol=atole
     
     #print('info_ODE',info)
@@ -154,9 +156,12 @@ def fE_tot(t, y, params, ODEpar, SB99f):
     # PHASE: current phase (core, gradient, ambient, collapse)
     """
 
+    # where is the counterpart? I feel like I have seen this before.
+    # ans: 
+
+
     r, v, E, T = y  # unpack current values of y (r, rdot, E, T)
 
-    #start_time = time.time()
 
     # sanity check: energy should not be negative!
     if E < 0.0:
@@ -165,7 +170,7 @@ def fE_tot(t, y, params, ODEpar, SB99f):
     #end = time.time()
     #print(end - start_time, '######')
 
-    # update the cooling curve once in a while
+    # update the cooling curve once in a while 
     if (np.abs(t - params['t_last_coolupdate'])) > 0.1:
         # get time-dependent cooling structure
         print("Updating cooling curve ...")

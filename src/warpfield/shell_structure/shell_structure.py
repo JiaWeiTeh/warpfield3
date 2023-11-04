@@ -30,6 +30,8 @@ def shell_structure(rShell0,
                     mShell_end,
                     f_cover,
                     ):
+    
+    
     """
     This function evaluates the shell structure. Includes the ability to 
     also treat the shell as composite region (i.e., ionised + neutral region).
@@ -111,9 +113,6 @@ def shell_structure(rShell0,
     nShellInner = nShell0
     
     
-    print('we are now in shell_structure. ')
-    print('this is the initial density')
-    
     # =============================================================================
     # Before beginning the integration, initialise some logic gates.
     # =============================================================================
@@ -171,6 +170,34 @@ def shell_structure(rShell0,
         np.min([ 5e-4 * u.pc.to(u.cm), mydr.value/1e3]),
         mydr.value/1e6
         ]) * u.cm
+    
+    
+                    #     # restate just for clarity
+                    # L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg = output
+                    
+                    # print('\n\nFinish bubble\n\n')
+                    # print('L_total', L_total.to(u.M_sun*u.pc**2/u.Myr**3))
+                    # print('T_rgoal', T_rgoal)
+                    # print('L_bubble', L_bubble.to(u.M_sun*u.pc**2/u.Myr**3))
+                    # print('L_conduction', L_conduction.to(u.M_sun*u.pc**2/u.Myr**3))
+                    # print('L_intermediate', L_intermediate.to(u.M_sun*u.pc**2/u.Myr**3))
+                    # print('dMdt_factor_out', dMdt_factor_out)
+                    # print('Tavg', Tavg)
+        
+    print('\n\nwe are now in shell_structure.\n\n')
+    print(f'rShell0: {rShell0.to(u.cm)}')
+    print(f'pBubble: {pBubble.to(u.M_sun/u.pc/u.Myr**2)}')
+    print(f'mBubble: {mBubble}')
+    print(f'Ln: {Ln.to(u.M_sun*u.pc**2/u.Myr**3)}')
+    print(f'Li: {Li.to(u.M_sun*u.pc**2/u.Myr**3)}')
+    print(f'Qi: {Qi.to(1/u.Myr)}')
+    print(f'mShell_end: {mShell_end}')
+    print(f'max_shellThickness: {max_shellThickness}')
+    print(f'nShell0: {nShell0}')
+    print(f'rShell_step: {rShell_step}')
+    # sys.exit()
+    
+    
     
     while not is_allMassSwept and not is_phiZero:
         
@@ -384,23 +411,23 @@ def shell_structure(rShell0,
                 # the maximum width of the neutral shell, assuming constant density.
                 max_shellThickness = np.abs((tau_max - tau0_ion)/(nShell0 * warpfield_params.sigma_d))
                 # the end range of integration 
-                rShell_stop = np.min([ 1 * u.pc.to(u.cm), max_shellThickness ]) + rShell_start
+                rShell_stop = np.min([ 1 * u.pc.to(u.cm), max_shellThickness.to(u.cm).value ])*u.cm + rShell_start.to(u.cm)
                 # Step size
                 rShell_step = np.max([
-                    np.min([ 5e-5 * u.pc.to(u.cm), max_shellThickness/1e3]),
-                    max_shellThickness/1e6
-                    ])
+                    np.min([ 5e-5 * u.pc.to(u.cm), max_shellThickness.to(u.cm).value/1e3]),
+                    max_shellThickness.to(u.cm).value/1e6
+                    ]) * u.cm
                 # range of r values
-                rShell_arr = np.arange(rShell_start, rShell_stop, rShell_step)   
+                rShell_arr = np.arange(rShell_start.to(u.cm).value, rShell_stop.value, rShell_step.value) * u.cm
                 # Get arguments and parameters for integration:
                 # neutral region
                 is_ionised = False
                 # initial values
-                y0 = [nShell0, tau0_neu]
+                y0 = [nShell0.to(1/u.cm**3).value, tau0_neu]
                 # constants
                 cons = [Ln, Qi]
                 # Run integration
-                sol_ODE = scipy.integrate.odeint(get_shellODE.get_shellODE, y0, rShell_arr,
+                sol_ODE = scipy.integrate.odeint(get_shellODE.get_shellODE, y0, rShell_arr.value,
                                       args=(cons, f_cover, is_ionised),
                                       rtol=1e-3, hmin=1e-7)
                 # solved for n(r) and tau(r)
@@ -444,11 +471,11 @@ def shell_structure(rShell0,
                 rShell_start = rShell_arr[idx - 1]
                 
             # append the last few values that are otherwise missed in the while loop.
-            mShell_arr_neu = np.append(( mShell_arr_neu, mShell_arr[idx-1]))
-            mShell_arr_cum_neu = np.append(( mShell_arr_cum_neu, mShell_arr_cum[idx-1]))
-            tauShell_arr_neu = np.append(( tauShell_arr_neu, tauShell_arr[idx-1]))
-            nShell_arr_neu = np.append(( nShell_arr_neu, nShell_arr[idx-1]))
-            rShell_arr_neu = np.append(( rShell_arr_neu, rShell_arr[idx-1]))
+            mShell_arr_neu = np.append(mShell_arr_neu, mShell_arr[idx-1])
+            mShell_arr_cum_neu = np.append(mShell_arr_cum_neu, mShell_arr_cum[idx-1])
+            tauShell_arr_neu = np.append(tauShell_arr_neu, tauShell_arr[idx-1])
+            nShell_arr_neu = np.append(nShell_arr_neu, nShell_arr[idx-1])
+            rShell_arr_neu = np.append(rShell_arr_neu, rShell_arr[idx-1])
             
             # =============================================================================
             # Now, compute the gravitational potential for the neutral part of shell
@@ -464,7 +491,7 @@ def shell_structure(rShell0,
             grav_neu_phi = - 4 * np.pi * c.G.cgs * (scipy.integrate.simps(grav_neu_r * grav_neu_rho, x = grav_neu_r)* u.cm**2 * u.g/u.cm**3)
             grav_phi = grav_neu_phi + grav_ion_phi
             # gravitational potential force per unit mass
-            grav_neu_force_m = c.G.cgs.value * grav_neu_m_cum / grav_neu_r**2
+            grav_neu_force_m = c.G.cgs * grav_neu_m_cum / grav_neu_r**2
             
             # Now, modify the array so that it matches the potential file.
             # I am not entirely sure what this section does, but it was in the
@@ -566,111 +593,17 @@ def shell_structure(rShell0,
         
     return f_absorbed_ion, f_absorbed_neu, f_absorbed, f_ionised_dust, is_fullyIonised, shellThickness, nShell_max, tau_kappa_IR, grav_r, grav_phi, grav_force_m
     
-#%%
-
-# Uncomment to check
-
-# import astropy.units as u
-
-# class Dict2Class(object):
-#     # set object attribute
-#     def __init__(self, dictionary):
-#         for k, v in dictionary.items():
-#             setattr(self, k, v)
-
-# params_dict = {'model_name': 'example', 
-#             'out_dir': 'def_dir', 
-#             'verbose': 1.0, 
-#             'output_format': 'ASCII', 
-#             'rand_input': 0.0, 
-#             'log_mCloud': 6.0, 
-#             'mCloud_beforeSF': 1.0, 
-#             'sfe': 0.01, 
-#             'nCore': 1000.0, 
-#             'rCore': 0.099, 
-#             'metallicity': 1.0, 
-#             'stochastic_sampling': 0.0, 
-#             'n_trials': 1.0, 
-#             'rand_log_mCloud': ['5', ' 7.47'], 
-#             'rand_sfe': ['0.01', ' 0.10'], 
-#             'rand_n_cloud': ['100.', ' 1000.'], 
-#             'rand_metallicity': ['0.15', ' 1'], 
-#             'mult_exp': 0.0, 
-#             'r_coll': 1.0, 
-#             'mult_SF': 1.0, 
-#             'sfe_tff': 0.01, 
-#             'imf': 'kroupa.imf', 
-#             'stellar_tracks': 'geneva', 
-#             'dens_profile': 'bE_prof', 
-#             'dens_g_bE': 14.1, 
-#             'dens_a_pL': -2.0, 
-#             'dens_navg_pL': 170.0, 
-#             'frag_enabled': 0.0, 
-#             'frag_r_min': 0.1, 
-#             'frag_grav': 0.0, 
-#             'frag_grav_coeff': 0.67, 
-#             'frag_RTinstab': 0.0, 
-#             'frag_densInhom': 0.0, 
-#             'frag_cf': 1.0, 
-#             'frag_enable_timescale': 1.0, 
-#             'stop_n_diss': 1.0, 
-#             'stop_t_diss': 1.0, 
-#             'stop_r': 1000.0, 
-#             'stop_t': 15.05, 
-#             'stop_t_unit': 'Myr', 
-#             'write_main': 1.0, 
-#             'write_stellar_prop': 0.0, 
-#             'write_bubble': 0.0, 
-#             'inc_grav': 1.0, 
-#             'f_Mcold_W': 0.0, 
-#             'f_Mcold_SN': 0.0, 
-#             'v_SN': 1000000000.0, 
-#             'sigma0': 1.5e-21, 
-#             'z_nodust': 0.05, 
-#             'mu_n': 2.125362090909091e-24, 
-#             'mu_p': 1.0169528260869563e-24, 
-#             't_ion': 10000.0, 
-#             't_neu': 100.0, 
-#             'nISM': 0.1, 
-#             'kappa_IR': 4.0, 
-#             'gamma_adia': 1.6666666666666667, 
-#             'thermcoeff_wind': 1.0, 
-#             'thermcoeff_SN': 1.0,
-#             'alpha_B': 2.59e-13,
-#             'gamma_mag': 1.3333333333333333,
-#             'log_BMW': -4.3125,
-#             'log_nMW': 2.065,
-#             }
-
-# # initialise the class
-# warpfield_params = Dict2Class(params_dict)
 
 
-# rShell0 = 0.4188936946067258 * 3.085677581491367e+18
-# pBubble = 72849987.43339926 * 6.496255990632244e-13
-# Ln = 1.515015429411944e+43
-# Li = 1.9364219639465924e+43
-# Qi = 5.395106225151267e+53
-# mShell_end =  9.66600949191584 * 1.989e33 # at r0 0.23790232199299727?
-# sigma_dust =  1.5e-21
-# f_cover = 1
-# mBubble = 1.9890000000000002e+34
-        
 
-# shell =  shell_structure(
-#         rShell0, 
-#         pBubble,
-#         mBubble,
-#         Ln, Li, Qi,
-#         mShell_end, # at r0 0.23790232199299727?
-#         sigma_dust,
-#         f_cover,
-#         warpfield_params,
-#         # TBD these are just filler keywords
-#         )
 
-# # list all attributes in the object
-# print(vars(shell))
+
+
+
+
+
+
+
 
 
 

@@ -118,7 +118,7 @@ def get_ODE_Edot(y, t, params):
     tmin = dt_switchon
     if (t.to(u.yr).value > (tmin + tSF).to(u.yr).value):
         # equation of state
-        press_bubble = get_bubbleParams.bubble_E2P(E_bubble, rShell, R1)[0]
+        press_bubble = get_bubbleParams.bubble_E2P(E_bubble, rShell, R1)
     elif (t.to(u.yr).value <= (tmin + tSF).to(u.yr).value):
         R1_tmp = (t-tSF)/tmin * R1
         press_bubble = get_bubbleParams.bubble_E2P(E_bubble, rShell, R1_tmp)[0]
