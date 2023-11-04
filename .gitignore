@@ -17,7 +17,7 @@ data/scoreboard.csv
 
 # Distribution / packaging
 .Python
-build/
+#build/
 develop-eggs/
 dist/
 downloads/

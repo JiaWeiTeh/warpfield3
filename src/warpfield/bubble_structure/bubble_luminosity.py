@@ -37,6 +37,52 @@ def get_bubbleproperties(
         Qi, alpha, beta, delta,
         Lw, Eb, vw,
         ):
+    """
+    
+
+    Parameters
+    ----------
+    t_now : TYPE
+        DESCRIPTION.
+    R2 : TYPE
+        DESCRIPTION.
+    Qi : TYPE
+        DESCRIPTION.
+    alpha : TYPE
+        DESCRIPTION.
+    beta : TYPE
+        DESCRIPTION.
+    delta : TYPE
+        DESCRIPTION.
+    Lw : TYPE
+        DESCRIPTION.
+    Eb : TYPE
+        DESCRIPTION.
+    vw : TYPE
+        DESCRIPTION.
+     : TYPE
+        DESCRIPTION.
+
+    Yields
+    ------
+    TYPE
+        DESCRIPTION.
+    TYPE
+        DESCRIPTION.
+    TYPE
+        DESCRIPTION.
+    TYPE
+        DESCRIPTION.
+    TYPE
+        DESCRIPTION.
+    TYPE
+        DESCRIPTION.
+    TYPE
+        DESCRIPTION.
+    TYPE
+        DESCRIPTION.
+
+    """
     
     
     # ---- remember to paste these two back:
@@ -610,18 +656,18 @@ def get_init_dMdt(
 def get_velocity_residuals(dMdt_init, params):
     """
     This routine calculates the value for dMdt, by comparing velocities at boundary condition.
+    Check out get_velocity_residuals() below, for full description.
 
     Parameters
     ----------
-    dMdt_init [Msun/yr]: TYPE
-        DESCRIPTION.
-    params : TYPE
-        DESCRIPTION.
+    dMdt_init [in Msun/yr, but scipy must take in unitless value]: TYPE
+        Guesses of dMdt.
+    params : t_now, T_goal, r_inner, R2, pressure, Qi, alpha, beta, delta, v0
+        Parameters.
 
     Returns
     -------
-    T : TYPE
-        DESCRIPTION.
+    resdual
 
     Old code: find_dMdt()
 
@@ -637,13 +683,6 @@ def get_velocity_residuals(dMdt_init, params):
     # =============================================================================
     # Watch out! these are unitless.
     r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime = get_bubble_ODE_initial_conditions(dMdt_init, params)
-    # print(v_r2Prime, T_r2Prime, dTdr_r2Prime)
-    # both in this run
-    # [980.46174014] [453898.] [-6.21501862e+12]
-    # [983.03480318] [30000.] [-3.65761471e+14]
-    
-    # [vR2_prime, TR2_prime, dTdrR2_prime] = y0
-    # y0: [1003.9291826702926, 453898.8577997466, -1815595431198.9866] TR2_prime: 453898.8577997466
     
     # =============================================================================
     # radius array at which bubble structure is being evaluated.
@@ -658,16 +697,11 @@ def get_velocity_residuals(dMdt_init, params):
     # array is monotonically decreasing, and sampled at higher density at larger radius
     # i.e., more datapoints near bubble's outer edge (sort of a reverse logspace).
     # these values are all in pc.
+    
+    # global, because we are also recording values here into the array in get_bubbleproperties().
     global r_array
-    # print(r2Prime)
-    # print(r_inner)
-    # print(np.logspace(np.log10(r_inner.to(u.pc).value), np.log10(r2Prime[0]), int(1e5)))
-    # sys.exit()
     r_array = (r2Prime + r_inner.to(u.pc).value) -  np.logspace(np.log10(r_inner.to(u.pc).value), np.log10(r2Prime[0]), int(1e5))
     r_array = r_array * u.pc
-    # print('r', r_array)
-    # sys.exit()
-    
     
     # check. For some reason get_bubble_ODE_initial_conditions() outputs an array. 
     if not (len(v_r2Prime) == 1 and len(T_r2Prime) == 1 and len(dTdr_r2Prime) == 1):
@@ -685,16 +719,15 @@ def get_velocity_residuals(dMdt_init, params):
         
     # V0 is the velocity at r -> 0.
     residual = (v0.to(u.km/u.s).value - v_array[-1].value)/v_array[0].value
-    
+    # return
     return residual
-    
     
     
     
 def get_bubble_ODE_initial_conditions(dMdt, params):
     """
     dMdt_init (see above) can be used as an initial estimate of dMdt, 
-    which is then adjusted until the velocity found by numerical integration (see below compare_bv) 
+    which is then adjusted until the velocity found by numerical integration (see get_velocity_residuals()) 
     remains positive and less than alpha*r/t at some chosen small radius. 
     
     For each value of dMdt, the integration of equations (42) and (43) - in get_bubbleODEs() - 
@@ -725,12 +758,9 @@ def get_bubble_ODE_initial_conditions(dMdt, params):
     -------
     r2_prime [pc]: float
         the small radius (slightly smaller than R2) at which these values are evaluated.
-    T [K]: ODE
-        T(r).
-    dTdr [K/pc]: ODE
-        T(r).
-    v [km/s]: ODE
-        T(r).
+    T [K]: T(r), ODE.
+    dTdr [K/pc]: ODE.
+    v [km/s]: ODE.
     """
     
     
@@ -784,16 +814,18 @@ def get_bubble_ODE_initial_conditions(dMdt, params):
     
 def get_bubble_ODE(r_arr, initial_ODEs, params):
     """
+    Here is the main function that deals with ODE calculation.
     
+    old code: calc_cons() and get_bubble_ODEs() aka bubble_struct()
 
     Parameters
     ----------
     r_arr : [pc]
         radius at which the ODE is solved.
-    initial_ODEs : TYPE
-        DESCRIPTION.
-    params : TYPE
-        DESCRIPTION.
+    initial_ODEs : v_r2Prime, T_r2Prime, dTdr_r2Prime
+        These are initial guesses for the ODE, obtained via get_bubble_ODE_initial_conditions().
+    params : [t_now, T_goal, r_inner, R2, press, Qi, alpha, beta, delta, v0]
+        Paramerers required to run the ODE. See the main function, get_bubbleproperties() for more.
 
     Returns
     -------
@@ -803,25 +835,7 @@ def get_bubble_ODE(r_arr, initial_ODEs, params):
         distance derivative of temperature.
     dTdrr : [K/pc**2]
         second distance derivative of temperature.
-
-    """
     
-        
-    """
-    ignoring cooling when t < tcool and assuming immediate loss of all
-    energy for t ≥ tcool is a major simplification.
-    Thus, we couple the energy loss term due to cooling Lcool
-    to the energy equation.
-
-
-    where U is the internal energy density and where the integration
-    runs from the inner shock at a radius R1 to the outer radius of the
-    bubble R2 , which is also the radius of the thin shell. The rate of
-    change of the radiative component of the internal energy density 
-    
-    old code: calc_cons() and get_bubble_ODEs() aka bubble_struct()
-    
-    This whole section should run in cgs.
     """
     
     # unravel
