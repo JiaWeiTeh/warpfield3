@@ -28,7 +28,7 @@ intersphinx_disabled_domains = ['std']
 templates_path = ['_templates']
 
 # -- Options for HTML output
-
+html_theme_path = ["_themes", ]
 html_theme = 'sphinx-rtd-theme'
 
 # -- Options for EPUB output
