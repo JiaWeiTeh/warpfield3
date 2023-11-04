@@ -3,7 +3,7 @@
 # -- Project information
 
 project = 'WARPFIELD'
-copyright = '2022, Jia Wei Teh, Daniel Rahner, et al.'
+copyright = '2022, Jia Wei Teh, et al.'
 author = 'Jia Wei Teh'
 
 release = '0.1'
@@ -29,7 +29,7 @@ templates_path = ['_templates']
 
 # -- Options for HTML output
 
-html_theme = 'sphinx_rtd_theme'
+# html_theme = 'sphinx_rtd_theme'
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
