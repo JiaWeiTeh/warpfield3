@@ -739,11 +739,17 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         
         # verbosity.print_parameter(weaver_data)
     
+    
+    
         # break
         pass
 
 
     # TODO: debug.
+
+    # Problem also: why is time not increasing, and only ever so slightly until 0.002Myr?
+
+
 
     # Problem that seems to behappening: the velocity drops way too quickly. 
     # it goes from 3656 to 400, then quickly to 150. 
