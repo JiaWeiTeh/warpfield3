@@ -327,6 +327,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         
         
         print(f'\n\nloop {loop_count}, r0: {r0}.\n\n')
+        print(f'conditions: r0 < rfinal: {r0}:{rfinal}, ')
         print(f'dt_Emin: {dt_Emin}')
         print(f'tStop_i: {tStop_i}')
         print(f'dt_real: {dt_real}') 
