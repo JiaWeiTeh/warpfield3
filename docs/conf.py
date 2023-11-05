@@ -10,7 +10,6 @@ release = '0.1'
 version = '0.1.0'
 
 # -- General configuration
-# import sphinx_rtd_theme
 
 extensions = [
     'sphinx.ext.duration',
@@ -27,7 +26,7 @@ intersphinx_mapping = {
 }
 intersphinx_disabled_domains = ['std']
 
-# templates_path = ['_templates']
+templates_path = ['_templates']
 
 # -- Options for HTML output
 # html_theme_path = ["./source/"]
