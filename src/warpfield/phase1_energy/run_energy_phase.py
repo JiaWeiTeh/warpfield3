@@ -327,7 +327,8 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         
         
         print(f'\n\nloop {loop_count}, r0: {r0}.\n\n')
-        print(f'conditions: r0 < rfinal: {r0}:{rfinal}, ')
+        print(f'conditions: r0 < rfinal: {r0}:{rfinal}')
+        print(f'conditions: tfinal - t0: {tfinal}:{t0}')
         print(f'dt_Emin: {dt_Emin}')
         print(f'tStop_i: {tStop_i}')
         print(f'dt_real: {dt_real}') 
@@ -749,7 +750,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # TODO: debug.
 
     # Problem also: why is time not increasing, and only ever so slightly until 0.002Myr?
-
+# solution: line 200!! Need to be incremented!?
 
 
     # Problem that seems to behappening: the velocity drops way too quickly. 
