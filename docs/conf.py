@@ -10,7 +10,7 @@ release = '0.1'
 version = '0.1.0'
 
 # -- General configuration
-import sphinx_rtd_theme
+# import sphinx_rtd_theme
 
 extensions = [
     'sphinx.ext.duration',
