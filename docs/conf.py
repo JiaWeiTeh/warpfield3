@@ -10,6 +10,7 @@ release = '0.1'
 version = '0.1.0'
 
 # -- General configuration
+import sphinx_rtd_theme
 
 extensions = [
     'sphinx.ext.duration',
@@ -17,7 +18,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
-    # 'sphinx_rtd_theme'
+    'sphinx_rtd_theme'
 ]
 
 intersphinx_mapping = {
@@ -30,7 +31,7 @@ intersphinx_disabled_domains = ['std']
 
 # -- Options for HTML output
 # html_theme_path = ["./source/"]
-html_theme = 'renku'
+html_theme = 'sphinx_rtd_theme'
 
 # -- Options for EPUB output
 # epub_show_urls = 'footnote'
