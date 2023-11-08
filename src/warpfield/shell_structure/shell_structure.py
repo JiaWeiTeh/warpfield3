@@ -591,7 +591,7 @@ def shell_structure(rShell0,
         grav_phi = np.nan
         grav_force_m = np.nan
         
-    return f_absorbed_ion, f_absorbed_neu, f_absorbed, f_ionised_dust, is_fullyIonised, shellThickness, nShell_max, tau_kappa_IR, grav_r, grav_phi, grav_force_m
+    return f_absorbed_ion, f_absorbed_neu, f_absorbed, f_ionised_dust, is_fullyIonised, shellThickness, nShellInner, nShell_max, tau_kappa_IR, grav_r, grav_phi, grav_force_m
     
 
 

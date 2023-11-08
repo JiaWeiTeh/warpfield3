@@ -283,6 +283,12 @@ def zeroODE34wrap(x, full_params):
     return res
 
 
+
+# TODO: remember to check the reproducibility of this function; should be straightforward:
+    # just go to implicit energy phase where one finds beta/delta, and from there 
+    # take the input and then feed into the new function. You should now be able to 
+    # double check if it is right or not. 
+
 def rootfinder_bd(beta_guess, delta_guess, params, Cool_Struc, verbose=0, xtol=1e-5, epsfcn=1e-6, log_error_min=-1.0, error_exit=False):
     """
     MAIN ROUTINE OF MODULE: finds roots of beta and delta

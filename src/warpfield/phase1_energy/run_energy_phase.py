@@ -109,7 +109,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     fLw_evo = scipy.interpolate.interp1d(t_evo, Lw_evo, kind = 'linear')
     fpdot_evo = scipy.interpolate.interp1d(t_evo, pdot_evo, kind = 'linear')
 
-    # mechanical luminosity at time t0 (erg)
+    # mechanical luminosity at time t0 (cgs)
     Lw0 = fLw_evo(t0) * u.erg / u.s
     # momentum of stellar winds at time t0 (cgs)
     pdot0 = fpdot_evo(t0) * u.g * u.cm / u.s**2
@@ -208,7 +208,9 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     delta = - 6 / 35
     
     # old: tscr
+    # sound crossing time
     t_sound = 1e99 * u.Myr
+    # time takes to fragmentation
     t_frag = 1e99 * u.Myr
     
     
@@ -510,7 +512,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
             
             f_absorbed_ion, f_absorbed_neu, f_absorbed,\
                 f_ionised_dust, is_fullyIonised, shellThickness,\
-                    nShell_max, tau_kappa_IR, grav_r, grav_phi, grav_force_m = shell_prop
+                    nShellInner, nShell_max, tau_kappa_IR, grav_r, grav_phi, grav_force_m = shell_prop
 
 
         elif not calculate_bubble_shell:
@@ -530,6 +532,8 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         # =============================================================================
         # call ODE solver to solve for equation of motion (r, v (rdot), Eb). 
         # =============================================================================
+        # radiation pressure coupled to the shell
+        # f_absorbed_ion calculated from shell_structure.
         F_rad = f_absorbed_ion * Lbol / c.c
         
         params = [Lw, pdot, mCloud, warpfield_params.rCore, warpfield_params.mCluster, L_total, F_rad, f_absorbed_ion, rCloud, tcoll, t_frag, t_sound, cs_avg]
@@ -556,7 +560,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         # print(Eb_arr)
 
         # =============================================================================
-        # calculate bubble mass
+        # calculate mass
         # =============================================================================
 
         # get shell mass
