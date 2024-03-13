@@ -31,7 +31,7 @@ def get_Lambda(T):
 
     Parameters
     ----------
-    T : float/arrayå
+    T : float/array
         Temperature.
 
     Available libraries (specified in .param file) include:

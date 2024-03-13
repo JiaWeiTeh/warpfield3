@@ -218,7 +218,7 @@ def start_expansion():
     ODEpar['Rsh_max'] = 0.
     ODEpar['tSF_list'] = np.array([tSF], dtype = object)
     # This tracks the mass of cluster formed; the length of this list gives the number of star formation event.
-    ODEpar['mCluster_list'] = np.array([warpfield_params.mCluster], dtype = object)
+    ODEpar['Mcluster_list'] = np.array([warpfield_params.mCluster], dtype = object)
     
     #  ODEpar['density_specific_param'] added.
     #  ODEpar['gamma'] = myc.gamma removed.
@@ -242,8 +242,6 @@ def start_expansion():
     SB99_data = read_SB99.read_SB99(f_mass = factor_feedback)
     SB99f = read_SB99.get_interpolation(SB99_data)
     # if tSF != 0.: we would actually need to shift the feedback parameters by tSF
-    
-    print('Feedback parameters retrieved from Starburst99.')
     
     # =============================================================================
     # These two are currently not being needed. 
@@ -333,9 +331,10 @@ def run_expansion(ODEpar, SB99_data, SB99f):
     :return:
     """
 
-    
+    # this is probably to track number collapse. Just not sure what ii means
     ii_coll = 0
-    tcoll = [0.]
+    # this is probably to record the time when recollapse happens. (I added Myr unit, not sure if it is year)
+    tcoll = [0.] * u.Myr
     # TODO: actually implement this.
     tStop = warpfield_params.stop_t 
     
@@ -350,143 +349,80 @@ def run_expansion(ODEpar, SB99_data, SB99f):
     # T0 = initial temperature (K)
     t0, y0 = get_InitPhaseParam.get_y0(0*u.Myr, SB99f)
     
+    # We begin with shell not being dissolved.
     shell_dissolved = False
+    # We set an initial condition such that shell dissolves in arbritrary large age.
     t_shdis = 1e99 * u.yr
 
     dt_Estart = 0.0001 * u.Myr
     tfinal = t0 + 30. * dt_Estart 
     
 
-    # # =============================================================================
-    # # Phase 1a: Energy driven phase.
-    # # =============================================================================
+    # =============================================================================
+    # Phase 1: Energy driven phase.
+    # =============================================================================
 
-    # phase1a_start = datetime.datetime.now()
-    # # DEBUG --- lets just skip through this and directly use results from WARPFIELD4.
-    # phase1a_results = run_energy_phase.run_energy(t0, y0, ODEpar,
-    #                                         tcoll, ii_coll,
-    #                                         shell_dissolved, t_shdis,
-    #                                         SB99_data, SB99f,
-    #                                         tfinal,
-    #                                         )
+    phase1_params = run_energy_phase.run_energy(t0, y0, ODEpar,
+                                            tcoll, ii_coll,
+                                            shell_dissolved, t_shdis,
+                                            SB99_data, SB99f,
+                                            tfinal,
+                                            )
     
-    # write_outputs.write_evolution(phase1a_results)
-    # phase1a_end = datetime.datetime.now()
     
-    # print(f'Phase 1a completed. Time elapsed: {phase1a_end - phase1a_start}.')
+    write_outputs.write_evolution(phase1_params)
+    sys.exit('Done with weaver')
+    #----- prep for next phase
     
     
     
-    # # print(phase1a_results)
-    # # sys.exit('Done with weaver')
+    
+    # =============================================================================
+    # Phase 1b: implicit energy phase
+    # =============================================================================
+    
+    params = [ phase1_params['t'], # t
+              phase1_params
+        ]
     
     
-    # #----- prep for next phase
-    # # =============================================================================
-    # # Phase 1b: implicit energy phase
-    # # =============================================================================
+    psoln_energy, params = run_energy_implicit_phase.run_phase_energy(params, ODEpar, SB99f)
     
-    # # i think we should make a dictionary, but make sure to document them.
-    # phase1b_inputs = {
-    #     't_now': phase1a_results['t'][-1],
-    #     'R2': phase1a_results['r'][-1],
-    #     'Eb': phase1a_results['E'][-1],
-    #     'T0': phase1a_results['t'][-1],
-    #     'beta': phase1a_results['beta'][-1],
-    #     'delta': phase1a_results['delta'][-1],
-    #     'dMdt_factor': phase1a_results['dMdt_factor']
-    #     }
-    
-    # # This is not quite correct, because the values from beta/delta are guesses, and thus v is a guess
-    # # this is why we need to go into an implicit phase where we try to get the right values for beta/delta.
-    # phase1b_inputs['alpha'] = phase1a_results['v'][-1] * phase1b_inputs['t_now'] / phase1b_inputs['R2']
-    
-    # ----
- 
-    
-    # -- when debug complete, delete this section and uncomment above section
-    
-    
+    # put these in
+        # t_now, r, E, T, beta, delta, alpha, dMdt_factor = params
 
-    phase1b_inputs = {'t_now': 0.0030021670498900535 * u.Myr,
-                      'R2': 0.5553774168024973 * u.pc,
-                      'T0': 13525028.155578127 * u.K,
-                      'beta': 0.8300873221122109, 
-                      'delta': -0.17851373971693396, 
-                      'alpha': 0.5730381076474188,
-                      'Eb': 2313387.1078863572 * u.M_sun * u.pc**2 / u.Myr**2,
-                      'dMdt_factor': 4.185808228893492, 
-                      }
-    
-    
-    # should we merge ODEpar and phase1b_inputs
-    
-    
-    # most of these are from get_cloudproperties() and expansion_main()
-    # tStop from warpfield_params
-    ODEpar = { 'mCloud': 9900000 * u.M_sun,
-              'rCore': 0.099 * u.pc,
-              'rhoCore': 313.94226159698525 * u.M_sun / u.pc**3,
-              'mCluster': 100000 * u.M_sun,
-              'rCloud': 19.59892574924841 * u.pc,
-              'tStop': 50 * u.Myr,
-              't_dissolve': 1e30 * u.yr,
-                'mCluster_list': np.array([100000]) * u.M_sun,
-              # 'tSF_list': np.array([0*u.Myr]),
-               'Rsh_max': 0.0 * u.pc,
-               'dR_shell':  0.0003608783609472255 * u.pc, #thickness of shell, newly implemented here to avoid using os.environ[]
-              }
-    
-    
-    # --
-
-
-
-    
-    # Run the implicit energy phase
-    phase1b_results = run_energy_implicit_phase.run_phase_energy(phase1b_inputs, ODEpar, SB99f)
-    # unravel the solutions
-    phase1b_solutions, phase1b_params = phase1b_results
-    
-    
-    
-    # take above from here:
-            
-  
-        # weaver_data = {'t':weaver_tShell, 'r':weaver_rShell, 'v':weaver_vShell, 'E':weaver_EShell, 
-        #           't_end': weaver_tShell[-1], 'r_end':weaver_rShell[-1], 'v_end':weaver_vShell[-1], 'E_end':weaver_EShell[-1],
-        #           'logMshell':np.log10(weaver_mShell.to(u.M_sun).value) * u.M_sun,
-        #           'dMdt_factor': dMdt_factor,
-        #           # I think these are not important for the code, but still worth tracking.
-        #           'fabs':weaver_f_absorbed, 'fabs_n': weaver_f_absorbed_neu, 'fabs_i':weaver_f_absorbed_ion,
-        #           'Lcool':weaver_L_total, 'Lbb':weaver_L_bubble, 'Lbcz':weaver_L_conduction, 'Lb3':weaver_L_intermediate,
-        #           }
     
                                                                  
     ######## STEP B: energy-phase (implicit) ################
     # if (aux.check_continue(Dw['t_end'], Dw['r_end'], Dw['v_end']) == ph.cont):
 
-
-    t = phase1b_solutions.t
-    r = phase1b_solutions.y[0]
-    v = phase1b_solutions.y[1]
-    E = phase1b_solutions.y[2]
-    T = phase1b_solutions.y[3]
-
-
+    params = {'t_now': Dw['t_end'], 'R2': Dw['r_end'], 'Eb': Dw['E_end'], 'T0': Dw['Tb'][-1], 'beta': Dw['beta'][-1],
+              'delta': Dw['delta'][-1], 'alpha': Dw['alpha'][-1], 'dMdt_factor': Dw['dMdt_factor_end']}
+    params['alpha'] = Dw['v_end'] * (params["t_now"]) / params['R2'] # this is not quite consistent (because we are only using rough guesses for beta and delta) but using a wrong value here means also using the wrong velocity
+    params['temp_counter'] = 0
+    params['mypath'] = mypath
 
     
-    # =============================================================================
-    # Phase 1c: transition phase
-    # =============================================================================
+    
+    tfeed=np.linspace(5e-03, 40,num=6000)
+    Qifee=SB99f['fQi_cgs'](tfeed)
+    Lifee=SB99f['fLi_cgs'](tfeed)
+    Lnfee=SB99f['fLn_cgs'](tfeed)
+    Lbolfee=SB99f['fLbol_cgs'](tfeed)
+    Lwfee=SB99f['fLw_cgs'](tfeed)
+    pdotfee=SB99f['fpdot_cgs'](tfeed)
+    pdot_SNefee=SB99f['fpdot_SNe_cgs'](tfeed)
 
+    
+    psoln_energy, params = run_energy_implicit_phase.run_phase_energy(params, ODEpar, SB99f)
+
+    t = psoln_energy.t
+    r = psoln_energy.y[0]
+    v = psoln_energy.y[1]
+    E = psoln_energy.y[2]
+    T = psoln_energy.y[3]
 
     ######### STEP C: transition phase ########################
-    
-    
-    
-    
-    
     if (set_phase.check_simulation_status(t[-1], r[-1], v[-1], tStop) == set_phase.cont):
 
 

@@ -5,6 +5,9 @@ Created on Thu Aug 18 13:36:10 2022
 
 @author: Jia Wei Teh
 
+
+This section kinda get merged into get_bubbleluminosity()
+
 """
 # libraries
 import sys
@@ -23,6 +26,8 @@ def get_bubbleStructure(Data_Struc,
                     
     # Notes:
     # old code: bubble_wrap()
+
+
 
     # print('we are now in bubble_structure because the bubble mass is incorrect. ')
     

@@ -12,6 +12,7 @@ Created on Sun Aug 20 17:43:02 2023
 # libraries
 import numpy as np
 import sys
+import os
 import scipy.optimize
 import scipy.integrate
 from scipy.interpolate import interp1d
@@ -36,9 +37,10 @@ def get_bubbleproperties(
         R2, 
         Qi, alpha, beta, delta,
         Lw, Eb, vw,
+        dMdt_factor
         ):
     """
-    
+    Used in run_energy_phase and ____.
 
     Parameters
     ----------
@@ -84,14 +86,15 @@ def get_bubbleproperties(
 
     """
     
+    # old code: calc_Lb(); i.e., get_bubbleLuminosity
     
-    # ---- remember to paste these two back:
-    rgoal = (warpfield_params.xi_Tb * R2).to(u.pc)
+    # ---- remember to comment these out and paste these two back in Step 2:
+    # rgoal = (warpfield_params.xi_Tb * R2).to(u.pc)
     # T_goal = 306686 * u.K
-    T_goal = 3e4 * u.K
+    # T_goal = 3e4 * u.K
 
     
-    print('\n\nHere in get_bubbleproperties\n')
+    print('Here in get_bubbleproperties-----')
     # print(f't_now: {t_now}')
     # print(f'R2: {R2}')
     # print(f'Qi: {Qi.to(1/u.Myr)}')
@@ -101,15 +104,27 @@ def get_bubbleproperties(
     # print(f'Lw: {Lw.to(u.M_sun*u.pc**2/u.Myr**3)}')
     # print(f'Eb: {Eb.to(u.M_sun*u.pc**2/u.Myr**2)}')
     # print(f'vw: {vw}')
-    # print(f'rgoal: {rgoal}')
-    # print(f'T_goal: {T_goal}')
+    # # print(f'rgoal: {rgoal}')
+    # # print(f'T_goal: {T_goal}')
+    # print(f'dMdt_factor: {dMdt_factor}')
     
     
+    
+    # Here is thje debug. Checking with the same condition if it yields same result.
+    # ---------------------------------------
+    t_now = 0.003002 * u.Myr
+    alpha = 0.573
+    beta = 0.83
+    delta = -0.17851
+    Qi = 1.6993e65 / u.Myr
+    Eb = 2313300.0 * u.M_sun*u.pc**2/u.Myr**2
+    R2 = 0.5553 * u.pc
+    Lw = 2016500000.0 * u.M_sun*u.pc**2/u.Myr**3
+    vw = 3810.2 * u.km/u.s
+    dMdt_factor = 4.1858
+    # ---------------------------------------
     
     # R2 is r0
-    
-    # old code: get_bubbleLuminosity
-    
     # =============================================================================
     # Step 1: Get necessary parameters, such as 
     # =============================================================================
@@ -117,23 +132,18 @@ def get_bubbleproperties(
     # velocity at r ---> 0.
     v0 = 0.0 * u.km / u.s
     
-        
-    # print('t_now', t_now)
-    # print('R2', R2)
-    # print('Qi', Qi.to(1/u.Myr))
-    # print('t_now', t_now)
-    # print('alpha', alpha)
-    # print('beta', beta)
-    # print('delta', delta)
-    # print('Lw', Lw.to(u.M_sun*u.pc**2/u.Myr**3))
-    # print('Eb', Eb.to(u.M_sun*u.pc**2/u.Myr**2))
-    # print('vw', vw)
-        
-    
-    
     # TODO: make warpfield run this to see if there is actually need to call this twice both in 
     
-    # initial radius of discontinuity [pc]
+    # initial radius of discontinuity [pc] (inner bubble radius)
+    
+    # print('calculation of R1')
+    # print('Lw', Lw)
+    # print('Eb', Lw)
+    # print(f'Lw: {Lw.to(u.M_sun*u.pc**2/u.Myr**3)}')
+    # print(f'Eb: {Eb.to(u.M_sun*u.pc**2/u.Myr**2)}')
+    # print(f'vw: {vw}')
+    # print(f'R2: {R2}')
+
     R1 = (scipy.optimize.brentq(get_bubbleParams.get_r1, 
                                1e-3 * R2.to(u.cm).value, R2.to(u.cm).value, 
                                args=([Lw.to(u.erg/u.s).value, 
@@ -143,37 +153,32 @@ def get_bubbleproperties(
                                       ])) * u.cm)\
                                 .to(u.pc)#back to pc
     
-    # print(r_inner, R1)
-    # 0.06669784054849992 pc
-    
     # The bubble pressure [cgs - g/cm/s2, or dyn/cm2]
     press = get_bubbleParams.bubble_E2P(Eb, R2, R1)
-    # print('Eb, R2, R1')
-    # print(Eb, R2, R1)
-    # 11858019.317814864 0.20207551764992493 0.14876975625376893
-    # 11858019.317814864 pc2 solMass / yr2 0.20207551764992493 pc 0.2020754412666312 pc
-    # print('this is pressure')
-    # print(press.to(u.M_sun/u.pc/u.Myr**2))
-    # 0.00024352944352531002 g / (cm s2) or 376360507.4418777 solMass / (Myr2 pc)
-    # 'press': 380571798.5188472
-    # sys.exit()
     
     # =============================================================================
     # Step 2: Calculate dMdt, the mass flux from the shell back into the hot region
     # =============================================================================
     
+    # ----------- prepare for calculation of dMdt
+    
     # The mass flux from the shell back into the hot region (b, hot stellar wind)
     # if it isn't yet computed, set it via estimation from Equation 33 in Weaver+77.
     # Question: should this be mu_n instead?
  
-    
     # First, guess dMdt
     # TODO: check what these variables actually should be
-    dMdt_init = get_init_dMdt(R2, Lw, Eb, vw, t_now, press)
-    # print('dMdt_init', dMdt_init.to(u.M_sun/u.Myr))
-    # dMdt_init 0.0845262588579248 solMass / yr
-    # dMdt_init 84526.25885792478 solMass / Myr
-    # dMdt 40416.890252523
+    # print('\n\n\n----- dMdt_init first ever guess -----')
+    # print('params in get_init_dMdt()')
+    # print('R2', R2)
+    # print('Lw', Lw)
+    # print('Eb', Eb)
+    # print('vw', vw)
+    # print('press', t_now)
+    # print('press', press)
+    # print('dMdt_factor', dMdt_factor)
+    
+    dMdt_init = get_init_dMdt(R2, Lw, Eb, vw, t_now, press, dMdt_factor)
     
     # This function evaluates dMdt guesses with the boundary conditions. 
     # Goes into loop and keeps evaluating until v0 (both estimated and true) agree.
@@ -183,54 +188,62 @@ def get_bubbleproperties(
     # TODO: this shouldn't be 4e5. In the old code of bubble_structure2 line 310, T prime is set awayfrom Tgoal, because of dR2. 
     r_inner = R1
     # change dR2 < _dR2min: too.
-    # T_goal = 3e4 * u.K
+    T_goal = 3e4 * u.K
     # T_goal = 453898 * u.K
+    
+    
+    # Now, we record values for R1, R2, and calculate what rgoal should be.
+    # rgoal is r_Tb, i.e., radius at which temperature is calculated.
+    # rgoal_f is xi_Tb. rgoal = rgoal_f * R2
+    
+    def get_xi_Tb(R1, R2):
+        
+        # First we check what we have recorded.
+        # Initialisation of this file is done in get_InitBubStruc.py
+        path2bubblestructure = os.path.join(warpfield_params.out_dir, 'bubble_structure' + '.csv')
+        R1_R2, R2prime_R2 = np.loadtxt(path2bubblestructure, skiprows=1, delimiter='\t', usecols=(0,1), unpack=True)
+        
+        # initialise variable
+        xi_Tb = warpfield_params.xi_Tb
+        
+        # if there is already a record of R1/R2, PLUS a record of R2prime/R2 (hence len > 2)
+        try:
+            if len(R1_R2) > 2:
+                R1_R2 = R1_R2[R1_R2 != 0]
+                R2prime_R2 = R2prime_R2[R2prime_R2 != 0]
+                # if there is still more than one, then calculate xi_Tb
+                if len(R1_R2) > 1:
+                    xi_Tb = np.min(R2prime_R2) - 0.2 * (np.min(R2prime_R2) - np.max(R1_R2))
+        except:
+            xi_Tb = warpfield_params.xi_Tb
+        
+        if np.isnan(xi_Tb):
+            xi_Tb = warpfield_params.xi_Tb
+        
+        # record R1/R2 ratio
+        R1_R2 = np.append(R1_R2, (R1/R2).value)
+        # record nan, because not calculated (calculated in get_velocity_residuals()), but had to add it in to ensure similar array length.
+        R2prime_R2 = np.append(R2prime_R2, np.nan)
+        # save data
+        np.savetxt(path2bubblestructure,
+                   np.c_[R1_R2, R2prime_R2],
+                   delimiter = '\t',
+                   header='R1/R2 (inner/outer bubble)'+'\t'+'R2prime/R2', comments='')
+        # return
+        return xi_Tb
+    
+    # get the ratio xi_Tb 
+    xi_Tb = get_xi_Tb(R1, R2)
+    # get rgoal (r_Tb) with this
+    rgoal = xi_Tb * R2
+    # sanity check: rgoal cannot be smaller than the inner bubble radius R1
+    if rgoal < R1:
+        # for now, stop code. However, could also say that energy-driven phase is over if rgoal_f < R1/R2, for a reasonable rgoal_f (0.99 or so)
+        sys.exit(f'rgoal ({rgoal}) is smaller than the inner bubble radius {R1}. Consider increasing xi_Tb.')
+    
+    # ----------- calculation of dMdt
+
     params = [t_now, T_goal, r_inner, R2, press, Qi, alpha, beta, delta, v0]
-    
-    
-    # TODO: fix this
-    # for now, use single value to check debug.
-    #--------------
-    # fix this
-    # rgoal = (warpfield_params.xi_Tb * R2).to(u.pc)
-    
-    # def calcr_Tb(l1,l2):
-    # rTb=i.r_Tb
-    
-    # try:
-    #     if len(l1)>2:
-    #         l1=l1[l1!=0]
-    #         l2=l2[l2!=0]
-    #         if len(l1)>1:
-    #             a=np.max(l1)
-    #             b=np.min(l2)
-    #             rTb=b-0.2*(b-a)
-    #     else:
-    #         rTb=i.r_Tb 
-    # except:
-    #     rTb=i.r_Tb 
-    
-
-        
-    # if np.isnan(rTb):
-    #     rTb=i.r_Tb
-        
-    # #print('calc_R_Tb=',rTb) 
-    
-    # return rTb
-    # rgoal_f=aux.calcr_Tb(R1R2,R2pR2)
-
-    # check whether R1 is smaller than the radius at which bubble temperature will be calculated
-    # if (R2 * rgoal_f < R1):
-    #     # for now, stop code. However, could also say that energy-driven phase is over if rgoal_f < R1/R2, for a reasonable rgoal_f (0.99 or so)
-    #     # print "debug, rgoal_f", rgoal_f,
-    #     sys.exit("rgoal_f is outside allowed range in bubble_structure.py (too small). Increase r_Tb in myconfig.py (<1.0)!")
-    # else:
-    #     rgoal = rgoal_f*R2
-    #--------------
-
-
-
 
     # While evaluating for dMdt, we create a global variable to also store the values for
     # temperature and velocity. 
@@ -240,6 +253,10 @@ def get_bubbleproperties(
     T_array = np.array([])
     dTdr_array = np.array([])
     r_array = np.array([])
+    
+    
+    # print('\n\n---dMdt_init befrore get_velocity_residuals---', dMdt_init.to(u.M_sun/u.Myr))
+    
     dMdt = scipy.optimize.fsolve(get_velocity_residuals, dMdt_init.to(u.M_sun/u.yr), args = (params,), 
                                  full_output = 1, factor = 50, xtol = 1e-6)[0] * u.M_sun / u.yr
 
@@ -250,7 +267,16 @@ def get_bubbleproperties(
     # print('v', v_array)
     # print('T', T_array)
     # print('dTdr', dTdr_array)
-    # print('r_array', r_array)
+    # print('r_array', r_array)        
+    
+    # new factor for dMdt (used in next time step to get a good initial guess for dMdt)
+    # TODO: fix this. It seems tht our simulation runs into negative dMdt, and
+    # so perhaps taking the absolute will fix?
+    # # original:
+    # dMdt_factor_out = dMdt_factor * dMdt / dMdt_init
+    # # fix?
+    dMdt_factor_out = dMdt_factor * dMdt / dMdt_init
+    
     # print('n', n_array)
 
     # =============================================================================
@@ -288,21 +314,21 @@ def get_bubbleproperties(
     """
     
     
-    print('\n\nsecond checkpoint\n\n')
+    # print('\n\nsecond checkpoint\n\n')
     # print(f'press: {press.to(u.M_sun/u.pc/u.Myr**2)}')
     # print(f'dMdt_init: {dMdt_init.to(u.M_sun/u.Myr)}')
     # print(f'dMdt: {dMdt.to(u.M_sun/u.Myr)}')
     # print(f'R1: {R1}')
     # print(f'v_array: {v_array}')
-    print(f'r_array: {r_array}')
-    print(f'T_array: {T_array}')
-    print(f'n_array: {n_array.to(1/u.pc**3)}')
+    # print(f'r_array: {r_array}')
+    # print(f'T_array: {T_array}')
+    # print(f'n_array: {n_array.to(1/u.pc**3)}')
     # sys.exit()
     
     
     
     # =============================================================================
-    # Here we identify which index in the temperature array has cooling and which doesn't. 
+    # Step 3: we identify which index in the temperature array has cooling and which doesn't. 
     # The bubble will have these regions:
     #   1. Low resolution (bubble) region. This is the CIE region, where T > 10**5.5 K.
     #   2. High resolution (conduction) region. This is the non0-CIE region.
@@ -326,10 +352,10 @@ def get_bubbleproperties(
     # index of radius array at which T is closest (and higher) to _CIEswitch
     index_CIE_switch = operations.find_nearest_higher(T_array.value, _CIEswitch.value)
     
-    print(f'index_CIE_switch: {index_CIE_switch}')
-    print(T_array[index_CIE_switch-1])
-    print(T_array[index_CIE_switch])
-    print(T_array[index_CIE_switch+1])
+    # print(f'index_CIE_switch: {index_CIE_switch}')
+    # print(T_array[index_CIE_switch-1])
+    # print(T_array[index_CIE_switch])
+    # print(T_array[index_CIE_switch+1])
     # interpolate so that we have an entry at exactly _CIEswitch.
     
     
@@ -376,14 +402,14 @@ def get_bubbleproperties(
     Tavg_bubble = np.abs(np.trapz(r_bubble**2 * T_bubble, x = r_bubble)).to(u.K * u.pc**3)
     
     # TODO: maybe some verbosity here.
-    print('\n\n1st zone done\n\n')
+    # print('\n\n1st zone done\n\n')
     # print(f'Lambda_bubble: {Lambda_bubble.to(u.M_sun*u.pc**5/u.Myr**3)}')
     # print(f'integrand_bubble: {integrand_bubble.to(u.M_sun*u.pc/u.Myr**3)}')
     # print(f'L_bubble: {L_bubble.to(u.M_sun*u.pc**2/u.Myr**3)}')
     # print(f'Tavg_bubble: {Tavg_bubble}')
-    print(f'r_bubble: {r_bubble}')
-    print(f'T_bubble: {T_bubble}')
-    print(f'n_bubble: {n_bubble}')
+    # print(f'r_bubble: {r_bubble}')
+    # print(f'T_bubble: {T_bubble}')
+    # print(f'n_bubble: {n_bubble}')
     
     '''
     import matplotlib.pyplot as plt
@@ -400,11 +426,11 @@ def get_bubbleproperties(
         # if this zone is not well resolved, solve ODE again with high resolution (IMPROVE BY ALWAYS INTERPOLATING)
         if index_CIE_switch - index_cooling_switch < 100:
             
-            print('inside cz, not well-resolved')
+            # print('inside cz, not well-resolved')
             
             # This is the original array that is too short
             lowres_r_conduction = (r_array[:index_CIE_switch+1]).to(u.pc)
-            print(f'lowres_r_conduction: {lowres_r_conduction}')
+            # print(f'lowres_r_conduction: {lowres_r_conduction}')
             # Find the minimum and maximum value
             original_rmax = max(lowres_r_conduction.value)
             original_rmin = min(lowres_r_conduction.value)
@@ -483,7 +509,7 @@ def get_bubbleproperties(
         
         
     # TODO: maybe some verbosity here.
-    print('\n\n2nd zone done\n\n')
+    # print('\n\n2nd zone done\n\n')
     # print(f'index_cooling_switch: {index_cooling_switch}, index_CIE_switch: {index_CIE_switch}')
     # print(f'integrand_conduction: {integrand_conduction.to(u.M_sun*u.pc/u.Myr**3)}')
     # print(f'L_conduction: {L_conduction.to(u.M_sun*u.pc**2/u.Myr**3)}')
@@ -512,8 +538,8 @@ def get_bubbleproperties(
         mask = regime_mask[regime]
         
         if regime == 'non-CIE':
-            print('non-CIE')
-            print(np.log10([n_intermediate[mask].value, T_intermediate[mask].value, phi_intermediate[mask].value]))
+            # print('non-CIE')
+            # print(np.log10([n_intermediate[mask].value, T_intermediate[mask].value, phi_intermediate[mask].value]))
             # import values from cooling curves
             cooling_nonCIE, heating_nonCIE = non_CIE.get_coolingStructure(t_now)
             # cooling rate
@@ -522,7 +548,7 @@ def get_bubbleproperties(
             dudt_intermediate = (heating_intermediate - cooling_intermediate) * u.erg / u.s / u.cm**3
             integrand_intermediate = dudt_intermediate * 4 * np.pi * r_intermediate[mask]**2
         elif regime == 'CIE':
-            print('CIE')
+            # print('CIE')
             # import values from cooling curves
             # value T chosen here is not important, since we want the interpolation only
             _, _, _, cooling_CIE_interpolation = CIE.get_Lambda(T_bubble[1])
@@ -537,7 +563,7 @@ def get_bubbleproperties(
     Tavg_intermediate =  (np.abs(np.trapz(r_intermediate**2 * T_intermediate,  x = r_intermediate))).to(u.K * u.pc**3)
 
     # TODO: maybe some verbosity here.
-    print('\n\n3rd zone done\n\n')
+    # print('\n\n3rd zone done\n\n')
     # print(f'R2_coolingswitch: {R2_coolingswitch}')
     # print(f'integrand_intermediate: {integrand_intermediate.to(u.M_sun*u.pc/u.Myr**3)}')
     # print(f'L_intermediate: {L_intermediate.to(u.M_sun*u.pc**2/u.Myr**3)}')
@@ -562,7 +588,7 @@ def get_bubbleproperties(
     # TODO: what is rgoal?
     # get temperature inside bubble at fixed scaled radius
     # temperature T at rgoal
-    # print(rgoal)
+    print('rgoal', rgoal)
     # print(r_array[index_cooling_switch])
     
     
@@ -574,13 +600,10 @@ def get_bubbleproperties(
     else:
         idx = operations.find_nearest(r_bubble.value, rgoal.value)
         T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
-        
-    # new factor for dMdt (used in next time step to get a good initial guess for dMdt)
-    dMdt_factor_out = warpfield_params.dMdt_factor * dMdt / dMdt_init
     
     # print('Completed calculation of bubble luminosity.')
     
-    print('\n\nfinal\n\n')
+    # print('\n\nfinal\n\n')
     # print(f'rgoal: {rgoal.to(u.pc)}')
     # print(f'L_total: {L_total.to(u.M_sun*u.pc**2/u.Myr**3)}')
     # print(f'Tavg: {Tavg}')
@@ -589,7 +612,7 @@ def get_bubbleproperties(
     
     
     # =============================================================================
-    # Mass/gravitational potential
+    # Step 4: Mass/gravitational potential
     # =============================================================================
     
     def get_mass_and_grav(n, r):
@@ -621,13 +644,30 @@ def get_bubbleproperties(
     # gettem
     m_cumulative, grav_phi, grav_force = get_mass_and_grav(n_array, r_array)
     
+    # TODO:
     # bubble mass
     mBubble = m_cumulative[-1]
+    # here is what was in the old code. This was wrong. 
+    # The problem is, if we tried to do this properly, we cannot. The code crashes.
+    # Fixing this now. Should probably work. 
     # mBubble = 10 * u.M_sun
 
     # print(f'mBubble: {mBubble.to(u.M_sun)}')
     # print(f'mBubble: {mBubble.to(u.g)}')
     
+    # T_rgoal will be T0 in the output in run_energy_phase.py
+    print('final result in get_bubble_properties')
+    # print(L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg, mBubble)
+    print(f'L_total: {L_total.to(u.M_sun*u.pc**2/u.Myr**3)}')
+    print(f'T_rgoal: {T_rgoal}')
+    print(f'L_bubble: {L_bubble.to(u.M_sun*u.pc**2/u.Myr**3)}')
+    print(f'L_conduction: {L_conduction.to(u.M_sun*u.pc**2/u.Myr**3)}')
+    print(f'L_intermediate: {L_intermediate.to(u.M_sun*u.pc**2/u.Myr**3)}')
+    print(f'dMdt_factor_out: {dMdt_factor_out}')
+    print(f'Tavg: {Tavg}')
+    print(f'mBubble: {mBubble.to(u.M_sun)}')
+    
+    print('End get_bubble_properties----------\n\n\n\n')
     
     return L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg, mBubble
 
@@ -638,15 +678,23 @@ def get_bubbleproperties(
 
 def get_init_dMdt(
         R2, Lw, Eb, vw,
-        t_now, press
+        t_now, press, dMdt_factor
         ):
     
     # print('get_init_dMdt parameter', R2, Lw, Eb, vw, t_now, press)
     
-    dMdt_init = 12 / 75 * warpfield_params.dMdt_factor**(5/2) * 4 * np.pi * R2**3 / t_now\
-            * warpfield_params.mu_p / c.k_B.cgs * (t_now * warpfield_params.c_therm / R2**2)**(2/7) * press**(5/7)
-       
-     # dMdt_guess = 4. / 25. * dMdt_factor * 4. * np.pi * R2 ** 3. / t_now * 0.5 * (myc.mp / myc.Msun) / myc.kboltz_au * (t_now * myc.Cspitzer_au / R2 ** 2.) ** (2. / 7.) * press ** (5. / 7.)
+    # TODO:
+    # dMdt_init = 12 / 75 * dMdt_factor**(5/2) * 4 * np.pi * R2**3 / t_now\
+    #         * warpfield_params.mu_p / c.k_B.cgs * (t_now * warpfield_params.c_therm / R2**2)**(2/7) * press**(5/7)
+    
+    # above is the original code. But, i suspect this is why we get different answers compared to wfld.
+    # the reason is because in theold code the factor is only powered once, where as here it is 5/2 according to the paper. 
+    
+    dMdt_init = 12 / 75 * dMdt_factor * 4 * np.pi * R2**3 / t_now\
+        * warpfield_params.mu_p / c.k_B.cgs * (t_now * warpfield_params.c_therm / R2**2)**(2/7) * press**(5/7)
+     
+    # old code in old warpfield:
+    # dMdt_guess = 4. / 25. * dMdt_factor * 4. * np.pi * R2 ** 3. / t_now * 0.5 * (myc.mp / myc.Msun) / myc.kboltz_au * (t_now * myc.Cspitzer_au / R2 ** 2.) ** (2. / 7.) * press ** (5. / 7.)
 
     return dMdt_init.to(u.M_sun/u.yr)
 
@@ -656,7 +704,7 @@ def get_init_dMdt(
 def get_velocity_residuals(dMdt_init, params):
     """
     This routine calculates the value for dMdt, by comparing velocities at boundary condition.
-    Check out get_velocity_residuals() below, for full description.
+    Check out get_bubble_ODE_initial_conditions() below, for full description.
 
     Parameters
     ----------
@@ -677,6 +725,33 @@ def get_velocity_residuals(dMdt_init, params):
     # units for dMdt_init! Because scipy removes them in ODE solvers
     # units in params are retained. 
     dMdt_init = dMdt_init*u.M_sun/u.yr
+    
+    # --- debug
+    
+    # for some reason, scipy in these loops return negative dMdt, with every other parameters simliar.
+
+    # print('\ndMdt_init in get_velocity_residuals', dMdt_init.to(u.M_sun/u.Myr))
+
+    # print('params in get_velocity_residuals')
+    # print('t_now', t_now)
+    # print('T_goal', T_goal)
+    # print('r_inner', r_inner)
+    # print('R2', R2)
+    # print('pressure', pressure)
+    # print('Qi', Qi)
+    # print('alpha', alpha)
+    # print('beta', beta)
+    # print('delta', delta)
+    # print('v0', v0)
+    
+    # perhaps one way to fix it is to just take the absolute value
+    # i.e., 
+    dMdt_init = np.abs(dMdt_init.value) *u.M_sun/u.yr
+
+    
+    # --- end debug
+    
+    
    
     # =============================================================================
     # Get initial bubble values for integration  
@@ -799,7 +874,16 @@ def get_bubble_ODE_initial_conditions(dMdt, params):
     # -----
     # Question: I think mu here should point to ionised region
     # T(r)
+    
+    # print('outputs in get_bubble_ODE_initial_conditions()')
+    # print('R2', R2)
+    # print('dMdt', dMdt)
+    # print('mu', mu)
+    # print('dR2', dR2)
+    
+    # temperature
     T = (25/4 * c.k_B.cgs.value / mu / warpfield_params.c_therm.value * dMdt / (4 * np.pi * R2**2) )**(2/5) * dR2**(2/5) 
+    # print('T', T)
     # v(r)
     v = (alpha * R2 / t_now - dMdt / (4 * np.pi * R2**2) * c.k_B.cgs.value * T / mu / pressure) * u.cm/u.s
     # T'(r)

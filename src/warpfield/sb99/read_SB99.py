@@ -24,7 +24,7 @@ def read_SB99(f_mass):
     """
     This function retrieves data from the Starburst99 files. 
     
-    Parameters
+    Returns
     ----------
     Here are the parameters directly from Starburst99 runs:
     
@@ -44,7 +44,7 @@ def read_SB99(f_mass):
 
     Returns
     -------
-    In addition, include parameters that will be useful for the run:
+    In addition, calculate and include parameters that will be useful for the run:
         
     Li: luminosity in the ionizing part of the spectrum (>13.6 eV)
     

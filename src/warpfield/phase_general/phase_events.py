@@ -145,7 +145,7 @@ def event_grav_frag(t, y, ODE_params, SB99f):
         mu = warpfield_params.mu_p
     else:
         mu = warpfield_params.mu_n
-        
+    # I think this is wrong in the old code.
     cs = np.sqrt(warpfield_params.gamma_adia * c.k_B.cgs.value * T / mu )
 
     frag_value = warpfield_params.frag_grav_coeff * Grav_au * 3. * Msh / (4. * np.pi * v * cs * r) # (compare McCray & Kafatos 1987, eq. 14)

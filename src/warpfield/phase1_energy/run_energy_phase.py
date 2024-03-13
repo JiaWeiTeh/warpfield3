@@ -32,10 +32,10 @@ def run_energy(t0, y0, #r0, v0, E0, T0
                 tcoll, coll_counter,
                 shell_dissolved, t_shelldiss,
                 stellar_outputs, # old code: SB99_data
-                SB99f,
+                SB99f, # interpolation functions from starburst99
                 # TODO: change tfinal to depend on warpfield_param
                 # not only tfinal, but all others too.
-                tfinal = 50,
+                tfinal = 50 * u.Myr,
                 Tarr = [], Larr = [], 
         
     # Note:
@@ -114,6 +114,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # momentum of stellar winds at time t0 (cgs)
     pdot0 = fpdot_evo(t0) * u.g * u.cm / u.s**2
     # terminal wind velocity at time t0 (km/s)
+    # In some scripts this is called 'vw, I think'
     vterminal0 = (2. * Lw0 / pdot0).to(u.km/u.s)
     # print('vterminal0', vterminal0)
 
@@ -235,6 +236,9 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # old code: mom_phase
     immediately_to_momentumphase = False
     
+    # factor for calculation of dMdt. See .params file for more explanation.
+    dMdt_factor = warpfield_params.dMdt_factor
+    
     # when to switch on cooling. This should be in parameter file
     dt_switchon = 0.001 * u.Myr
     
@@ -250,20 +254,16 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     loop_count = 0
     
     
-# These seems to be the most important ones. Others are thrown away.
-# t_end = tweaver_end = t[-1]
-# r_end =  rweaver_end = r[-1]
-# E_end = Eweaver_end = Eb[-1]
-# v_end = vweaver_end = Eb[-1]
-
-    
     # =============================================================================
     # Initialise arrays to record values
     # =============================================================================
     
     # tSweaver, rSweaver, vSweaver, ESweaver
     # time, inner shell radius, shell velocity, shell energy
-    weaver_tShell = [] * u.Myr; weaver_rShell = [] * u.pc; weaver_vShell = [] * u.km / u.s; weaver_EShell = [] * u.erg
+    weaver_tShell = [] * u.Myr; weaver_rShell = [] * u.pc; weaver_vShell = [] * u.km / u.s; weaver_EShell = [] * u.erg; 
+    
+    # bubble temperature
+    weaver_Tbubble = [] * u.K
     
     # shellmass
     weaver_mShell = [] * u.M_sun
@@ -273,6 +273,9 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     
     # fraction of absorbed photons
     weaver_f_absorbed_ion = []; weaver_f_absorbed_neu = []; weaver_f_absorbed = []; weaver_f_ionised_dust = []
+    
+    # parameters used in ODE functions
+    weaver_alpha = []; weaver_beta = []; weaver_delta = []
     
     # fabsweaver = []; fabs_i_weaver = []; fabs_n_weaver = []; ionshweaver = []; Mshell_weaver = []
     # FSgrav_weaver = []; FSwind_weaver = []; FSradp_weaver = []; FSsne_weaver = []; FSIR_weaver = []; dRs_weaver = []; nmax_weaver = []
@@ -411,15 +414,20 @@ def run_energy(t0, y0, #r0, v0, E0, T0
                 
                 if calculate_bubble_shell:
                     
+                    print('\nCalculate bubble and shell\n')
+                    
                     output = bubble_luminosity.get_bubbleproperties(t0 - tcoll[coll_counter],
                                                                     # T_goal, rgoal,
                                                                     # R2 is r0 in old code
                                                                     r0,
                                                                     Qi, alpha, beta, delta,
                                                                     Lw, E0, vterminal,
+                                                                    dMdt_factor
                                                                     )
                     # restate just for clarity
-                    L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg, mBubble = output
+                    # T_rgoal here is T0 in original code.
+                    # here, dMdt_factor is also being updated.
+                    L_total, T0, L_bubble, L_conduction, L_intermediate, dMdt_factor, Tavg, mBubble = output
                     
                     print('\n\nFinish bubble\n\n')
                     # print('L_total', L_total.to(u.M_sun*u.pc**2/u.Myr**3))
@@ -431,13 +439,12 @@ def run_energy(t0, y0, #r0, v0, E0, T0
                     # print('Tavg', Tavg)
                     
                     
-                    
                 elif not calculate_bubble_shell:
                     L_total = 0 * u.erg / u.s
                     L_bubble =  0 * u.erg / u.s
                     L_conduction = 0 * u.erg / u.s
                     L_intermediate = 0 * u.erg / u.s
-                    dMdt_factor_out = 1.646 # as in classical Weaver
+                    dMdt_factor = 1.646 # as in classical Weaver
                     Tavg = T0
                     
                     mBubble = np.nan
@@ -478,7 +485,7 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         # Calculate shell structure
         # =============================================================================
         
-        # PROBLEM: Where is Mbubble in previous code? Why does it only appear once in else case?
+        # TODO: Where is Mbubble in previous code? Why does it only appear once in else case?
         
         
         if calculate_bubble_shell:
@@ -646,8 +653,6 @@ def run_energy(t0, y0, #r0, v0, E0, T0
             # -----------    
             
             
-            
-            
             # TODO: Below is not implemented yet. Specifically, I think the cover fraction
             # will always be one, since tfrag is very large. The slope will always end up at 1. I think.
             # OPTION 2 for switching to mom-driving: if i.immediate_leak is set to False, when covering fraction drops below 50%, switch to momentum driving
@@ -660,6 +665,8 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         weaver_rShell = np.concatenate([weaver_rShell, [r0]])
         weaver_vShell = np.concatenate([weaver_vShell, [v0]])
         weaver_EShell = np.concatenate([weaver_EShell, [E0]])
+        # bubble temperature
+        weaver_Tbubble = np.concatenate([weaver_Tbubble, [T0]])
         # mass
         weaver_mShell = np.concatenate([weaver_mShell, [Msh0]])
         # luminosity properties
@@ -669,19 +676,29 @@ def run_energy(t0, y0, #r0, v0, E0, T0
         weaver_L_intermediate = np.concatenate([weaver_L_intermediate, [L_intermediate]])
         # absorbed photons 
         weaver_f_absorbed_ion = np.concatenate([weaver_f_absorbed_ion, [f_absorbed_ion]])
-        weaver_f_absorbed_neu = np.concatenate([weaver_f_absorbed_ion, [f_absorbed_ion]])
-        weaver_f_absorbed = np.concatenate([weaver_f_absorbed_ion, [f_absorbed_ion]])
+        weaver_f_absorbed_neu = np.concatenate([weaver_f_absorbed_neu, [f_absorbed_neu]])
+        weaver_f_absorbed = np.concatenate([weaver_f_absorbed, [f_absorbed]])
+        # ODE parameters
+        weaver_alpha = np.concatenate([weaver_alpha, [alpha]])
+        weaver_beta = np.concatenate([weaver_beta, [beta]])
+        weaver_delta = np.concatenate([weaver_delta, [delta]])
     
-  
+        # remember to change names once this is done. Names are quite misleading and i would love to change them.
+        # This is doable because they are referred not many times. 
+        
+        # TODO: remember to also update the script in write_outputs.py, which saves data into a fits file.
         weaver_data = {'t':weaver_tShell, 'r':weaver_rShell, 'v':weaver_vShell, 'E':weaver_EShell, 
-                  't_end': weaver_tShell[-1], 'r_end':weaver_rShell[-1], 'v_end':weaver_vShell[-1], 'E_end':weaver_EShell[-1],
                   'logMshell':np.log10(weaver_mShell.to(u.M_sun).value) * u.M_sun,
+                  'Tb': weaver_Tbubble,
+                  # this was dMdt_factor_end
+                  'dMdt_factor': dMdt_factor,
+                  'alpha': weaver_alpha, 'beta': weaver_beta, 'delta': weaver_delta, 
                   # I think these are not important for the code, but still worth tracking.
                   'fabs':weaver_f_absorbed, 'fabs_n': weaver_f_absorbed_neu, 'fabs_i':weaver_f_absorbed_ion,
                   'Lcool':weaver_L_total, 'Lbb':weaver_L_bubble, 'Lbcz':weaver_L_conduction, 'Lb3':weaver_L_intermediate,
                   }
           
-          
+          # 't_end': weaver_tShell[-1], 'r_end':weaver_rShell[-1], 'v_end':weaver_vShell[-1], 'E_end':weaver_EShell[-1],
           # 'Fgrav':FSgrav_weaver, 'Fwind':FSwind_weaver, 'Fradp_dir':FSradp_weaver, 'FSN':FSsne_weaver, 'Fradp_IR':FSIR_weaver,
           # 'dRs':dRs_weaver, 'logMshell':np.log10(Mshell_weaver), 'nmax':nmax_weaver, 'logMcluster':logMcluster_weaver, 'logMcloud':logMcloud_weaver,
           # 'phase': phase_weaver, 'R1':R1weaver, 'Eb':Ebweaver, 'Pb':Pbweaver, 'Lmech':Lwweaver, 'Lcool':Lbweaver, 'Tb':Tbweaver,
@@ -761,6 +778,11 @@ def run_energy(t0, y0, #r0, v0, E0, T0
     # it goes from 3656 to 400, then quickly to 150. 
     # Also, the M was negative at first. The radius then is stuck at 0.249pc. Why?
 
+
+    # Another problem: now it seems that the dMdt factor drops from 2k Msol/Myr to 200 Msol/Myr, then 
+    # suddenly turn to -200 Msol/Myr. What could be the problem?
+    # This seems to have to do with the ODE solver which switches the guesses automatically.
+    # Perhaps the values of other parameters caused this? i.e., why did dMdt drop to 200 in the first place?
 
     return weaver_data
     

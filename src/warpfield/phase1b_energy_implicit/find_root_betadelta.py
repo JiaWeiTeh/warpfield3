@@ -10,6 +10,12 @@ Created on Thu Jul  6 14:28:19 2023
 # old code: root_betadelta.py
 # module to find roots of beta and delta
 
+# my_params["v2"] is v from phase_energy.py, where r, v, E, T = y
+
+# It appears that xtol is always 1e-5, from phase_energy.
+# xtol is used in scipy.fsovle, and also in fsolveODEbd() to compare beta-beta_guess and delta-delta_guess
+
+
 import numpy as np
 import scipy.optimize
 import sys
@@ -76,6 +82,8 @@ def zero_delta(delta, full_params):
     Cool_Struc = full_params[1]
     my_params = dict.copy(full_params[0])
     if hasattr(delta, "__len__"): delta = delta[0]
+    # not sure what this does. Probably just updating the parameter to be fed into bstrux.
+    # This isn't needed inthe new function though since we declare every single time.
     my_params["delta"] = delta
     full_params = [my_params, Cool_Struc]
 
@@ -149,6 +157,7 @@ def fsolveODEbd(x, full_params, xtol=1e-4):
         x0 = [beta, delta]
         my_params['x0'] = x0
         full_params = [my_params, Cool_Struc]
+        # this is basically the residual thing, used in wrapper.
         my_params['d0'] = zero_delta(delta, full_params)
         full_params = [my_params, Cool_Struc]
 
@@ -174,6 +183,8 @@ def fsolveODEbd(x, full_params, xtol=1e-4):
 
         if hasattr(beta, "__len__"): beta = beta[0]
         my_params["beta"] = beta
+        
+        # TODO: why are we not normalising here, but do so in ODEwrap? 
 
         # required precission achieved?
         # print "ddelta", np.abs(delta - delta_old), "dbeta", np.abs(beta - beta_old)
@@ -196,15 +207,23 @@ def zeroODE34(x, full_params):
 
     for an example, see zeroODE34wrap
     """
+    
+    # fullparams is basicaly just params + cooling structure.
+    
     Cool_Struc = full_params[1]
     my_params = dict.copy(full_params[0])
+    
+    
+    # here is the meaning of 'y0': full_params[0]['y0'] = zeroODE34(x0, full_params)
+    
     if 'y0' in my_params:
         y0 = my_params["y0"]
     else:
         y0 = np.array([1.,1.])
 
     my_params["beta"] = x[0]
-    my_params["delta"] = x[1]
+    # I think this one is not used. 
+    my_params["delta"] = x[1] 
 
     full_params = [my_params, Cool_Struc]
 
@@ -227,6 +246,9 @@ def zeroODE34(x, full_params):
     Lloss = Lb2 + my_params['L_leak']
     Edot2 = energy_eq(Lgain, Lloss, my_params["R2"], my_params["v2"], Pb)
     
+    
+    # this is declared here and used in event_cool_switch.
+    # find a better way to do this - maybe just return?
     os.environ["Lcool_event"] = str(Lloss)
     os.environ["Lgain_event"] = str(Lgain)
     
@@ -262,7 +284,14 @@ def zeroODE34wrap(x, full_params):
     :return: residuals: [residual(beta), residual(delta)]
 
     example:
-    params = {'R2': 3.7722768501127852, 'delta': -0.13059185573497623, 'dt_L': 0.0017159535542888942, 'dMdt_factor': 3.0988406957317669, 'Lw': 20162080054.290474, 'structure_switch': True, 'beta': 0.83903033695041396, 'T0': 6580032.8642736319, 'vw': 3808.6254043470976, 'Qi': 1.7004101133849865e+66, 'alpha': 0.57225108377678047, 'Lres0': 17721920706.542767, 'Eb': 122510753.20964822, 'temp_counter': 32, 't_now': 0.015151270837035451, 'v2':1.4248e+02}
+    params = {'R2': 3.7722768501127852, 'delta': -0.13059185573497623, 
+              'dt_L': 0.0017159535542888942, 'dMdt_factor': 3.0988406957317669, 
+              'Lw': 20162080054.290474, 'structure_switch': True, 
+              'beta': 0.83903033695041396, 'T0': 6580032.8642736319, 
+              'vw': 3808.6254043470976, 'Qi': 1.7004101133849865e+66, 
+              'alpha': 0.57225108377678047, 'Lres0': 17721920706.542767, 
+              'Eb': 122510753.20964822, 'temp_counter': 32, '
+              t_now': 0.015151270837035451, 'v2':1.4248e+02}
     params["verbose"] = 1
     Cool_Struc = coolnoeq.get_Cool_dat(1.0, indiv_CH=True)
     full_params = [params,Cool_Struc]
@@ -273,13 +302,24 @@ def zeroODE34wrap(x, full_params):
 
     # debug
     if verbose > 1: print("zeroODE34: beta, delta:", x[0], x[1])
-
+    
+    # x = [beta, delta]
+    #--
+    # what is x0 and where did full_params come from?
+    # x0 is input beta and delta values. This is being decalred in rootfinder_bd(), where
+    # x0 is beta_guess and delta_guess, and y0 is 1. 
     if all(x == full_params[0]["x0"]) and full_params[0]["y0"] is not None:
         # return full_params[0]["y0"]
+        # np.sign is used here so it basically returns [-1 or 1].
         res = np.array([np.sign(full_params[0]["y0"][0]), np.sign(full_params[0]["y0"][1])])
     else:
         res = zeroODE34(x, full_params)
+        
+    #--    
+        
     if verbose > 1: print("zeroODE34: beta, delta:", x[0], x[1], "residuals:", res)
+    
+    
     return res
 
 
@@ -312,10 +352,12 @@ def rootfinder_bd(beta_guess, delta_guess, params, Cool_Struc, verbose=0, xtol=1
 
     params["beta"] = beta_guess
     params["delta"] = delta_guess
+    # what is this for? this gets overwritten anyway
     params["y0"] = np.array([1., 1.])
     params["verbose"] = verbose
     full_params = [params, Cool_Struc]
     x0 = [params["beta"], params["delta"]]
+    # basically just means full_params[0]['x0'] = [beta_guess, delta_guess]
     full_params[0]['x0'] = x0
     full_params[0]['y0'] = zeroODE34(x0, full_params)
 
@@ -377,7 +419,34 @@ def rootfinder_bd_wrap(beta_guess, delta_guess, params, Cool_Struc, verbose=0, x
     :param epsfcn: step size for Jacobian in rootfinder fsolve
     :param log_error_min: log10 of error we allow at most
     :return: dictionary with results
+    
+    
+    
+    # ONLY USEFUL RESULTS (I THINK)
+    beta = rootf_bd_res['beta']
+    delta = rootf_bd_res['delta']
+    residual = rootf_bd_res['residual']
+    dMdt_factor = rootf_bd_res['dMdt_factor']
+    Tavg = rootf_bd_res['Tavg']
+    
+    
     """
+
+    # I'm pretty sure BD_res_count does not need to be environment variable
+    # because it is only being used in this function. 
+
+    # BD_res is however a dictionary that includes     dic_res={'Lb': 0, 'Trgoal': 0, 'dMdt_factor': 0, 'Tavg': 0, 'beta': 0, 'delta': 0, 'residual': 0}
+    # so i amnot sure. (p.s. i think actually this is also only used here!)
+    # BD_res is actually just str(result) for this fucntion (see below in this function where it is defined).
+    
+    # result is actually just output from 
+    #     beta = rootf_bd_res['beta']
+    # delta = rootf_bd_res['delta']
+    # residual = rootf_bd_res['residual']
+    # dMdt_factor = rootf_bd_res['dMdt_factor']
+    # Tavg = rootf_bd_res['Tavg']
+
+    # these are the only needed ones.
 
     # debug
     #Ntry = 1
@@ -388,14 +457,15 @@ def rootfinder_bd_wrap(beta_guess, delta_guess, params, Cool_Struc, verbose=0, x
     bdcount_l=float(os.environ["BD_res_count"])
     
     res_l= ast.literal_eval(os.environ["BD_res"])
+    
     flag=False
   
-    
     #print('rootfinder_BD_wrap called',res_l['beta'],type(res_l['beta']))
     #xtol=1e-5
 
     if Ntry <= 1:
         error_exit = True
+        # result is actually just output from bstrux.
         result = rootfinder_bd(beta_guess, delta_guess, params, Cool_Struc, verbose=verbose, xtol=xtol, epsfcn=epsfcn, log_error_min=log_error_min, error_exit=error_exit)
     else:
         error_exit = False
@@ -448,7 +518,6 @@ def rootfinder_bd_wrap(beta_guess, delta_guess, params, Cool_Struc, verbose=0, x
         delta_guess += -0.002
         result = rootfinder_bd(beta_guess, delta_guess, params, Cool_Struc, verbose=verbose, xtol=xtol, epsfcn=epsfcn, log_error_min=log_error_min, error_exit=error_exit)
 
-
     #os.environ["BD_res_B"] = str()
     #os.environ["BD_res_D"] = str()
     #os.environ["BD_res_Res"] = str()
@@ -463,6 +532,14 @@ def rootfinder_bd_wrap(beta_guess, delta_guess, params, Cool_Struc, verbose=0, x
     #print('res_bd_wrap',result)
     os.environ["BD_res"]=str(result)
     os.environ["BD_res_count"]=str(bdcount_l)
+    
+        
+    # ONLY USEFUL RESULTS (I THINK)
+    # beta = rootf_bd_res['beta']
+    # delta = rootf_bd_res['delta']
+    # residual = rootf_bd_res['residual']
+    # dMdt_factor = rootf_bd_res['dMdt_factor']
+    # Tavg = rootf_bd_res['Tavg']
     
  
         

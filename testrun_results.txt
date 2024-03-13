@@ -1,0 +1,4019 @@
+
+          ,          __     __   ______   ______   ______  ______  __   ______   __       _____    
+       \  :  /      /\ \  _ \ \ /\  __ \ /\  == \ /\  == \/\  ___\/\ \ /\  ___\ /\ \     /\  __-.  
+    `. __/ \__ .'   \ \ \/ ".\ \\ \  __ \\ \  __< \ \  _-/\ \  __\\ \ \\ \  __\ \ \ \____\ \ \/\ \ 
+    _ _\     /_ _    \ \__/".~\_\\ \_\ \_\\ \_\ \_\\ \_\   \ \_\   \ \_\\ \_____\\ \_____\\ \____- 
+       /_   _\        \/_/   \/_/ \/_/\/_/ \/_/ /_/ \/_/    \/_/    \/_/ \/_____/ \/_____/ \/____/ 
+     .'  \ /  `.      
+          '           © J.W. Teh, R.S. Klessen, S.O. Glover, K. Kreckel.                             
+        
+		      --------------------------------------------------
+		      Welcome to [32m]8;;https://github.com/JiaWeiTeh/warpfield3\WARPFIELD]8;;\[0m!
+
+		      Notes:
+		         - Documentation can be found [32m]8;;https://warpfield3.readthedocs.io/en/latest/\here]8;;\[0m.
+		         - [1m[96mBold text[0m indicates that a file is saved,
+		           and shows where it is saved.
+		         - [1m[94mWarning message[0m. Code runs still.
+		         - [1m[91mError encountered.[0m Code terminates.
+
+		      [Version 3.0] 2022. All rights reserved.
+		      --------------------------------------------------
+[5mLoading parameters:[0m
+	model name: example_pl
+	log_mCloud: 7.0 solMass
+	SFE: 0.01
+	metallicity: 1.0
+	density profile: pL_prof
+➳ [1m[96mSummary: outputs/example_pl/example_pl_summary.txt[0m
+➳ [1m[96mVerbose yaml: outputs/example_pl/example_pl_config.yaml[0m
+
+		      --------------------------------------------------
+		      Initialising bubble
+		      --------------------------------------------------
+Cloud radius is 19.58645811538505pc.
+➳ [1m[96mDensity for CLOUDY: outputs/example_pl/init_density_profile_col0.csv[0m
+➳ [1m[96mBubble structure tracking (radius): outputs/example_pl/bubble_structure.csv[0m
+
+		      --------------------------------------------------
+		      Entering phase 1 (energy-driven phase)
+		      --------------------------------------------------
+Inner discontinuity: 0.006669784054849991 pc.
+Initial bubble mass: 0.0005953786133541729 solMass
+Initial bubble pressure: 1940519533.7745223 solMass / (Myr2 pc)
+rfinal: 19.58645811538505 pc
+Lw0: 2028172549.6498227 pc2 solMass / Myr3
+pdot0: 1084804.5012862822 pc solMass / Myr2
+vterminal0: 3656.2004322855196 km / s
+
+
+loop 0, r0: 0.00767376661532033 pc.
+
+
+conditions: r0 < rfinal: 0.00767376661532033 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:2.0522259231733454e-06 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.00010205222592317335 Myr
+dt_real: 0.0001 Myr
+
+
+loop 1, r0: 0.07095068975383301 pc.
+
+
+conditions: r0 < rfinal: 0.07095068975383301 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.00010205222592317323 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.00020205222592317322 Myr
+dt_real: 9.999999999999999e-05 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.07095068975383301 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 1.8063689718228828e+48 erg
+vw 3656.2004322855196 km / s
+press 0.00010205222592317323 Myr
+press 3.3758788734517454e-05 g / (cm s2)
+dMdt_factor 1.646
+
+
+---dMdt_init befrore get_velocity_residuals--- 1827.406797822097 solMass / Myr
+
+dMdt_init in get_velocity_residuals [1827.40679782] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00010205222592317323 Myr
+T_goal 30000.0 K
+r_inner 0.04067720402591396 pc
+R2 0.07095068975383301 pc
+pressure 3.3758788734517454e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.1893095276475174e+17
+dMdt [1.15142904e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [370093.14123795]
+
+dMdt_init in get_velocity_residuals [1827.40679782] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00010205222592317323 Myr
+T_goal 30000.0 K
+r_inner 0.04067720402591396 pc
+R2 0.07095068975383301 pc
+pressure 3.3758788734517454e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.1893095276475174e+17
+dMdt [1.15142904e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [370093.14123795]
+
+dMdt_init in get_velocity_residuals [1827.40679782] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00010205222592317323 Myr
+T_goal 30000.0 K
+r_inner 0.04067720402591396 pc
+R2 0.07095068975383301 pc
+pressure 3.3758788734517454e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.1893095276475174e+17
+dMdt [1.15142904e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [370093.14123795]
+
+dMdt_init in get_velocity_residuals [1827.40682505] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00010205222592317323 Myr
+T_goal 30000.0 K
+r_inner 0.04067720402591396 pc
+R2 0.07095068975383301 pc
+pressure 3.3758788734517454e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.1893095276475174e+17
+dMdt [1.15142906e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [370093.14344387]
+
+dMdt_init in get_velocity_residuals [1891.21494579] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00010205222592317323 Myr
+T_goal 30000.0 K
+r_inner 0.04067720402591396 pc
+R2 0.07095068975383301 pc
+pressure 3.3758788734517454e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.1893095276475174e+17
+dMdt [1.19163386e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [375209.04456704]
+
+dMdt_init in get_velocity_residuals [1894.07177981] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00010205222592317323 Myr
+T_goal 30000.0 K
+r_inner 0.04067720402591396 pc
+R2 0.07095068975383301 pc
+pressure 3.3758788734517454e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.1893095276475174e+17
+dMdt [1.19343392e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [375435.65542239]
+
+dMdt_init in get_velocity_residuals [1894.03769113] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00010205222592317323 Myr
+T_goal 30000.0 K
+r_inner 0.04067720402591396 pc
+R2 0.07095068975383301 pc
+pressure 3.3758788734517454e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.1893095276475174e+17
+dMdt [1.19341244e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [375432.95263671]
+
+dMdt_init in get_velocity_residuals [1894.0376634] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00010205222592317323 Myr
+T_goal 30000.0 K
+r_inner 0.04067720402591396 pc
+R2 0.07095068975383301 pc
+pressure 3.3758788734517454e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.1893095276475174e+17
+dMdt [1.19341242e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [375432.95043786]
+
+
+second checkpoint
+
+
+r_array: [0.07095059 0.07095036 0.07095014 ... 0.04067799 0.0406776  0.0406772 ] pc
+T_array: [  375432.95043786   628009.45199581   789365.29267784 ...
+ 65187573.40520113 65188069.30039997 65188565.19972448] K
+n_array: [9.15140280e+60 5.47083829e+60 4.35253258e+60 ... 5.27054157e+58
+ 5.27050148e+58 5.27046138e+58] 1 / pc3
+index_CIE_switch: 0
+65188565.19972448 K
+375432.9504378603 K
+628009.4519958148 K
+
+
+1st zone done
+
+
+r_bubble: [0.07095059 0.07095036 0.07095014 ... 0.04067799 0.0406776  0.0406772 ] pc
+T_bubble: [  375432.95043786   628009.45199581   789365.29267784 ...
+ 65187573.40520113 65188069.30039997 65188565.19972448] K
+n_bubble: [311484.20984333 186209.67494143 148146.15869362 ...   1793.92221259
+   1793.90856596   1793.89491942] 1 / cm3
+
+
+2nd zone done
+
+
+non-CIE
+[[ 5.56804288  5.56854563  5.56904897 ...  7.03730405  7.05236565
+   7.06796842]
+ [ 5.49992554  5.49942279  5.49891946 ...  4.03066438  4.01560277
+   4.        ]
+ [15.95217654 15.95217654 15.95217654 ... 15.95217405 15.95217405
+  15.95217405]]
+CIE
+
+
+3rd zone done
+
+
+rgoal 0.06385562077844971 pc
+
+
+final
+
+
+
+
+Finish bubble
+
+
+
+
+here calculate_bubble_shell
+
+
+
+
+we are now in shell_structure.
+
+
+rShell0: 2.1893095276475174e+17 cm
+pBubble: 52172232.95394117 solMass / (Myr2 pc)
+mBubble: 0.14053276809452936 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 9.357142555643518e+32 g
+max_shellThickness: 2.1918355558797357e+17 cm
+nShell0: 11694143.591628853 1 / cm3
+rShell_step: 252602823221.824 cm
+
+
+loop 2, r0: 0.09189808793843983 pc.
+
+
+conditions: r0 < rfinal: 0.09189808793843983 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.00015205222592317444 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.00025205222592317443 Myr
+dt_real: 9.999999999999999e-05 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.09189808793843983 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 2.5817971598316364e+48 erg
+vw 3656.2004322855196 km / s
+press 0.00015205222592317444 Myr
+press 2.1674441852434537e-05 g / (cm s2)
+dMdt_factor [1.70601641]
+
+
+---dMdt_init befrore get_velocity_residuals--- [2053.14142046] solMass / Myr
+
+dMdt_init in get_velocity_residuals [2053.14142046] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00015205222592317444 Myr
+T_goal 30000.0 K
+r_inner 0.050765721232260655 pc
+R2 0.09189808793843983 pc
+pressure 2.1674441852434537e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.8356786973356598e+17
+dMdt [1.29366196e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [315256.9032177]
+
+dMdt_init in get_velocity_residuals [2053.14142046] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00015205222592317444 Myr
+T_goal 30000.0 K
+r_inner 0.050765721232260655 pc
+R2 0.09189808793843983 pc
+pressure 2.1674441852434537e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.8356786973356598e+17
+dMdt [1.29366196e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [315256.9032177]
+
+dMdt_init in get_velocity_residuals [2053.14142046] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00015205222592317444 Myr
+T_goal 30000.0 K
+r_inner 0.050765721232260655 pc
+R2 0.09189808793843983 pc
+pressure 2.1674441852434537e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.8356786973356598e+17
+dMdt [1.29366196e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [315256.9032177]
+
+dMdt_init in get_velocity_residuals [2053.14145106] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00015205222592317444 Myr
+T_goal 30000.0 K
+r_inner 0.050765721232260655 pc
+R2 0.09189808793843983 pc
+pressure 2.1674441852434537e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.8356786973356598e+17
+dMdt [1.29366198e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [315256.90509678]
+
+dMdt_init in get_velocity_residuals [1877.44663347] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00015205222592317444 Myr
+T_goal 30000.0 K
+r_inner 0.050765721232260655 pc
+R2 0.09189808793843983 pc
+pressure 2.1674441852434537e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.8356786973356598e+17
+dMdt [1.1829586e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [304175.40830959]
+
+dMdt_init in get_velocity_residuals [1926.10564491] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00015205222592317444 Myr
+T_goal 30000.0 K
+r_inner 0.050765721232260655 pc
+R2 0.09189808793843983 pc
+pressure 2.1674441852434537e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.8356786973356598e+17
+dMdt [1.21361811e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [307304.62810398]
+
+dMdt_init in get_velocity_residuals [1927.20403422] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00015205222592317444 Myr
+T_goal 30000.0 K
+r_inner 0.050765721232260655 pc
+R2 0.09189808793843983 pc
+pressure 2.1674441852434537e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.8356786973356598e+17
+dMdt [1.21431019e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [307374.71406016]
+
+dMdt_init in get_velocity_residuals [1927.1940491] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00015205222592317444 Myr
+T_goal 30000.0 K
+r_inner 0.050765721232260655 pc
+R2 0.09189808793843983 pc
+pressure 2.1674441852434537e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.8356786973356598e+17
+dMdt [1.2143039e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [307374.07703861]
+
+dMdt_init in get_velocity_residuals [1927.19410725] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00015205222592317444 Myr
+T_goal 30000.0 K
+r_inner 0.050765721232260655 pc
+R2 0.09189808793843983 pc
+pressure 2.1674441852434537e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 2.8356786973356598e+17
+dMdt [1.21430393e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [307374.08074822]
+
+
+second checkpoint
+
+
+r_array: [0.09189799 0.09189769 0.09189739 ... 0.05076681 0.05076627 0.05076572] pc
+T_array: [  307374.08074822   572667.34245554   731473.17187476 ...
+ 60991661.99741023 60992147.50769777 60992633.02272999] K
+n_array: [7.17651971e+60 3.85193285e+60 3.01566241e+60 ... 3.61668477e+58
+ 3.61665598e+58 3.61662719e+58] 1 / pc3
+index_CIE_switch: 1
+307374.0807482185 K
+572667.3424555358 K
+731473.1718747633 K
+
+
+1st zone done
+
+
+r_bubble: [0.09189798 0.09189769 0.09189739 ... 0.05076681 0.05076627 0.05076572] pc
+T_bubble: [  316227.76601684   572667.34245554   731473.17187476 ...
+ 60991661.99741023 60992147.50769777 60992633.02272999] K
+n_bubble: [237426.66324892 131107.35979827 102643.41359179 ...   1231.00274453
+   1230.99294549   1230.98314651] 1 / cm3
+inside cz, not well-resolved
+lowres_r_conduction: [0.09189799 0.09189798] pc
+
+
+2nd zone done
+
+
+non-CIE
+[[ 5.38786225  5.38828304  5.38870423 ...  6.85041445  6.86279045
+   6.87552949]
+ [ 5.48766724  5.48724645  5.48682526 ...  4.02511504  4.01273904
+   4.        ]
+ [15.72747704 15.72747704 15.72747704 ... 15.72747476 15.72747476
+  15.72747475]]
+CIE
+
+
+3rd zone done
+
+
+rgoal 0.08270827914459584 pc
+
+
+final
+
+
+
+
+Finish bubble
+
+
+
+
+here calculate_bubble_shell
+
+
+
+
+we are now in shell_structure.
+
+
+rShell0: 2.8356786973356598e+17 cm
+pBubble: 33496581.834278017 solMass / (Myr2 pc)
+mBubble: 0.21749560965627776 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 2.0332594837492784e+33 g
+max_shellThickness: 2.839330927342384e+17 cm
+nShell0: 7508090.3312037205 1 / cm3
+rShell_step: 365223000672.416 cm
+
+
+loop 3, r0: 0.1111197111116899 pc.
+
+
+conditions: r0 < rfinal: 0.1111197111116899 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.00020205222592317566 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.00030205222592317565 Myr
+dt_real: 9.999999999999999e-05 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.1111197111116899 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 3.3569941226424746e+48 erg
+vw 3656.2004322855196 km / s
+press 0.00020205222592317566 Myr
+press 1.568357944897689e-05 g / (cm s2)
+dMdt_factor [1.60136304]
+
+
+---dMdt_init befrore get_velocity_residuals--- [1800.74657306] solMass / Myr
+
+dMdt_init in get_velocity_residuals [1800.74657306] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00020205222592317566 Myr
+T_goal 30000.0 K
+r_inner 0.059679053671307394 pc
+R2 0.1111197111116899 pc
+pressure 1.568357944897689e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.428796014391387e+17
+dMdt [1.13463073e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [256974.71642612]
+
+dMdt_init in get_velocity_residuals [1800.74657306] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00020205222592317566 Myr
+T_goal 30000.0 K
+r_inner 0.059679053671307394 pc
+R2 0.1111197111116899 pc
+pressure 1.568357944897689e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.428796014391387e+17
+dMdt [1.13463073e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [256974.71642612]
+
+dMdt_init in get_velocity_residuals [1800.74657306] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00020205222592317566 Myr
+T_goal 30000.0 K
+r_inner 0.059679053671307394 pc
+R2 0.1111197111116899 pc
+pressure 1.568357944897689e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.428796014391387e+17
+dMdt [1.13463073e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [256974.71642612]
+
+dMdt_init in get_velocity_residuals [1800.7465999] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00020205222592317566 Myr
+T_goal 30000.0 K
+r_inner 0.059679053671307394 pc
+R2 0.1111197111116899 pc
+pressure 1.568357944897689e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.428796014391387e+17
+dMdt [1.13463074e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [256974.71795781]
+
+dMdt_init in get_velocity_residuals [1951.19673793] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00020205222592317566 Myr
+T_goal 30000.0 K
+r_inner 0.059679053671307394 pc
+R2 0.1111197111116899 pc
+pressure 1.568357944897689e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.428796014391387e+17
+dMdt [1.22942773e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [265356.53110374]
+
+dMdt_init in get_velocity_residuals [1966.3089253] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00020205222592317566 Myr
+T_goal 30000.0 K
+r_inner 0.059679053671307394 pc
+R2 0.1111197111116899 pc
+pressure 1.568357944897689e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.428796014391387e+17
+dMdt [1.23894975e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [266176.71252862]
+
+dMdt_init in get_velocity_residuals [1965.83977712] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00020205222592317566 Myr
+T_goal 30000.0 K
+r_inner 0.059679053671307394 pc
+R2 0.1111197111116899 pc
+pressure 1.568357944897689e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.428796014391387e+17
+dMdt [1.23865415e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [266151.30751559]
+
+dMdt_init in get_velocity_residuals [1965.84100893] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00020205222592317566 Myr
+T_goal 30000.0 K
+r_inner 0.059679053671307394 pc
+R2 0.1111197111116899 pc
+pressure 1.568357944897689e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.428796014391387e+17
+dMdt [1.23865493e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [266151.37422444]
+
+dMdt_init in get_velocity_residuals [1965.8410433] solMass / Myr
+params in get_velocity_residuals
+t_now 0.00020205222592317566 Myr
+T_goal 30000.0 K
+r_inner 0.059679053671307394 pc
+R2 0.1111197111116899 pc
+pressure 1.568357944897689e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.428796014391387e+17
+dMdt [1.23865495e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [266151.37608587]
+
+
+second checkpoint
+
+
+r_array: [0.11111961 0.11111924 0.11111887 ... 0.05968044 0.05967974 0.05967905] pc
+T_array: [  266151.37608587   549506.18443651   706182.30154195 ...
+ 58262252.86616799 58262732.95112504 58263213.04133009] K
+n_array: [5.99721577e+60 2.90473024e+60 2.26027646e+60 ... 2.73962497e+58
+ 2.73960240e+58 2.73957983e+58] 1 / pc3
+index_CIE_switch: 1
+266151.37608587334 K
+549506.184436515 K
+706182.3015419452 K
+
+
+1st zone done
+
+
+r_bubble: [0.11111956 0.11111924 0.11111887 ... 0.05968044 0.05967974 0.05967905] pc
+T_bubble: [  316227.76601684   549506.18443651   706182.30154195 ...
+ 58262252.86616799 58262732.95112504 58263213.04133009] K
+n_bubble: [171801.4222337   98867.64060206  76932.51421461 ...    932.47990386
+    932.47222023    932.46453664] 1 / cm3
+inside cz, not well-resolved
+lowres_r_conduction: [0.11111961 0.11111956] pc
+
+
+2nd zone done
+
+
+non-CIE
+[[ 5.30989804  5.31031664  5.31073564 ...  6.71330771  6.72403147
+   6.73502675]
+ [ 5.42512872  5.42471012  5.42429112 ...  4.02171905  4.01099528
+   4.        ]
+ [15.56250762 15.56250762 15.56250762 ... 15.56250574 15.56250574
+  15.56250574]]
+CIE
+
+
+3rd zone done
+
+
+rgoal 0.10000774000052091 pc
+
+
+final
+
+
+
+
+Finish bubble
+
+
+
+
+here calculate_bubble_shell
+
+
+
+
+we are now in shell_structure.
+
+
+rShell0: 3.428796014391387e+17 cm
+pBubble: 24238054.481114443 solMass / (Myr2 pc)
+mBubble: 0.29888764414192237 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 3.5945678977022e+33 g
+max_shellThickness: 3.4335663560927635e+17 cm
+nShell0: 5432837.9951478345 1 / cm3
+rShell_step: 477034170137.664 cm
+
+
+loop 4, r0: 0.1283528976373662 pc.
+
+
+conditions: r0 < rfinal: 0.1283528976373662 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.0002520522259231769 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.00035205222592317686 Myr
+dt_real: 9.999999999999999e-05 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.1283528976373662 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 4.1646260122773286e+48 erg
+vw 3656.2004322855196 km / s
+press 0.0002520522259231769 Myr
+press 1.2439278388860804e-05 g / (cm s2)
+dMdt_factor [1.7481778]
+
+
+---dMdt_init befrore get_velocity_residuals--- [2302.88666997] solMass / Myr
+
+dMdt_init in get_velocity_residuals [2302.88666997] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.45102371e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [252654.31740704]
+
+dMdt_init in get_velocity_residuals [2302.88666997] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.45102371e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [252654.31740704]
+
+dMdt_init in get_velocity_residuals [2302.88666997] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.45102371e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [252654.31740704]
+
+dMdt_init in get_velocity_residuals [2302.88670428] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.45102373e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [252654.31891298]
+
+dMdt_init in get_velocity_residuals [2065.03109591] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.30115351e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [241873.52608699]
+
+dMdt_init in get_velocity_residuals [2008.16013779] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.26531975e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [239186.70407138]
+
+dMdt_init in get_velocity_residuals [2005.41644719] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.26359098e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [239055.93292779]
+
+dMdt_init in get_velocity_residuals [2005.38766716] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.26357284e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [239054.56063096]
+
+dMdt_init in get_velocity_residuals [2005.38766307] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.26357284e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [239054.56043571]
+
+dMdt_init in get_velocity_residuals [2005.38766936] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.26357284e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [239054.56073587]
+
+dMdt_init in get_velocity_residuals [2005.38769704] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.26357286e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [239054.56205584]
+
+dMdt_init in get_velocity_residuals [2005.38766567] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0002520522259231769 Myr
+T_goal 30000.0 K
+r_inner 0.06701112800100481 pc
+R2 0.1283528976373662 pc
+pressure 1.2439278388860804e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 3.960556587590771e+17
+dMdt [1.26357284e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [239054.56056009]
+
+
+second checkpoint
+
+
+r_array: [0.1283528  0.12835236 0.12835193 ... 0.0670128  0.06701196 0.06701113] pc
+T_array: [  239054.56056009   540530.01898842   695832.14605826 ...
+ 56645701.69031408 56646185.05133388 56646668.41822478] K
+n_array: [5.29579733e+60 2.34211692e+60 1.81938203e+60 ... 2.23491715e+58
+ 2.23489808e+58 2.23487901e+58] 1 / pc3
+index_CIE_switch: 1
+239054.56056008744 K
+540530.0189884205 K
+695832.1460582624 K
+
+
+1st zone done
+
+
+r_bubble: [0.12835271 0.12835236 0.12835193 ... 0.0670128  0.06701196 0.06701113] pc
+T_bubble: [  316227.76601684   540530.01898842   695832.14605826 ...
+ 56645701.69031408 56646185.05133388 56646668.41822478] K
+n_bubble: [136262.62587056  79718.09937823  61925.89120053 ...    760.69365344
+    760.68716246    760.6806715 ] 1 / cm3
+inside cz, not well-resolved
+lowres_r_conduction: [0.1283528  0.12835271] pc
+
+
+2nd zone done
+
+
+non-CIE
+[[ 5.25587972  5.25629646  5.25671361 ...  6.61490454  6.62453152
+   6.63437675]
+ [ 5.37849703  5.37808029  5.37766315 ...  4.01947221  4.00984523
+   4.        ]
+ [15.43727837 15.43727837 15.43727836 ... 15.43727675 15.43727675
+  15.43727675]]
+CIE
+
+
+3rd zone done
+
+
+rgoal 0.1155176078736296 pc
+
+
+final
+
+
+
+
+Finish bubble
+
+
+
+
+here calculate_bubble_shell
+
+
+
+
+we are now in shell_structure.
+
+
+rShell0: 3.960556587590771e+17 cm
+pBubble: 19224176.998359013 solMass / (Myr2 pc)
+mBubble: 0.38507762035470366 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 5.53975314994988e+33 g
+max_shellThickness: 3.96623989784305e+17 cm
+nShell0: 4309002.577063675 1 / cm3
+rShell_step: 568331025227.904 cm
+
+
+loop 5, r0: 0.14399057186284134 pc.
+
+
+conditions: r0 < rfinal: 0.14399057186284134 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.000302052225923151 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.000402052225923151 Myr
+dt_real: 9.999999999999999e-05 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.14399057186284134 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 4.992610376179161e+48 erg
+vw 3656.2004322855196 km / s
+press 0.000302052225923151 Myr
+press 1.0428645983305543e-05 g / (cm s2)
+dMdt_factor [1.522339]
+
+
+---dMdt_init befrore get_velocity_residuals--- [1669.22140226] solMass / Myr
+
+dMdt_init in get_velocity_residuals [1669.22140226] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.05175815e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [202619.18875224]
+
+dMdt_init in get_velocity_residuals [1669.22140226] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.05175815e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [202619.18875224]
+
+dMdt_init in get_velocity_residuals [1669.22140226] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.05175815e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [202619.18875224]
+
+dMdt_init in get_velocity_residuals [1669.22142714] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.05175817e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [202619.18995994]
+
+dMdt_init in get_velocity_residuals [1844.76779491] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.16236802e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [210887.90755101]
+
+dMdt_init in get_velocity_residuals [2059.36638183] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.29758424e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [220378.10379281]
+
+dMdt_init in get_velocity_residuals [2041.68698656] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.28644465e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [219619.37873453]
+
+dMdt_init in get_velocity_residuals [2042.33199255] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.28685106e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [219647.12880417]
+
+dMdt_init in get_velocity_residuals [2042.33409853] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.28685238e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [219647.2194012]
+
+dMdt_init in get_velocity_residuals [2042.33404428] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.28685235e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [219647.21706757]
+
+dMdt_init in get_velocity_residuals [2042.33407443] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.28685237e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [219647.21836439]
+
+dMdt_init in get_velocity_residuals [2042.33405502] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.28685236e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [219647.21752937]
+
+dMdt_init in get_velocity_residuals [2042.33406151] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000302052225923151 Myr
+T_goal 30000.0 K
+r_inner 0.07318642946115621 pc
+R2 0.14399057186284134 pc
+pressure 1.0428645983305543e-05 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.4430847954329114e+17
+dMdt [1.28685236e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [219647.21780848]
+
+
+second checkpoint
+
+
+r_array: [0.14399047 0.14398998 0.14398948 ... 0.07318838 0.0731874  0.07318643] pc
+T_array: [  219647.21780848   533431.91523186   687281.61351855 ...
+ 55577105.36786162 55577595.68958788 55578086.01785801] K
+n_array: [4.83209452e+60 1.98967494e+60 1.54428126e+60 ... 1.90970024e+58
+ 1.90968340e+58 1.90966655e+58] 1 / pc3
+index_CIE_switch: 1
+219647.21780848037 K
+533431.9152318572 K
+687281.6135185461 K
+
+
+1st zone done
+
+
+r_bubble: [0.14399035 0.14398998 0.14398948 ... 0.07318838 0.0731874  0.07318643] pc
+T_bubble: [  316227.76601684   533431.91523186   687281.61351855 ...
+ 55577105.36786162 55577595.68958788 55578086.01785801] K
+n_bubble: [114237.71070452  67722.11226857  52562.34902899 ...    650.00031599
+    649.9945815     649.98884703] 1 / cm3
+inside cz, not well-resolved
+lowres_r_conduction: [0.14399047 0.14399035] pc
+
+
+2nd zone done
+
+
+non-CIE
+[[ 5.21608378  5.21649892  5.21691445 ...  6.53995369  6.54878983
+   6.55780949]
+ [ 5.34172571  5.34131057  5.34089504 ...  4.01785581  4.00901966
+   4.        ]
+ [15.33742154 15.33742153 15.33742153 ... 15.3374201  15.3374201
+  15.3374201 ]]
+CIE
+
+
+3rd zone done
+
+
+rgoal 0.12959151467655722 pc
+
+
+final
+
+
+
+
+Finish bubble
+
+
+
+
+here calculate_bubble_shell
+
+
+
+
+we are now in shell_structure.
+
+
+rShell0: 4.4430847954329114e+17 cm
+pBubble: 16116862.24627149 solMass / (Myr2 pc)
+mBubble: 0.47494656684698894 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 7.821238870918693e+33 g
+max_shellThickness: 4.449509812952554e+17 cm
+nShell0: 3612513.6050969665 1 / cm3
+rShell_step: 642501751964.288 cm
+
+
+loop 6, r0: 0.15840257055572343 pc.
+
+
+conditions: r0 < rfinal: 0.15840257055572343 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.0003520522259231251 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.0004520522259231251 Myr
+dt_real: 9.999999999999999e-05 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.15840257055572343 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 5.829423110565497e+48 erg
+vw 3656.2004322855196 km / s
+press 0.0003520522259231251 Myr
+press 9.049418471622813e-06 g / (cm s2)
+dMdt_factor [1.86261977]
+
+
+---dMdt_init befrore get_velocity_residuals--- [2822.50175597] solMass / Myr
+
+dMdt_init in get_velocity_residuals [2822.50175597] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0003520522259231251 Myr
+T_goal 30000.0 K
+r_inner 0.078565917469819 pc
+R2 0.15840257055572343 pc
+pressure 9.049418471622813e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.8877926081440026e+17
+dMdt [1.7784275e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [231625.38164554]
+
+dMdt_init in get_velocity_residuals [2822.50175597] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0003520522259231251 Myr
+T_goal 30000.0 K
+r_inner 0.078565917469819 pc
+R2 0.15840257055572343 pc
+pressure 9.049418471622813e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.8877926081440026e+17
+dMdt [1.7784275e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [231625.38164554]
+
+dMdt_init in get_velocity_residuals [2822.50175597] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0003520522259231251 Myr
+T_goal 30000.0 K
+r_inner 0.078565917469819 pc
+R2 0.15840257055572343 pc
+pressure 9.049418471622813e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.8877926081440026e+17
+dMdt [1.7784275e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [231625.38164554]
+
+dMdt_init in get_velocity_residuals [2822.50179803] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0003520522259231251 Myr
+T_goal 30000.0 K
+r_inner 0.078565917469819 pc
+R2 0.15840257055572343 pc
+pressure 9.049418471622813e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.8877926081440026e+17
+dMdt [1.77842752e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [231625.38302613]
+
+dMdt_init in get_velocity_residuals [955.71074676] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0003520522259231251 Myr
+T_goal 30000.0 K
+r_inner 0.078565917469819 pc
+R2 0.15840257055572343 pc
+pressure 9.049418471622813e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.8877926081440026e+17
+dMdt [6.02182892e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [150197.61876991]
+
+dMdt_init in get_velocity_residuals [1876.5758648] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0003520522259231251 Myr
+T_goal 30000.0 K
+r_inner 0.078565917469819 pc
+R2 0.15840257055572343 pc
+pressure 9.049418471622813e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.8877926081440026e+17
+dMdt [1.18240993e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [196733.76808396]
+
+dMdt_init in get_velocity_residuals [2161.81841214] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0003520522259231251 Myr
+T_goal 30000.0 K
+r_inner 0.078565917469819 pc
+R2 0.15840257055572343 pc
+pressure 9.049418471622813e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.8877926081440026e+17
+dMdt [1.36213814e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [208190.13372791]
+
+dMdt_init in get_velocity_residuals [2072.59122648] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0003520522259231251 Myr
+T_goal 30000.0 K
+r_inner 0.078565917469819 pc
+R2 0.15840257055572343 pc
+pressure 9.049418471622813e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.8877926081440026e+17
+dMdt [1.30591707e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [204709.46428165]
+
+dMdt_init in get_velocity_residuals [2075.74574607] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0003520522259231251 Myr
+T_goal 30000.0 K
+r_inner 0.078565917469819 pc
+R2 0.15840257055572343 pc
+pressure 9.049418471622813e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.8877926081440026e+17
+dMdt [1.3079047e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [204834.0359555]
+
+dMdt_init in get_velocity_residuals [2075.79338836] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0003520522259231251 Myr
+T_goal 30000.0 K
+r_inner 0.078565917469819 pc
+R2 0.15840257055572343 pc
+pressure 9.049418471622813e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.8877926081440026e+17
+dMdt [1.30793472e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [204835.9164741]
+
+dMdt_init in get_velocity_residuals [2075.79322843] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0003520522259231251 Myr
+T_goal 30000.0 K
+r_inner 0.078565917469819 pc
+R2 0.15840257055572343 pc
+pressure 9.049418471622813e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 4.8877926081440026e+17
+dMdt [1.30793462e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [204835.91016155]
+
+
+second checkpoint
+
+
+r_array: [0.15840247 0.15840192 0.15840137 ... 0.07856814 0.07856703 0.07856592] pc
+T_array: [  204835.91016155   525112.86273544   677154.36665578 ...
+ 54781848.39393051 54782346.72750884 54782845.06830466] K
+n_array: [4.49622233e+60 1.75388542e+60 1.36008544e+60 ... 1.68119153e+58
+ 1.68117623e+58 1.68116094e+58] 1 / pc3
+index_CIE_switch: 1
+204835.91016155377 K
+525112.862735437 K
+677154.3666557765 K
+
+
+1st zone done
+
+
+r_bubble: [0.15840232 0.15840192 0.15840137 ... 0.07856814 0.07856703 0.07856592] pc
+T_bubble: [  316227.76601684   525112.86273544   677154.36665578 ...
+ 54781848.39393051 54782346.72750884 54782845.06830466] K
+n_bubble: [99129.34536855 59696.59792623 46292.91779867 ...   572.22332491
+   572.21811962   572.21291434] 1 / cm3
+inside cz, not well-resolved
+lowres_r_conduction: [0.15840247 0.15840232] pc
+
+
+2nd zone done
+
+
+non-CIE
+[[ 5.18479614  5.18520985  5.18562394 ...  6.4795841   6.48781369
+   6.49620224]
+ [ 5.3114061   5.31099239  5.3105783  ...  4.01661813  4.00838855
+   4.        ]
+ [15.25456514 15.25456514 15.25456514 ... 15.25456384 15.25456384
+  15.25456384]]
+CIE
+
+
+3rd zone done
+
+
+rgoal 0.14256231350015108 pc
+
+
+final
+
+
+
+
+Finish bubble
+
+
+
+
+here calculate_bubble_shell
+
+
+
+
+we are now in shell_structure.
+
+
+rShell0: 4.8877926081440026e+17 cm
+pBubble: 13985346.817744829 solMass / (Myr2 pc)
+mBubble: 0.5675721821563076 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 1.0412620865333095e+34 g
+max_shellThickness: 4.894843337231925e+17 cm
+nShell0: 3134745.143260791 1 / cm3
+rShell_step: 705072908792.256 cm
+
+
+loop 7, r0: 0.17185251569426793 pc.
+
+
+conditions: r0 < rfinal: 0.17185251569426793 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.0004020522259230992 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.0005020522259230992 Myr
+dt_real: 0.00010000000000000005 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.17185251569426793 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 6.667902504589838e+48 erg
+vw 3656.2004322855196 km / s
+press 0.0004020522259230992 Myr
+press 8.034553517862509e-06 g / (cm s2)
+dMdt_factor [1.36985336]
+
+
+---dMdt_init befrore get_velocity_residuals--- [1333.11931447] solMass / Myr
+
+dMdt_init in get_velocity_residuals [1333.11931447] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [8.39983904e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [160755.23796478]
+
+dMdt_init in get_velocity_residuals [1333.11931447] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [8.39983904e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [160755.23796478]
+
+dMdt_init in get_velocity_residuals [1333.11931447] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [8.39983904e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [160755.23796478]
+
+dMdt_init in get_velocity_residuals [1333.11933434] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [8.39983916e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [160755.23892295]
+
+dMdt_init in get_velocity_residuals [349.29667162] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [2.20088014e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [94079.5655808]
+
+dMdt_init in get_velocity_residuals [1825.0306359] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.14993185e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [182274.36253804]
+
+dMdt_init in get_velocity_residuals [2171.61858602] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.36831313e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [195402.87279656]
+
+dMdt_init in get_velocity_residuals [2101.80113797] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.32432192e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [192865.33393061]
+
+dMdt_init in get_velocity_residuals [2105.37936537] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.32657652e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [192996.60493661]
+
+dMdt_init in get_velocity_residuals [2105.42097925] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.32660274e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [192998.13079752]
+
+dMdt_init in get_velocity_residuals [2105.42095753] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.32660272e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [192998.13000111]
+
+dMdt_init in get_velocity_residuals [2105.42101568] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.32660276e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [192998.13213329]
+
+dMdt_init in get_velocity_residuals [2105.42101063] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.32660276e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [192998.13194788]
+
+dMdt_init in get_velocity_residuals [2105.42071197] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.32660257e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [192998.12099692]
+
+dMdt_init in get_velocity_residuals [2105.42095919] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.32660273e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [192998.13006197]
+
+dMdt_init in get_velocity_residuals [2105.42096898] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.32660273e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [192998.13042084]
+
+dMdt_init in get_velocity_residuals [2105.42096287] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004020522259230992 Myr
+T_goal 30000.0 K
+r_inner 0.08338033743955438 pc
+R2 0.17185251569426793 pc
+pressure 8.034553517862509e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.302814550006959e+17
+dMdt [1.32660273e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [192998.13019691]
+
+
+second checkpoint
+
+
+r_array: [0.17185242 0.17185181 0.17185121 ... 0.08338282 0.08338158 0.08338034] pc
+T_array: [  192998.13019691   516730.95707829   667069.79974575 ...
+ 54139194.07365078 54139700.38736039 54140206.7089396 ] K
+n_array: [4.23683790e+60 1.58245172e+60 1.22581144e+60 ... 1.51036935e+58
+ 1.51035522e+58 1.51034110e+58] 1 / pc3
+index_CIE_switch: 1
+192998.13019691387 K
+516730.957078287 K
+667069.799745753 K
+
+
+1st zone done
+
+
+r_bubble: [0.17185224 0.17185181 0.17185121 ... 0.08338282 0.08338158 0.08338034] pc
+T_bubble: [  316227.76601684   516730.95707829   667069.79974575 ...
+ 54139194.07365078 54139700.38736039 54140206.7089396 ] K
+n_bubble: [88012.28864063 53861.54833111 41722.664449   ...   514.08097027
+   514.07616259   514.07135493] 1 / cm3
+inside cz, not well-resolved
+lowres_r_conduction: [0.17185242 0.17185224] pc
+
+
+2nd zone done
+
+
+non-CIE
+[[ 5.15899021  5.15940261  5.1598154  ...  6.42891692  6.43665984
+   6.44454331]
+ [ 5.2855531   5.2851407   5.28472791 ...  4.0156264   4.00788348
+   4.        ]
+ [15.18377776 15.18377776 15.18377776 ... 15.18377657 15.18377657
+  15.18377656]]
+CIE
+
+
+3rd zone done
+
+
+rgoal 0.15466726412484114 pc
+
+
+final
+
+
+
+
+Finish bubble
+
+
+
+
+here calculate_bubble_shell
+
+
+
+
+we are now in shell_structure.
+
+
+rShell0: 5.302814550006959e+17 cm
+pBubble: 12416932.405700605 solMass / (Myr2 pc)
+mBubble: 0.662186595607029 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 1.3296614033670078e+34 g
+max_shellThickness: 5.310413763509878e+17 cm
+nShell0: 2783192.941885447 1 / cm3
+rShell_step: 759921350291.904 cm
+
+
+loop 8, r0: 0.18452575096799675 pc.
+
+
+conditions: r0 < rfinal: 0.18452575096799675 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.0004520522259230733 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.0005520522259230734 Myr
+dt_real: 0.00010000000000000005 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.18452575096799675 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 7.503712550246428e+48 erg
+vw 3656.2004322855196 km / s
+press 0.0004520522259230733 Myr
+press 7.249907521130927e-06 g / (cm s2)
+dMdt_factor [2.16343574]
+
+
+---dMdt_init befrore get_velocity_residuals--- [4244.72671593] solMass / Myr
+
+dMdt_init in get_velocity_residuals [4244.72671593] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [2.67455589e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [241344.02331619]
+
+dMdt_init in get_velocity_residuals [4244.72671593] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [2.67455589e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [241344.02331619]
+
+dMdt_init in get_velocity_residuals [4244.72671593] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [2.67455589e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [241344.02331619]
+
+dMdt_init in get_velocity_residuals [4244.72677918] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [2.67455593e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [241344.02475472]
+
+dMdt_init in get_velocity_residuals [3612.74293346] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [2.27634982e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [226272.34542142]
+
+dMdt_init in get_velocity_residuals [2368.51082861] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.49237278e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [191111.49256302]
+
+dMdt_init in get_velocity_residuals [2169.47444725] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.36696213e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [184517.88593581]
+
+dMdt_init in get_velocity_residuals [2132.72186843] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.34380473e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [183261.12290287]
+
+dMdt_init in get_velocity_residuals [2131.27572852] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.34289353e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [183211.40706164]
+
+dMdt_init in get_velocity_residuals [2131.26594449] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.34288737e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [183211.07063436]
+
+dMdt_init in get_velocity_residuals [2131.26599011] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.3428874e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [183211.07220326]
+
+dMdt_init in get_velocity_residuals [2131.26597003] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.34288738e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [183211.07151278]
+
+dMdt_init in get_velocity_residuals [2131.26597581] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.34288739e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [183211.07171128]
+
+dMdt_init in get_velocity_residuals [2131.26597299] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.34288739e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [183211.07161445]
+
+dMdt_init in get_velocity_residuals [2131.26600756] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.34288741e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [183211.07280331]
+
+dMdt_init in get_velocity_residuals [2131.26598673] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.34288739e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [183211.07208702]
+
+dMdt_init in get_velocity_residuals [2131.26597276] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0004520522259230733 Myr
+T_goal 30000.0 K
+r_inner 0.08777650589622331 pc
+R2 0.18452575096799675 pc
+pressure 7.249907521130927e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 5.6938697296980646e+17
+dMdt [1.34288739e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [183211.07160646]
+
+
+second checkpoint
+
+
+r_array: [0.18452565 0.184525   0.18452435 ... 0.08777925 0.08777788 0.08777651] pc
+T_array: [  183211.07160646   509567.55001983   658560.54107389 ...
+ 53591261.24662745 53591775.08419725 53592288.93025803] K
+n_array: [4.02729974e+60 1.44798447e+60 1.12039191e+60 ... 1.37680264e+58
+ 1.37678944e+58 1.37677624e+58] 1 / pc3
+index_CIE_switch: 1
+183211.07160645668 K
+509567.55001983466 K
+658560.5410738897 K
+
+
+1st zone done
+
+
+r_bubble: [0.18452544 0.184525   0.18452435 ... 0.08777925 0.08777788 0.08777651] pc
+T_bubble: [  316227.76601684   509567.55001983   658560.54107389 ...
+ 53591261.24662745 53591775.08419725 53592288.93025803] K
+n_bubble: [79417.10164094 49284.7172754  38134.52381233 ...   468.61917505
+   468.61468194   468.61018883] 1 / cm3
+inside cz, not well-resolved
+lowres_r_conduction: [0.18452565 0.18452544] pc
+
+
+2nd zone done
+
+
+non-CIE
+[[ 5.13696232  5.13737351  5.1377851  ...  6.38510928  6.39244858
+   6.39991403]
+ [ 5.26295171  5.26254052  5.26212893 ...  4.01480475  4.00746546
+   4.        ]
+ [15.12197555 15.12197555 15.12197555 ... 15.12197444 15.12197444
+  15.12197444]]
+CIE
+
+
+3rd zone done
+
+
+rgoal 0.16607317587119708 pc
+
+
+final
+
+
+
+
+Finish bubble
+
+
+
+
+here calculate_bubble_shell
+
+
+
+
+we are now in shell_structure.
+
+
+rShell0: 5.6938697296980646e+17 cm
+pBubble: 11204307.922938855 solMass / (Myr2 pc)
+mBubble: 0.7581921673253637 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 1.6460549337456774e+34 g
+max_shellThickness: 5.701964973658532e+17 cm
+nShell0: 2511389.263544527 1 / cm3
+rShell_step: 809524396046.72 cm
+
+
+loop 9, r0: 0.1965678338562705 pc.
+
+
+conditions: r0 < rfinal: 0.1965678338562705 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.0005021022259230473 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.0006021022259230474 Myr
+dt_real: 0.00010000000000000005 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.1965678338562705 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 8.334901971121745e+48 erg
+vw 3656.2004322855196 km / s
+press 0.0005021022259230473 Myr
+press 6.620274299995468e-06 g / (cm s2)
+dMdt_factor [1.08625532]
+
+
+---dMdt_init befrore get_velocity_residuals--- [768.67002034] solMass / Myr
+
+dMdt_init in get_velocity_residuals [768.67002034] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [4.84330575e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [115831.92005778]
+
+dMdt_init in get_velocity_residuals [768.67002034] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [4.84330575e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [115831.92005778]
+
+dMdt_init in get_velocity_residuals [768.67002034] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [4.84330575e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [115831.92005778]
+
+dMdt_init in get_velocity_residuals [768.6700318] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [4.84330582e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [115831.92074819]
+
+dMdt_init in get_velocity_residuals [68.25684692] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [4.30078929e+21]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [43973.47298181]
+
+dMdt_init in get_velocity_residuals [1118.87660705] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [7.04991916e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [134600.02970102]
+
+dMdt_init in get_velocity_residuals [1819.28978048] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [1.1463146e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [163490.69127735]
+
+dMdt_init in get_velocity_residuals [2285.38320867] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [1.43999497e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [179108.37390715]
+
+dMdt_init in get_velocity_residuals [2145.17654643] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [1.35165229e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [174629.45322055]
+
+dMdt_init in get_velocity_residuals [2153.54038429] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [1.35692225e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [174901.48073059]
+
+dMdt_init in get_velocity_residuals [2153.73188823] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [1.35704291e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [174907.70182173]
+
+dMdt_init in get_velocity_residuals [2153.73156715] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005021022259230473 Myr
+T_goal 30000.0 K
+r_inner 0.09185578867062215 pc
+R2 0.1965678338562705 pc
+pressure 6.620274299995468e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.065449581726136e+17
+dMdt [1.35704271e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [174907.69139175]
+
+
+second checkpoint
+
+
+r_array: [0.19656773 0.19656704 0.19656634 ... 0.09185878 0.09185728 0.09185579] pc
+T_array: [  174907.69139175   503779.18055882   651713.33452116 ...
+ 53105343.04830703 53105863.79828082 53106384.5573331 ] K
+n_array: [3.85212418e+60 1.33742356e+60 1.03383821e+60 ... 1.26873514e+58
+ 1.26872270e+58 1.26871025e+58] 1 / pc3
+index_CIE_switch: 1
+174907.69139174532 K
+503779.1805588223 K
+651713.3345211553 K
+
+
+1st zone done
+
+
+r_bubble: [0.1965675  0.19656704 0.19656634 ... 0.09185878 0.09185728 0.09185579] pc
+T_bubble: [  316227.76601684   503779.18055882   651713.33452116 ...
+ 53105343.04830703 53105863.79828082 53106384.5573331 ] K
+n_bubble: [72519.95910861 45521.58077495 35188.51532691 ...   431.8364847
+   431.83225016   431.82801563] 1 / cm3
+inside cz, not well-resolved
+lowres_r_conduction: [0.19656773 0.1965675 ] pc
+
+
+2nd zone done
+
+
+non-CIE
+[[ 5.11764864  5.11805871  5.11846917 ...  6.34635111  6.35334706
+   6.36045755]
+ [ 5.24280891  5.24239884  5.24198838 ...  4.01410644  4.00711049
+   4.        ]
+ [15.06706458 15.06706458 15.06706458 ... 15.06706354 15.06706354
+  15.06706354]]
+CIE
+
+
+3rd zone done
+
+
+rgoal 0.17691105047064346 pc
+
+
+final
+
+
+
+
+Finish bubble
+
+
+
+
+here calculate_bubble_shell
+
+
+
+
+we are now in shell_structure.
+
+
+rShell0: 6.065449581726136e+17 cm
+pBubble: 10231246.615942614 solMass / (Myr2 pc)
+mBubble: 0.8552827407373444 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 1.989805999389705e+34 g
+max_shellThickness: 6.074004913326877e+17 cm
+nShell0: 2293282.4660548004 1 / cm3
+rShell_step: 855533160074.112 cm
+
+
+loop 10, r0: 0.20806560133103394 pc.
+
+
+conditions: r0 < rfinal: 0.20806560133103394 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.0005521522259230757 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.0006521522259230757 Myr
+dt_real: 0.00010000000000000005 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.20806560133103394 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 9.158777388035026e+48 erg
+vw 3656.2004322855196 km / s
+press 0.0005521522259230757 Myr
+press 6.101497027699982e-06 g / (cm s2)
+dMdt_factor [3.04357178]
+
+
+---dMdt_init befrore get_velocity_residuals--- [10221.97940534] solMass / Myr
+
+dMdt_init in get_velocity_residuals [10221.97940534] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [6.44075746e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [311598.96863019]
+
+dMdt_init in get_velocity_residuals [10221.97940534] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [6.44075746e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [311598.96863019]
+
+dMdt_init in get_velocity_residuals [10221.97940534] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [6.44075746e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [311598.96863019]
+
+dMdt_init in get_velocity_residuals [10221.97955766] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [6.44075755e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [311598.97048746]
+
+dMdt_init in get_velocity_residuals [6041.23978729] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [3.80651913e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [252483.1736045]
+
+dMdt_init in get_velocity_residuals [3301.25356787] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [2.08008378e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [198268.42848643]
+
+dMdt_init in get_velocity_residuals [2453.6743508] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [1.54603338e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [176079.49342804]
+
+dMdt_init in get_velocity_residuals [2209.96611292] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [1.39247548e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [168863.68276677]
+
+dMdt_init in get_velocity_residuals [2174.84134709] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [1.37034375e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [167784.96562677]
+
+dMdt_init in get_velocity_residuals [2173.21854387] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [1.36932124e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [167734.87591171]
+
+dMdt_init in get_velocity_residuals [2173.20803377] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [1.36931462e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [167734.55143219]
+
+dMdt_init in get_velocity_residuals [2173.20799978] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [1.3693146e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [167734.55038269]
+
+dMdt_init in get_velocity_residuals [2173.20801988] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [1.36931461e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [167734.5510034]
+
+dMdt_init in get_velocity_residuals [2173.20806615] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [1.36931464e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [167734.55243196]
+
+dMdt_init in get_velocity_residuals [2173.20808321] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [1.36931465e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [167734.55295863]
+
+dMdt_init in get_velocity_residuals [2173.2086063] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [1.36931498e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [167734.5691081]
+
+dMdt_init in get_velocity_residuals [2173.20805197] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0005521522259230757 Myr
+T_goal 30000.0 K
+r_inner 0.09568113543709256 pc
+R2 0.20806560133103394 pc
+pressure 6.101497027699982e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.420233615066917e+17
+dMdt [1.36931463e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [167734.55199419]
+
+
+second checkpoint
+
+
+r_array: [0.2080655  0.20806476 0.20806401 ... 0.09568437 0.09568275 0.09568114] pc
+T_array: [  167734.55199419   499238.34068229   646315.80629845 ...
+ 52663056.53117524 52663583.53022283 52664110.53890093] K
+n_array: [3.70209086e+60 1.24383186e+60 9.60781936e+59 ... 1.17913504e+58
+ 1.17912324e+58 1.17911144e+58] 1 / pc3
+index_CIE_switch: 1
+167734.55199419428 K
+499238.34068229236 K
+646315.8062984463 K
+
+
+1st zone done
+
+
+r_bubble: [0.20806524 0.20806476 0.20806401 ... 0.09568437 0.09568275 0.09568114] pc
+T_bubble: [  316227.76601684   499238.34068229   646315.80629845 ...
+ 52663056.53117524 52663583.53022283 52664110.53890093] K
+n_bubble: [66837.15732903 42336.02114811 32701.91560086 ...   401.33950327
+   401.33548711   401.33147095] 1 / cm3
+inside cz, not well-resolved
+lowres_r_conduction: [0.2080655  0.20806524] pc
+
+
+2nd zone done
+
+
+non-CIE
+[[ 5.10039544  5.10080444  5.10121383 ...  6.31151569  6.31821436
+   6.32501797]
+ [ 5.22462253  5.22421353  5.22380414 ...  4.01350228  4.00680361
+   4.        ]
+ [15.01768889 15.01768889 15.01768889 ... 15.01768791 15.01768791
+  15.01768791]]
+CIE
+
+
+3rd zone done
+
+
+rgoal 0.18725904119793055 pc
+
+
+final
+
+
+
+
+Finish bubble
+
+
+
+
+here calculate_bubble_shell
+
+
+
+
+we are now in shell_structure.
+
+
+rShell0: 6.420233615066917e+17 cm
+pBubble: 9429506.69232574 solMass / (Myr2 pc)
+mBubble: 0.9530666007893038 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 2.3597947917415057e+34 g
+max_shellThickness: 6.429223306931162e+17 cm
+nShell0: 2113576.4949073833 1 / cm3
+rShell_step: 898969186424.448 cm
+
+
+loop 11, r0: 0.21909545603845615 pc.
+
+
+conditions: r0 < rfinal: 0.21909545603845615 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.000602202225923104 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.0007022022259231041 Myr
+dt_real: 0.00010000000000000005 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.21909545603845615 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 9.974021027261661e+48 erg
+vw 3656.2004322855196 km / s
+press 0.000602202225923104 Myr
+press 5.664747875877597e-06 g / (cm s2)
+dMdt_factor [0.64706789]
+
+
+---dMdt_init befrore get_velocity_residuals--- [215.2655001] solMass / Myr
+
+dMdt_init in get_velocity_residuals [215.2655001] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.35636438e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [63830.06933253]
+
+dMdt_init in get_velocity_residuals [215.2655001] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.35636438e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [63830.06933253]
+
+dMdt_init in get_velocity_residuals [215.2655001] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.35636438e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [63830.06933253]
+
+dMdt_init in get_velocity_residuals [215.2655033] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.3563644e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [63830.06971298]
+
+dMdt_init in get_velocity_residuals [-276.36388478] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.74133862e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [70538.79862104]
+
+dMdt_init in get_velocity_residuals [-522.17857722] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [3.29019012e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [90983.60976566]
+
+dMdt_init in get_velocity_residuals [-1013.8079621] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [6.38789312e+22]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [118636.36247687]
+
+dMdt_init in get_velocity_residuals [-1997.06673186] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.25832991e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [155593.90264001]
+
+dMdt_init in get_velocity_residuals [-2276.76221193] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.43456298e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [163969.32659431]
+
+dMdt_init in get_velocity_residuals [-2186.98471561] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.37799516e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [161351.81028597]
+
+dMdt_init in get_velocity_residuals [-2190.04544706] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.37992369e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [161442.09850108]
+
+dMdt_init in get_velocity_residuals [-2190.09176735] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.37995288e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [161443.46431688]
+
+dMdt_init in get_velocity_residuals [-2190.09173887] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.37995286e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [161443.46347738]
+
+dMdt_init in get_velocity_residuals [-2190.07452139] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.37994201e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [161442.95579891]
+
+dMdt_init in get_velocity_residuals [-2190.09170624] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.37995284e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [161443.4625151]
+
+dMdt_init in get_velocity_residuals [-2190.09172208] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.37995285e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [161443.46298225]
+
+dMdt_init in get_velocity_residuals [-2190.09173256] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.37995285e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [161443.46329117]
+
+dMdt_init in get_velocity_residuals [-2190.09173729] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.37995286e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [161443.46343079]
+
+dMdt_init in get_velocity_residuals [-2190.0917386] solMass / Myr
+params in get_velocity_residuals
+t_now 0.000602202225923104 Myr
+T_goal 30000.0 K
+r_inner 0.09930113896966095 pc
+R2 0.21909545603845615 pc
+pressure 5.664747875877597e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 6.760579369044915e+17
+dMdt [1.37995286e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+T [161443.4634693]
+
+
+second checkpoint
+
+
+r_array: [0.21909536 0.21909457 0.21909378 ... 0.09930461 0.09930287 0.09930114] pc
+T_array: [  161443.4634693    495641.88416013   641987.54541502 ...
+ 52252389.04174066 52252921.63241031 52253454.23322725] K
+n_array: [3.57102854e+60 1.16317695e+60 8.98022431e+59 ... 1.10333561e+58
+ 1.10332437e+58 1.10331312e+58] 1 / pc3
+index_CIE_switch: 1
+161443.4634693005 K
+495641.884160128 K
+641987.545415023 K
+
+
+1st zone done
+
+
+r_bubble: [0.21909507 0.21909457 0.21909378 ... 0.09930461 0.09930287 0.09930114] pc
+T_bubble: [  316227.76601684   495641.88416013   641987.54541502 ...
+ 52252389.04174066 52252921.63241031 52253454.23322725] K
+n_bubble: [62052.9098499  39590.78859917 30565.78464305 ...   375.53982538
+   375.53599768   375.53216997] 1 / cm3
+inside cz, not well-resolved
+lowres_r_conduction: [0.21909536 0.21909507] pc
+
+
+2nd zone done
+
+
+non-CIE
+[[ 5.08474169  5.08514968  5.08555806 ...  6.27979044  6.28622787
+   6.29276215]
+ [ 5.20802047  5.20761247  5.2072041  ...  4.01297171  4.00653429
+   4.        ]
+ [14.9728227  14.9728227  14.9728227  ... 14.97282177 14.97282177
+  14.97282177]]
+CIE
+
+
+3rd zone done
+
+
+rgoal 0.19718591043461053 pc
+
+
+final
+
+
+
+
+Finish bubble
+
+
+
+
+here calculate_bubble_shell
+
+
+
+
+we are now in shell_structure.
+
+
+rShell0: 6.760579369044915e+17 cm
+pBubble: 8754536.429899959 solMass / (Myr2 pc)
+mBubble: 1.0513239768766498 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 2.7553291830664673e+34 g
+max_shellThickness: 6.769985134780946e+17 cm
+nShell0: 1962285.305667797 1 / cm3
+rShell_step: 940576573603.072 cm
+
+
+loop 12, r0: 0.22971755433398822 pc.
+
+
+conditions: r0 < rfinal: 0.22971755433398822 pc:19.58645811538505 pc
+conditions: tfinal - t0: 0.0030020522259231732 Myr:0.0006522522259231324 Myr
+dt_Emin: 0.0001 Myr
+tStop_i: 0.0007522522259231324 Myr
+dt_real: 0.00010000000000000005 Myr
+
+Calculate bubble and shell
+
+
+
+Here in get_bubbleproperties
+
+
+
+
+----- dMdt_init first ever guess -----
+params in get_init_dMdt()
+R2 0.22971755433398822 pc
+Lw 1.2217996601648814e+39 erg / s
+Eb 1.0779541045809533e+49 erg
+vw 3656.2004322855196 km / s
+press 0.0006522522259231324 Myr
+press 5.2905834946361966e-06 g / (cm s2)
+dMdt_factor [-6.58321027]
+
+
+---dMdt_init befrore get_velocity_residuals--- [nan] solMass / Myr
+
+dMdt_init in get_velocity_residuals [nan] solMass / Myr
+params in get_velocity_residuals
+t_now 0.0006522522259231324 Myr
+T_goal 30000.0 K
+r_inner 0.10275258018472169 pc
+R2 0.22971755433398822 pc
+pressure 5.2905834946361966e-06 g / (cm s2)
+Qi 5.395106225151268e+51 1 / s
+alpha 0.6
+beta 0.8
+delta -0.17142857142857143
+v0 0.0 km / s
+outputs in get_bubble_ODE_initial_conditions()
+R2 7.088343074834125e+17
+dMdt [nan]
+mu 1.0181176926808696e-24
+dR2 [nan]
+T [nan]

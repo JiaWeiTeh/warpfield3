@@ -402,6 +402,7 @@ frag_cf    1
 frag_cf_end    0.1
 
 # Take into account timescale for fragmentation?
+# For example, see _RT_instability() in run_energy_implicit_phase.py
 # Available values:
 # -- 0 no, approximate as instantaneous fragmentation
 # -- 1 yes

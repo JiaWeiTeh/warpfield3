@@ -38,10 +38,10 @@ to calculate values and to
 
 
 
-def fE_tot_part1(t, y, 
+def get_vdot(t, y, 
                  ODEpar, SB99f, 
-                 Eb0=1, cfs=False, 
-                 cf_reconstruct=1):
+                 Eb0=1, cfs=False, cf_reconstruct=1 #these three are unused, because we assume cf = 1 now.
+                 ):
     
     
     # Note:
@@ -51,7 +51,12 @@ def fE_tot_part1(t, y,
 
     # unpack current values of y (r, rdot, E, T)
     rShell, vShell, Ebubble, TBubble = y  
-
+    # Add units
+    rShell *= u.pc
+    vShell *= u.km/u.s
+    Ebubble *= u.erg
+    TBubble *= u.K
+    
     # unpack 'ODEpar' parameters
     mCloud = ODEpar['mCloud']
     mCluster = warpfield_params.mCluster
@@ -68,10 +73,10 @@ def fE_tot_part1(t, y,
     Lbol = SB99f['fLbol_cgs'](t) * u.erg / u.s
     Ln = SB99f['fLn_cgs'](t) * u.erg / u.s
     Li = SB99f['fLi_cgs'](t) * u.erg / u.s
-    Qi = SB99f['fQi_cgs'](t) * u.erg / u.s
+    Qi = SB99f['fQi_cgs'](t) / u.s
     
     # velocity from luminosity and change of momentum
-    v_wind = (2.*L_wind/pdot_wind).to(u.cm/u.s)    
+    v_wind = (2.*L_wind/pdot_wind).to(u.km/u.s)    
     
     # TODO!! check in the old version, which script updates [Rsh_max] and add it in.
     # It might have been removed cause I originally thought it was a useless additon.
@@ -101,61 +106,66 @@ def fE_tot_part1(t, y,
     if (rShell < ODEpar['Rsh_max']):
         mShell_dot = 0 * u.M_sun
         
-    # ----
-    # To future: this section should be used. However, im a lil too scared to change this cause it might break everything
-    # and then shi hits the fan and all hell break loose.
-    
-    
-    def calc_coveringf(t,tFRAG,ts):
-        """
-        estimate covering fraction cf (assume that after fragmentation, during 1 sound crossing time cf goes from 1 to 0)
-        if the shell covers the whole sphere: cf = 1
-        if there is no shell: cf = 0
         
-        Note: I think, since we set tFRAG ultra high, that means cf will almost always be 1. 
-        """
-        cfmin = 0.4
-        # simple slope
-        cf = 1. - ((t - tFRAG) / ts)**1.
-        cf[cf>1.0] = 1.0
-        cf[cf<cfmin] = cfmin
-        # return
-        return cf
-
-    # calculate covering fraction
-    # cf = calc_coveringf(np.array([t.value])*u.s,tFRAG,tSCR)
-
-
-    #----
-    
-    # If frag_cf is enabled, what is the final cover fraction at the end
-    # of the fragmentation process?
-
-    def coverfrac(E,E0,cfe):
-        if int(os.environ["Coverfrac?"])==1:
-            if (1-cfe)*(E/E0)+cfe < cfe:    # just to be safe, that 'overshooting' is not happening. 
-                return cfe
-            else:
-                return (1-cfe)*(E/E0)+cfe
-        else:
-            return 1
-    
-    
-    if cfs == True:
-        cf = coverfrac(Ebubble,Eb0,warpfield_params.frag_cf_end)
-        try:
-            tcf,cfv=np.loadtxt(ODEpar['mypath'] +"/FragmentationDetails/Coverfrac"+str(len(ODEpar['Mcluster_list']))+".txt", skiprows=1, delimiter='\t', usecols=(0,1), unpack=True)
-            tcf=np.append(tcf, t)
-            cfv=np.append(cfv, cf)
-            np.savetxt(ODEpar['mypath'] +"/FragmentationDetails/Coverfrac"+str(len(ODEpar['Mcluster_list']))+".txt", np.c_[tcf,cfv],delimiter='\t',header='Time'+'\t'+'Coverfraction (=1 for t<Time[0])')
-        except:
-            pass
-    elif cfs=='recon':     ##### coverfraction has to be considered again in the reconstruction of the data. 
-        cf = cf_reconstruct
-    else:
-        cf=1
         
-    #----
+    # ----TODO: in the future, uncomment this part and deal with cover fractions.
+    # for now, we assume no cover fraction, i.e., cf = 1
+    cf = 1
+    
+    # # ----
+    # # TODO future: this section should be used. However, im a lil too scared to change this cause it might break everything
+    # # and then shii hits the fan and all hell break loose.
+    
+    
+    # def calc_coveringf(t,tFRAG,ts):
+    #     """
+    #     estimate covering fraction cf (assume that after fragmentation, during 1 sound crossing time cf goes from 1 to 0)
+    #     if the shell covers the whole sphere: cf = 1
+    #     if there is no shell: cf = 0
+        
+    #     Note: I think, since we set tFRAG ultra high, that means cf will almost always be 1. 
+    #     """
+    #     cfmin = 0.4
+    #     # simple slope
+    #     cf = 1. - ((t - tFRAG) / ts)**1.
+    #     cf[cf>1.0] = 1.0
+    #     cf[cf<cfmin] = cfmin
+    #     # return
+    #     return cf
+
+    # # calculate covering fraction
+    # # cf = calc_coveringf(np.array([t.value])*u.s,tFRAG,tSCR)
+    
+    
+    # #----
+    # # OLD version
+    # # If frag_cf is enabled, what is the final cover fraction at the end
+    # # of the fragmentation process?
+
+    # def coverfrac(E,E0,cfe):
+    #     if int(os.environ["Coverfrac?"])==1:
+    #         if (1-cfe)*(E/E0)+cfe < cfe:    # just to be safe, that 'overshooting' is not happening. 
+    #             return cfe
+    #         else:
+    #             return (1-cfe)*(E/E0)+cfe
+    #     else:
+    #         return 1
+    
+    # if cfs == True:
+    #     cf = coverfrac(Ebubble,Eb0,warpfield_params.frag_cf_end)
+    #     try:
+    #         tcf,cfv=np.loadtxt(ODEpar['mypath'] +"/FragmentationDetails/Coverfrac"+str(len(ODEpar['Mcluster_list']))+".txt", skiprows=1, delimiter='\t', usecols=(0,1), unpack=True)
+    #         tcf=np.append(tcf, t)
+    #         cfv=np.append(cfv, cf)
+    #         np.savetxt(ODEpar['mypath'] +"/FragmentationDetails/Coverfrac"+str(len(ODEpar['Mcluster_list']))+".txt", np.c_[tcf,cfv],delimiter='\t',header='Time'+'\t'+'Coverfraction (=1 for t<Time[0])')
+    #     except:
+    #         pass
+    # elif cfs=='recon':     ##### coverfraction has to be considered again in the reconstruction of the data. 
+    #     cf = cf_reconstruct
+    # else:
+    #     cf=1
+        
+    # #----
         
         
     # gravity correction (self-gravity and gravity between shell and star cluster)
@@ -190,7 +200,7 @@ def fE_tot_part1(t, y,
     # calculate simplified shell structure (warpfield-internal shell structure, not cloudy)
     # We are setting mBubble = 0 here, since we are not interested in the potential. This can skip some calculations.
     shell_prop = shell_structure.shell_structure(rShell, press_bubble, 
-                                        0, 
+                                        0 * u.M_sun, 
                                         Ln, Li, Qi,
                                         mShell,
                                         f_cover = 1,
@@ -243,4 +253,4 @@ def fE_tot_part1(t, y,
     evolution_data = {'Msh': mShell, 'fabs_i': f_absorbed_ion, 'fabs_n': f_absorbed_neu,
               'fabs': f_absorbed, 'Pb': press_bubble, 'R1': R1, 'n0':nShellInner, 'nmax':nShell_max}
 
-    return vd.to(u.km/u.s), evolution_data
+    return vd.to(u.km/u.s**2), evolution_data

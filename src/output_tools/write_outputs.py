@@ -115,7 +115,7 @@ def write_evolution(data):
                             unit='erg', array = data['E']))
     # Shell_mass
     cols.append(fits.Column(name="M", format='1D', 
-                            unit='Msun', array = data['logMshell']))
+                            unit='log Msun', array = data['logMshell']))
     # Total cooling luminosity
     cols.append(fits.Column(name="LumC_t", format='1D', 
                             unit='erg/s', array = data['Lcool']))    
@@ -127,8 +127,14 @@ def write_evolution(data):
                             unit='erg/s', array = data['Lbcz']))   
     # Bubble cooling luminosity - intermediate zone
     cols.append(fits.Column(name="LumC_i", format='1D', 
-                            unit='erg/s', array = data['Lb3']))    
-        
+                            unit='erg/s', array = data['Lb3']))
+    # Bubble temperature
+    cols.append(fits.Column(name="T", format='1D', 
+                            unit='K', array = data['Tb'])) 
+    # dMdt factor
+    # fabs, fabs_n, fabs_i
+    # alpha, beta, delta
+    
     fitscols = fits.ColDefs(cols)
     
     # Create the binary table HDU

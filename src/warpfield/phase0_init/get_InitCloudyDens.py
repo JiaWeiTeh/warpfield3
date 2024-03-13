@@ -47,7 +47,7 @@ def create_InitCloudyDens(path2output,
     np.savetxt(full_path,
                np.transpose([logr, logn]), fmt='%.6e',
                delimiter = ',',
-               header="Density [log10(n)],Radius [log10(r)]", comments='')
+               header="Log10 radius [pc],Log10 density [1/cm3]", comments='')
     
     # TODO: make this sound better, and also check if the logr is in correct unit.
     return print(f'{cpr.FILE}Density for CLOUDY: {rel_path}{cpr.END}')

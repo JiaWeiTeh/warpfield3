@@ -1,0 +1,596 @@
+
+          ,          __     __   ______   ______   ______  ______  __   ______   __       _____    
+       \  :  /      /\ \  _ \ \ /\  __ \ /\  == \ /\  == \/\  ___\/\ \ /\  ___\ /\ \     /\  __-.  
+    `. __/ \__ .'   \ \ \/ ".\ \\ \  __ \\ \  __< \ \  _-/\ \  __\\ \ \\ \  __\ \ \ \____\ \ \/\ \ 
+    _ _\     /_ _    \ \__/".~\_\\ \_\ \_\\ \_\ \_\\ \_\   \ \_\   \ \_\\ \_____\\ \_____\\ \____- 
+       /_   _\        \/_/   \/_/ \/_/\/_/ \/_/ /_/ \/_/    \/_/    \/_/ \/_____/ \/_____/ \/____/ 
+     .'  \ /  `.      
+          '           © J.W. Teh, R.S. Klessen, S.O. Glover, K. Kreckel.                             
+        
+		      --------------------------------------------------
+		      Welcome to [32m]8;;https://github.com/JiaWeiTeh/warpfield3\WARPFIELD]8;;\[0m!
+
+		      Notes:
+		         - Documentation can be found [32m]8;;https://warpfield3.readthedocs.io/en/latest/\here]8;;\[0m.
+		         - [1m[96mBold text[0m indicates that a file is saved,
+		           and shows where it is saved.
+		         - [1m[94mWarning message[0m. Code runs still.
+		         - [1m[91mError encountered.[0m Code terminates.
+
+		      [Version 3.0] 2022. All rights reserved.
+		      --------------------------------------------------
+[5mLoading parameters:[0m
+	model name: example_pl
+	log_mCloud: 7.0 solMass
+	SFE: 0.01
+	metallicity: 1.0
+	density profile: pL_prof
+➳ [1m[96mSummary: outputs/example_pl/example_pl_summary.txt[0m
+➳ [1m[96mVerbose yaml: outputs/example_pl/example_pl_config.yaml[0m
+
+		      --------------------------------------------------
+		      Initialising bubble
+		      --------------------------------------------------
+Cloud radius is 19.58645811538505pc.
+Feedback parameters retrieved from Starburst99.
+➳ [1m[96mDensity for CLOUDY: outputs/example_pl/init_density_profile_col0.csv[0m
+➳ [1m[96mBubble structure tracking (radius): outputs/example_pl/bubble_structure.csv[0m
+
+
+we are now in shell_structure.
+
+
+rShell0: 1.7137156442940526e+18 cm
+pBubble: 2248084.4232403296 solMass / (Myr2 pc)
+mBubble: 0.0 solMass
+Ln: 251490715410.29745 pc2 solMass / Myr3
+Li: 321443686707.64545 pc2 solMass / Myr3
+Qi: 1.7025660421083365e+65 1 / Myr
+mShell_end: 4.487846859194238e+35 g
+max_shellThickness: 1.715935716634842e+18 cm
+nShell0: 503896.81566218275 1 / cm3
+rShell_step: 2220072340789.504 cm
+
+
+
+entering get_beta_delta_wrapper
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 4.2279860999297626e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 -0.17324214139737934 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+-0.17324214139737934 -0.24935272491212676
+these above should be unitless, because they are normalised.
+
+
+begin fast_wrapper!-------
+in sign loop 0.8300873221122109 -0.17851373971693396 0.8300873221122109 -0.17851373971693396 -0.24935272491212676 -0.17324214139737934
+in sign loop 0.8300873221122109 -0.17851373971693396 0.8300873221122109 -0.17851373971693396 -0.24935272491212676 -0.17324214139737934
+in sign loop 0.8300873221122109 -0.17851373971693396 0.8300873221122109 -0.17851373971693396 -0.24935272491212676 -0.17324214139737934
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 4.223867245087231e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 -0.17404755927932633 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 4.2279860999297626e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 -0.17324214139737934 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 3.7094674778548696e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 -0.2746354136314914 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 3.709467477855086e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 -0.27463541363144917 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 3.708096703418456e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 -0.2749034605244779 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 3.704830104390262e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 -0.27554222478567264 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 3.7094674778548696e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 -0.2746354136314914 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 4.0742770826695564e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 -0.20329903727035123 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 4.80389629229893e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 -0.060626284548070855 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.1107022760298844e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 -0.0006321757405494511 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+
+in get_Edot_Tdot_residual_fast()====================
+Here in get_bubbleproperties-----
+rgoal 0.49977000000000005 pc
+final result in get_bubble_properties
+L_total: 255555256.21456507 pc2 solMass / Myr3
+T_rgoal: 16897530.78068477 K
+L_bubble: 164013040.7884533 pc2 solMass / Myr3
+L_conduction: 42631228.546521984 pc2 solMass / Myr3
+L_intermediate: 48910986.879589766 pc2 solMass / Myr3
+dMdt_factor_out: [3.01929351]
+Tavg: 22839603.68917779 K
+mBubble: 6.060571891285626 solMass
+End get_bubble_properties----------
+
+
+
+
+Showing residuals--------
+Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
+T0 13525028.155578127 K T2 16897530.78068477 K
+second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+end get_Edot_Tdot_residual_fast()====================
+check for values for error before ending fast_wrapper solver
+[beta_fast, delta_fast] 0.6515388835278839 -0.13898150502866669
+Edot_residual_guess, T_residual_guess -0.17324214139737934 -0.24935272491212676

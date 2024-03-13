@@ -42,7 +42,7 @@ def get_ODE_Edot(y, t, params):
         
         - Lw: mechanical luminosity
         - pdot_wind: momentum rate 
-        - L_bubble: luminosity loss to cooling (see get_bubble_properties() in bubble_luminosity.py)
+        - L_bubble: luminosity loss to cooling (see get_bubbleproperties() in bubble_luminosity.py)
         - FRAD: radiation pressure coupled to the shell, i.e. Lbol/c * fabs (calculate fabs from shell structure)
         - tFRAG: time takes to fragmentation
         - tSCR: sound crossing time

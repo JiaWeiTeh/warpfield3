@@ -1,4 +1,4 @@
-Density [log10(n)],Radius [log10(r)]
+Log10 radius [pc],Log10 density [1/cm3]
 -4.000000e+00,4.000000e+00
 -1.000000e+00,4.000000e+00
 -9.884826e-01,4.000000e+00
