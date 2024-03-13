@@ -32,7 +32,7 @@ intersphinx_disabled_domains = ['std']
 
 # -- Options for HTML output
 # html_theme = 'alabaster'
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # -- Options for EPUB output
 # epub_show_urls = 'footnote'
