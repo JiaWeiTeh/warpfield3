@@ -57,540 +57,1478 @@ entering get_beta_delta_wrapper
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.8300873221122109, -0.17851373971693396, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
+
+
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.62585541e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [81911.26966411] [-3.27645079e+11] [103.31696844]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.42455668e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77693.15946024] [-3.10772638e+11] [103.3737979]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.40161489e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77190.23621582] [-3.08760945e+11] [103.38008094]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.40024116e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77159.96559609] [-3.08639862e+11] [103.38045587]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.40023165e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77159.75597841] [-3.08639024e+11] [103.38045846]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.40023169e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77159.75676758] [-3.08639027e+11] [103.38045845]
+dMdt, dMdt_init, dMdt_factor_out [0.00222228] solMass / yr 0.003078446329493336 solMass / yr [3.02166064]
+T_array [   77159.75676758   441384.69868351   564639.63119279 ...
+ 43276909.93532649 43277518.6587972  43278127.40386581] K
+T_array log [4.88739085 5.64481727 5.75177136 ... 7.63625624 7.63626235 7.63626846]
+index_cooling_switch 0
+index_CIE_switch 1
+rgoal 0.4998396751222476 pc xi_Tb 0.9 R1 0.19595867711299023 pc R2 0.5553774168024973 pc
+rarray [0.55537732 0.55537623 0.55537528 ... 0.19597025 0.19596446 0.19595868] pc
+rgoal is in case3
+[0.55537623 0.55537528 0.55537323 ... 0.19597025 0.19596446 0.19595868] pc
+0.4998396751222476 pc 100000
+idx 23952
+T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
+16915245.48520272 K 107.84309696829298 K
 final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
+L_total: 256493046.02819747 pc2 solMass / Myr3
+T_rgoal: 16915353.328299686 K
+L_bubble: 164534632.1597368 pc2 solMass / Myr3
+L_conduction: 42762523.75368195 pc2 solMass / Myr3
+L_intermediate: 49195890.11477874 pc2 solMass / Myr3
+dMdt_factor_out: [3.02166064]
+Tavg: 22803514.442178622 K
+mBubble: 6.064873755160704 solMass
 End get_bubble_properties----------
 
 
 
 
 Showing residuals--------
-Edot 4.2279860999297626e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 -0.17324214139737934 residual1 -0.24935272491212676
+Edot 4.2279860999297626e+38 erg / s Edot2 5.108285804099293e+38 erg / s
+beta, delta 0.8300873221122109 -0.17851373971693396
+T0 13525028.155578127 K T2 16915353.328299686 K
+second normalisation residuals residual0 -0.1723278097445347 residual1 -0.25067047060625064
 end get_Edot_Tdot_residual_fast()====================
--0.17324214139737934 -0.24935272491212676
+-0.1723278097445347 -0.25067047060625064
 these above should be unitless, because they are normalised.
 
 
 begin fast_wrapper!-------
-in sign loop 0.8300873221122109 -0.17851373971693396 0.8300873221122109 -0.17851373971693396 -0.24935272491212676 -0.17324214139737934
-in sign loop 0.8300873221122109 -0.17851373971693396 0.8300873221122109 -0.17851373971693396 -0.24935272491212676 -0.17324214139737934
-in sign loop 0.8300873221122109 -0.17851373971693396 0.8300873221122109 -0.17851373971693396 -0.24935272491212676 -0.17324214139737934
+in sign loop 0.8300873221122109 -0.17851373971693396 0.8300873221122109 -0.17851373971693396 -0.25067047060625064 -0.1723278097445347
+in sign loop 0.8300873221122109 -0.17851373971693396 0.8300873221122109 -0.17851373971693396 -0.25067047060625064 -0.1723278097445347
+in sign loop 0.8300873221122109 -0.17851373971693396 0.8300873221122109 -0.17851373971693396 -0.25067047060625064 -0.1723278097445347
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.8309174094343231, -0.17851373971693396, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
+
+
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.38319793e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [76782.91963856] [-3.07131679e+11] [103.38509513]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.3974073e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77097.46392766] [-3.08389856e+11] [103.38122883]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.39936554e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77140.66160319] [-3.08562646e+11] [103.38069477]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.39935636e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77140.45912213] [-3.08561836e+11] [103.38069728]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.39935639e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77140.45975217] [-3.08561839e+11] [103.38069727]
+dMdt, dMdt_init, dMdt_factor_out [0.00222089] solMass / yr 0.003078446329493336 solMass / yr [3.01977178]
+T_array [   77140.45975217   441374.1529831    564622.50371289 ...
+ 43272562.74400677 43273171.43334947 43273780.1442887 ] K
+T_array log [4.88728222 5.6448069  5.75175818 ... 7.63621262 7.63621873 7.63622483]
+index_cooling_switch 0
+index_CIE_switch 1
+rgoal 0.4998396751222476 pc xi_Tb 0.9 R1 0.19595867711299023 pc R2 0.5553774168024973 pc
+rarray [0.55537732 0.55537623 0.55537528 ... 0.19597025 0.19596446 0.19595868] pc
+rgoal is in case3
+[0.55537623 0.55537528 0.55537323 ... 0.19597025 0.19596446 0.19595868] pc
+0.4998396751222476 pc 100000
+idx 23952
+T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
+16912844.450917467 K 107.82953056292769 K
 final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
+L_total: 256529994.64453566 pc2 solMass / Myr3
+T_rgoal: 16912952.28044803 K
+L_bubble: 164570235.2710647 pc2 solMass / Myr3
+L_conduction: 42769242.194705874 pc2 solMass / Myr3
+L_intermediate: 49190517.178765096 pc2 solMass / Myr3
+dMdt_factor_out: [3.01977178]
+Tavg: 22800679.20634871 K
+mBubble: 6.0656646428661665 solMass
 End get_bubble_properties----------
 
 
 
 
 Showing residuals--------
-Edot 4.223867245087231e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 -0.17404755927932633 residual1 -0.24935272491212676
+Edot 4.223867245087231e+38 erg / s Edot2 5.108063220439469e+38 erg / s
+beta, delta 0.8309174094343231 -0.17851373971693396
+T0 13525028.155578127 K T2 16912952.28044803 K
+second normalisation residuals residual0 -0.17309808770850865 residual1 -0.2504929443324391
 end get_Edot_Tdot_residual_fast()====================
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.8300873221122109, -0.17833522597721702, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
+
+
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [2.25384732e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [93342.77045919] [-3.73371082e+11] [103.12194791]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.7826194e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [84983.44661137] [-3.39933786e+11] [103.27069856]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.46846744e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [78642.37460105] [-3.14569498e+11] [103.36165918]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.40603503e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77287.51540594] [-3.09150062e+11] [103.37887358]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.40014855e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77157.92424647] [-3.08631697e+11] [103.38048114]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.40003542e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77155.4304652] [-3.08621722e+11] [103.38051201]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.40003523e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77155.42624468] [-3.08621705e+11] [103.38051206]
+dMdt, dMdt_init, dMdt_factor_out [0.00222196] solMass / yr 0.003078446329493336 solMass / yr [3.02123677]
+T_array [   77155.42624468   441382.33662397   564635.79965188 ...
+ 43276725.96252108 43277334.6956237  43277943.45032443] K
+T_array log [4.88736647 5.64481495 5.75176841 ... 7.6362544  7.63626051 7.63626662]
+index_cooling_switch 0
+index_CIE_switch 1
+rgoal 0.4998396751222476 pc xi_Tb 0.9 R1 0.19595867711299023 pc R2 0.5553774168024973 pc
+rarray [0.55537732 0.55537623 0.55537528 ... 0.19597025 0.19596446 0.19595868] pc
+rgoal is in case3
+[0.55537623 0.55537528 0.55537323 ... 0.19597025 0.19596446 0.19595868] pc
+0.4998396751222476 pc 100000
+idx 23952
+T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
+16914803.44536365 K 107.8417460910845 K
 final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
+L_total: 256500643.76443562 pc2 solMass / Myr3
+T_rgoal: 16914911.28710974 K
+L_bubble: 164541916.4997042 pc2 solMass / Myr3
+L_conduction: 42764042.65959333 pc2 solMass / Myr3
+L_intermediate: 49194684.60513804 pc2 solMass / Myr3
+dMdt_factor_out: [3.02123677]
+Tavg: 22803124.96573978 K
+mBubble: 6.065011027744049 solMass
 End get_bubble_properties----------
 
 
 
 
 Showing residuals--------
-Edot 4.2279860999297626e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 -0.17324214139737934 residual1 -0.24935272491212676
+Edot 4.2279860999297626e+38 erg / s Edot2 5.108240034267948e+38 erg / s
+beta, delta 0.8300873221122109 -0.17833522597721702
+T0 13525028.155578127 K T2 16914911.28710974 K
+second normalisation residuals residual0 -0.17232039380160658 residual1 -0.2506377874070098
 end get_Edot_Tdot_residual_fast()====================
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.9226078194268371, -0.1981762833802405, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
+
+
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [3.91833676e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [116453.24445884] [-4.65812978e+11] [102.50074077]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.49108561e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79124.6717765] [-3.16498687e+11] [103.35534944]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.34459498e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75918.4764844] [-3.03673906e+11] [103.39551845]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32455448e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75463.825969] [-3.01855304e+11] [103.40088286]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32362453e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75442.62869395] [-3.01770515e+11] [103.401131]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32361882e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75442.49856678] [-3.01769994e+11] [103.40113253]
+dMdt, dMdt_init, dMdt_factor_out [0.00210069] solMass / yr 0.003078446329493336 solMass / yr [2.85633231]
+T_array [   75442.49856678   440452.90106074   563131.46700143 ...
+ 42807026.08731964 42807629.91093893 42808233.7559787 ] K
+T_array log [4.87761606 5.64389947 5.7506098  ... 7.63151506 7.63152118 7.63152731]
+index_cooling_switch 0
+index_CIE_switch 1
+rgoal 0.4998396751222476 pc xi_Tb 0.9 R1 0.19595867711299023 pc R2 0.5553774168024973 pc
+rarray [0.55537732 0.55537623 0.55537528 ... 0.19597025 0.19596446 0.19595868] pc
+rgoal is in case3
+[0.55537623 0.55537528 0.55537323 ... 0.19597025 0.19596446 0.19595868] pc
+0.4998396751222476 pc 100000
+idx 23952
+T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
+16692959.583234333 K 106.4601781410114 K
 final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
+L_total: 259871471.44802257 pc2 solMass / Myr3
+T_rgoal: 16693066.043412473 K
+L_bubble: 167796580.5211035 pc2 solMass / Myr3
+L_conduction: 43369405.212895356 pc2 solMass / Myr3
+L_intermediate: 48705485.71402372 pc2 solMass / Myr3
+dMdt_factor_out: [2.85633231]
+Tavg: 22526527.115459725 K
+mBubble: 6.139881640196925 solMass
 End get_bubble_properties----------
 
 
 
 
 Showing residuals--------
-Edot 3.7094674778548696e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 -0.2746354136314914 residual1 -0.24935272491212676
+Edot 3.768903677820068e+38 erg / s Edot2 5.0879336943611574e+38 erg / s
+beta, delta 0.9226078194268371 -0.1981762833802405
+T0 13525028.155578127 K T2 16693066.043412473 K
+second normalisation residuals residual0 -0.25924669930406935 residual1 -0.23423521573430162
 end get_Edot_Tdot_residual_fast()====================
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.9221407203985617, -0.1980203738098094, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
+
+
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [2.5510011e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [98083.31774617] [-3.92333271e+11] [103.02133553]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.63404251e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [82076.00881553] [-3.28304035e+11] [103.31459446]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.36050379e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [76276.50615916] [-3.05106025e+11] [103.39123716]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32673813e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75513.56505529] [-3.0205426e+11] [103.40029991]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32397525e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75450.62407897] [-3.01802496e+11] [103.40103743]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32394583e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75449.95347333] [-3.01799814e+11] [103.40104528]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32394579e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75449.95257292] [-3.0179981e+11] [103.40104529]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32394571e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75449.95057754] [-3.01799802e+11] [103.40104531]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32394575e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75449.95167142] [-3.01799807e+11] [103.4010453]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32394577e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75449.95192575] [-3.01799808e+11] [103.4010453]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32394574e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75449.95123509] [-3.01799805e+11] [103.4010453]
+dMdt, dMdt_init, dMdt_factor_out [0.0021012] solMass / yr 0.003078446329493336 solMass / yr [2.85703782]
+T_array [   75449.95123509   440456.90978399   563137.93372944 ...
+ 42809369.76970099 42809973.62140498 42810577.49453043] K
+T_array log [4.87765896 5.64390343 5.75061478 ... 7.63153883 7.63154496 7.63155109]
+index_cooling_switch 0
+index_CIE_switch 1
+rgoal 0.4998396751222476 pc xi_Tb 0.9 R1 0.19595867711299023 pc R2 0.5553774168024973 pc
+rarray [0.55537732 0.55537623 0.55537528 ... 0.19597025 0.19596446 0.19595868] pc
+rgoal is in case3
+[0.55537623 0.55537528 0.55537323 ... 0.19597025 0.19596446 0.19595868] pc
+0.4998396751222476 pc 100000
+idx 23952
+T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
+16693955.997533593 K 106.46682632390586 K
 final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
+L_total: 259856419.08344254 pc2 solMass / Myr3
+T_rgoal: 16694062.464359917 K
+L_bubble: 167782026.8656633 pc2 solMass / Myr3
+L_conduction: 43366723.68595742 pc2 solMass / Myr3
+L_intermediate: 48707668.531821825 pc2 solMass / Myr3
+dMdt_factor_out: [2.85703782]
+Tavg: 22527819.896533657 K
+mBubble: 6.139538043134349 solMass
 End get_bubble_properties----------
 
 
 
 
 Showing residuals--------
-Edot 3.709467477855086e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 -0.27463541363144917 residual1 -0.24935272491212676
+Edot 3.771221401562263e+38 erg / s Edot2 5.088024371921761e+38 erg / s
+beta, delta 0.9221407203985617 -0.1980203738098094
+T0 13525028.155578127 K T2 16694062.464359917 K
+second normalisation residuals residual0 -0.2588043755502174 residual1 -0.23430888810939626
 end get_Edot_Tdot_residual_fast()====================
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.9221327987510228, -0.1979431420342411, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
+
+
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [5.36899342e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [132089.42152333] [-5.28357686e+11] [101.86194862]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.53209898e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79988.1439169] [-3.19952576e+11] [103.34381031]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.34948352e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [76028.76290272] [-3.04115052e+11] [103.39420502]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32525601e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75479.81071653] [-3.01919243e+11] [103.40069562]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32387823e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75448.41233242] [-3.01793649e+11] [103.40106332]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32386786e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75448.17609002] [-3.01792704e+11] [103.40106608]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32386794e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75448.17785431] [-3.01792711e+11] [103.40106606]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32386791e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75448.17704004] [-3.01792708e+11] [103.40106607]
+dMdt, dMdt_init, dMdt_factor_out [0.00210108] solMass / yr 0.003078446329493336 solMass / yr [2.85686982]
+T_array [   75448.17704004   440455.96131313   563136.41479075 ...
+ 42809330.64314777 42809934.49945705 42810538.3771879 ] K
+T_array log [4.87764875 5.64390249 5.75061361 ... 7.63153844 7.63154456 7.63155069]
+index_cooling_switch 0
+index_CIE_switch 1
+rgoal 0.4998396751222476 pc xi_Tb 0.9 R1 0.19595867711299023 pc R2 0.5553774168024973 pc
+rarray [0.55537732 0.55537623 0.55537528 ... 0.19597025 0.19596446 0.19595868] pc
+rgoal is in case3
+[0.55537623 0.55537528 0.55537323 ... 0.19597025 0.19596446 0.19595868] pc
+0.4998396751222476 pc 100000
+idx 23952
+T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
+16693783.239024395 K 106.46636710827585 K
 final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
+L_total: 259859521.43187124 pc2 solMass / Myr3
+T_rgoal: 16693889.705391504 K
+L_bubble: 167785008.2273348 pc2 solMass / Myr3
+L_conduction: 43367364.29147833 pc2 solMass / Myr3
+L_intermediate: 48707148.91305811 pc2 solMass / Myr3
+dMdt_factor_out: [2.85686982]
+Tavg: 22527674.95949776 K
+mBubble: 6.139592629530513 solMass
 End get_bubble_properties----------
 
 
 
 
 Showing residuals--------
-Edot 3.708096703418456e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 -0.2749034605244779 residual1 -0.24935272491212676
+Edot 3.771260708410418e+38 erg / s Edot2 5.088005682938634e+38 erg / s
+beta, delta 0.9221327987510228 -0.1979431420342411
+T0 13525028.155578127 K T2 16693889.705391504 K
+second normalisation residuals residual0 -0.25879392763722614 residual1 -0.2342961148296348
 end get_Edot_Tdot_residual_fast()====================
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.9230628611189602, -0.1980203738098094, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
+
+
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.53931938e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [80138.71686714] [-3.20554867e+11] [103.34176594]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.34951561e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [76029.48600867] [-3.04117944e+11] [103.39419639]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32444492e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75461.32917967] [-3.01845317e+11] [103.4009121]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32296728e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75427.64201982] [-3.01710568e+11] [103.40130634]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32295579e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75427.37979957] [-3.01709519e+11] [103.40130941]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32295583e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75427.38079772] [-3.01709523e+11] [103.40130939]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32295581e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75427.38043979] [-3.01709522e+11] [103.4013094]
+dMdt, dMdt_init, dMdt_factor_out [0.00209963] solMass / yr 0.003078446329493336 solMass / yr [2.85490159]
+T_array [   75427.38043979   440444.76721372   563118.35398778 ...
+ 42804430.48216903 42805034.29570745 42805638.13066578] K
+T_array log [4.87752903 5.64389145 5.75059968 ... 7.63148872 7.63149485 7.63150098]
+index_cooling_switch 0
+index_CIE_switch 1
+rgoal 0.4998396751222476 pc xi_Tb 0.9 R1 0.19595867711299023 pc R2 0.5553774168024973 pc
+rarray [0.55537732 0.55537623 0.55537528 ... 0.19597025 0.19596446 0.19595868] pc
+rgoal is in case3
+[0.55537623 0.55537528 0.55537323 ... 0.19597025 0.19596446 0.19595868] pc
+0.4998396751222476 pc 100000
+idx 23952
+T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
+16691209.436254302 K 106.4513441445386 K
 final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
+L_total: 259899926.0751961 pc2 solMass / Myr3
+T_rgoal: 16691315.887598448 K
+L_bubble: 167824027.5002993 pc2 solMass / Myr3
+L_conduction: 43374841.74856591 pc2 solMass / Myr3
+L_intermediate: 48701056.82633085 pc2 solMass / Myr3
+dMdt_factor_out: [2.85490159]
+Tavg: 22524584.115248803 K
+mBubble: 6.1404641172514385 solMass
 End get_bubble_properties----------
 
 
 
 
 Showing residuals--------
-Edot 3.704830104390262e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 -0.27554222478567264 residual1 -0.24935272491212676
+Edot 3.766645782021363e+38 erg / s Edot2 5.087762279686323e+38 erg / s
+beta, delta 0.9230628611189602 -0.1980203738098094
+T0 13525028.155578127 K T2 16691315.887598448 K
+second normalisation residuals residual0 -0.2596655317288943 residual1 -0.23410581446475204
 end get_Edot_Tdot_residual_fast()====================
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.9221407203985617, -0.1978223534359996, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
+
+
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.5866626e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [81115.66327316] [-3.24462653e+11] [103.32826658]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.3553378e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [76160.52160946] [-3.04642086e+11] [103.39262961]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32582353e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75492.7382924] [-3.01970953e+11] [103.40054412]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32374341e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75445.33902722] [-3.01781356e+11] [103.40109929]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32372427e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75444.90253541] [-3.0177961e+11] [103.40110439]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32372426e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75444.90234478] [-3.01779609e+11] [103.4011044]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.32372427e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [75444.90258798] [-3.0177961e+11] [103.40110439]
+dMdt, dMdt_init, dMdt_factor_out [0.00210085] solMass / yr 0.003078446329493336 solMass / yr [2.85655986]
+T_array [   75444.90258798   440454.19704755   563133.56034949 ...
+ 42809164.92628517 42809768.78905263 42810372.67324179] K
+T_array log [4.8776299  5.64390075 5.75061141 ... 7.63153676 7.63154288 7.63154901]
+index_cooling_switch 0
+index_CIE_switch 1
+rgoal 0.4998396751222476 pc xi_Tb 0.9 R1 0.19595867711299023 pc R2 0.5553774168024973 pc
+rarray [0.55537732 0.55537623 0.55537528 ... 0.19597025 0.19596446 0.19595868] pc
+rgoal is in case3
+[0.55537623 0.55537528 0.55537323 ... 0.19597025 0.19596446 0.19595868] pc
+0.4998396751222476 pc 100000
+idx 23952
+T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
+16693452.821505511 K 106.46529801448807 K
 final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
+L_total: 259865321.85426325 pc2 solMass / Myr3
+T_rgoal: 16693559.286803525 K
+L_bubble: 167790590.7984499 pc2 solMass / Myr3
+L_conduction: 43368541.1868723 pc2 solMass / Myr3
+L_intermediate: 48706189.86894105 pc2 solMass / Myr3
+dMdt_factor_out: [2.85655986]
+Tavg: 22527377.94414243 K
+mBubble: 6.139698031172309 solMass
 End get_bubble_properties----------
 
 
 
 
 Showing residuals--------
-Edot 3.7094674778548696e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 -0.2746354136314914 residual1 -0.24935272491212676
+Edot 3.771221401562263e+38 erg / s Edot2 5.0879707403786005e+38 erg / s
+beta, delta 0.9221407203985617 -0.1978223534359996
+T0 13525028.155578127 K T2 16693559.286803525 K
+second normalisation residuals residual0 -0.2587965627173314 residual1 -0.23427168467066004
 end get_Edot_Tdot_residual_fast()====================
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.8572112195053512, -0.1971643908249655, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
+
+
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [2.76963881e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [101363.16055864] [-4.05452642e+11] [102.94421926]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.52472366e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79833.89981507] [-3.19335599e+11] [103.34589459]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.40728991e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [77315.09950752] [-3.09260398e+11] [103.37853053]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.39267748e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [76992.97676073] [-3.07971907e+11] [103.38251755]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.3921431e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [76981.1581927] [-3.07924633e+11] [103.38266304]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.39214075e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [76981.1062389] [-3.07924425e+11] [103.38266368]
+dMdt, dMdt_init, dMdt_factor_out [0.00220943] solMass / yr 0.003078446329493336 solMass / yr [3.0042007]
+T_array [   76981.1062389    441286.9940157    564480.89547692 ...
+ 43153531.81589026 43154138.40642574 43154745.01849184] K
+T_array log [4.88638415 5.64472113 5.75164925 ... 7.63501635 7.63502245 7.63502855]
+index_cooling_switch 0
+index_CIE_switch 1
+rgoal 0.4998396751222476 pc xi_Tb 0.9 R1 0.19595867711299023 pc R2 0.5553774168024973 pc
+rarray [0.55537732 0.55537623 0.55537528 ... 0.19597025 0.19596446 0.19595868] pc
+rgoal is in case3
+[0.55537623 0.55537528 0.55537323 ... 0.19597025 0.19596446 0.19595868] pc
+0.4998396751222476 pc 100000
+idx 23952
+T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
+16882793.52689642 K 107.53958583406283 K
 final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
+L_total: 256909486.09984675 pc2 solMass / Myr3
+T_rgoal: 16882901.066482253 K
+L_bubble: 164938764.04795432 pc2 solMass / Myr3
+L_conduction: 42824704.69473671 pc2 solMass / Myr3
+L_intermediate: 49146017.35715572 pc2 solMass / Myr3
+dMdt_factor_out: [3.0042007]
+Tavg: 22751299.288649365 K
+mBubble: 6.07645455474724 solMass
 End get_bubble_properties----------
 
 
 
 
 Showing residuals--------
-Edot 4.0742770826695564e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 -0.20329903727035123 residual1 -0.24935272491212676
+Edot 4.093398577448632e+38 erg / s Edot2 5.105777110555896e+38 erg / s
+beta, delta 0.8572112195053512 -0.1971643908249655
+T0 13525028.155578127 K T2 16882901.066482253 K
+second normalisation residuals residual0 -0.1982809886107701 residual1 -0.24827104774042477
 end get_Edot_Tdot_residual_fast()====================
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.7276282208135042, -0.19466645606099578, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
+
+
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.81200217e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [85541.01017544] [-3.42164041e+11] [103.26183889]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.55661576e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [80497.6975992] [-3.2199079e+11] [103.33685306]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.5265273e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79871.66161165] [-3.19486646e+11] [103.34538525]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.52434261e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79825.91871151] [-3.19303675e+11] [103.34600216]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.52432302e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79825.50830724] [-3.19302033e+11] [103.34600769]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.52432297e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79825.5072324] [-3.19302029e+11] [103.3460077]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.524323e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79825.50794783] [-3.19302032e+11] [103.3460077]
+dMdt, dMdt_init, dMdt_factor_out [0.00241922] solMass / yr 0.003078446329493336 solMass / yr [3.2894463]
+T_array [   79825.50794783   442860.3397699    567050.77116031 ...
+ 43822947.08121429 43823559.17367681 43824171.28788619] K
+T_array log [4.90214169 5.64626679 5.75362195 ... 7.64170158 7.64170765 7.64171371]
+index_cooling_switch 0
+index_CIE_switch 1
+rgoal 0.4998396751222476 pc xi_Tb 0.9 R1 0.19595867711299023 pc R2 0.5553774168024973 pc
+rarray [0.55537732 0.55537624 0.55537528 ... 0.19597025 0.19596446 0.19595868] pc
+rgoal is in case3
+[0.55537624 0.55537528 0.55537323 ... 0.19597025 0.19596446 0.19595868] pc
+0.4998396751222476 pc 100000
+idx 23952
+T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
+17244240.035853643 K 109.6107085159574 K
 final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
+L_total: 251473130.91479456 pc2 solMass / Myr3
+T_rgoal: 17244349.64656216 K
+L_bubble: 159710578.11040363 pc2 solMass / Myr3
+L_conduction: 41853426.76368758 pc2 solMass / Myr3
+L_intermediate: 49909126.04070333 pc2 solMass / Myr3
+dMdt_factor_out: [3.2894463]
+Tavg: 23181480.778670784 K
+mBubble: 5.95901602897747 solMass
 End get_bubble_properties----------
 
 
 
 
 Showing residuals--------
-Edot 4.80389629229893e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 -0.060626284548070855 residual1 -0.24935272491212676
+Edot 4.736383414650605e+38 erg / s Edot2 5.138526478546204e+38 erg / s
+beta, delta 0.7276282208135042 -0.19466645606099578
+T0 13525028.155578127 K T2 17244349.64656216 K
+second normalisation residuals residual0 -0.07826038565230355 residual1 -0.2749954712256974
 end get_Edot_Tdot_residual_fast()====================
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.700483948793392, -0.13903727153311646, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
+
+
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [2.4605453e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [96677.0600701] [-3.8670824e+11] [103.05248741]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.67927041e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [82977.27027405] [-3.31909081e+11] [103.30139449]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.50956293e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79515.42382815] [-3.18061695e+11] [103.35016635]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.49324477e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79170.48215079] [-3.16681929e+11] [103.35474509]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.49245034e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79153.63167414] [-3.16614527e+11] [103.35496749]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.49244659e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [79153.55192137] [-3.16614208e+11] [103.35496855]
+dMdt, dMdt_init, dMdt_factor_out [0.00236863] solMass / yr 0.003078446329493336 solMass / yr [3.22065789]
+T_array [   79153.55192137   442485.08953754   566435.30651867 ...
+ 43904719.01220261 43905335.10393892 43905951.21753069] K
+T_array log [4.89847041 5.64589864 5.75315032 ... 7.6425112  7.6425173  7.64252339]
+index_cooling_switch 0
+index_CIE_switch 1
+rgoal 0.4998396751222476 pc xi_Tb 0.9 R1 0.19595867711299023 pc R2 0.5553774168024973 pc
+rarray [0.55537732 0.55537624 0.55537528 ... 0.19597025 0.19596446 0.19595868] pc
+rgoal is in case3
+[0.55537624 0.55537528 0.55537323 ... 0.19597025 0.19596446 0.19595868] pc
+0.4998396751222476 pc 100000
+idx 23952
+T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
+17187404.224135347 K 109.62984982566957 K
 final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
+L_total: 252552682.1514462 pc2 solMass / Myr3
+T_rgoal: 17187513.85398517 K
+L_bubble: 160732974.26905808 pc2 solMass / Myr3
+L_conduction: 42084460.9339411 pc2 solMass / Myr3
+L_intermediate: 49735246.94844703 pc2 solMass / Myr3
+dMdt_factor_out: [3.22065789]
+Tavg: 23153911.242386155 K
+mBubble: 5.974747608859539 solMass
 End get_bubble_properties----------
 
 
 
 
 Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
+Edot 4.871072035087014e+38 erg / s Edot2 5.132023110110914e+38 erg / s
+beta, delta 0.700483948793392 -0.13903727153311646
+T0 13525028.155578127 K T2 17187513.85398517 K
+second normalisation residuals residual0 -0.05084760325996666 residual1 -0.2707932032582517
 end get_Edot_Tdot_residual_fast()====================
 
 in get_Edot_Tdot_residual_fast()====================
 Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
+params [<Quantity 0.00300217 Myr>, <Quantity 30000. K>, <Quantity 0.19595868 pc>, <Quantity 0.55537742 pc>, <Quantity 1.45465515e-06 g / (cm s2)>, <Quantity 5.39510623e+51 1 / s>, 0.5730381076474188, 0.7237035325889052, -0.02727994737884827, <Quantity 0. km / s>]
+Qi 1.7025660421083365e+65 1 / Myr
 
 
-
-
-Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-
-in get_Edot_Tdot_residual_fast()====================
-Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
-
-
-
-
-Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-
-in get_Edot_Tdot_residual_fast()====================
-Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
-
-
-
-
-Showing residuals--------
-Edot 5.1107022760298844e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 -0.0006321757405494511 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-
-in get_Edot_Tdot_residual_fast()====================
-Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
-
-
-
-
-Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-
-in get_Edot_Tdot_residual_fast()====================
-Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
-
-
-
-
-Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-
-in get_Edot_Tdot_residual_fast()====================
-Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
-
-
-
-
-Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-
-in get_Edot_Tdot_residual_fast()====================
-Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
-
-
-
-
-Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-
-in get_Edot_Tdot_residual_fast()====================
-Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
-
-
-
-
-Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-
-in get_Edot_Tdot_residual_fast()====================
-Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
-
-
-
-
-Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-
-in get_Edot_Tdot_residual_fast()====================
-Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
-
-
-
-
-Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-
-in get_Edot_Tdot_residual_fast()====================
-Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
-
-
-
-
-Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-
-in get_Edot_Tdot_residual_fast()====================
-Here in get_bubbleproperties-----
-rgoal 0.49977000000000005 pc
-final result in get_bubble_properties
-L_total: 255555256.21456507 pc2 solMass / Myr3
-T_rgoal: 16897530.78068477 K
-L_bubble: 164013040.7884533 pc2 solMass / Myr3
-L_conduction: 42631228.546521984 pc2 solMass / Myr3
-L_intermediate: 48910986.879589766 pc2 solMass / Myr3
-dMdt_factor_out: [3.01929351]
-Tavg: 22839603.68917779 K
-mBubble: 6.060571891285626 solMass
-End get_bubble_properties----------
-
-
-
-
-Showing residuals--------
-Edot 5.113935181790555e+38 erg / s Edot2 5.113935181790555e+38 erg / s
-T0 13525028.155578127 K T2 16897530.78068477 K
-second normalisation residuals residual0 0.0 residual1 -0.24935272491212676
-end get_Edot_Tdot_residual_fast()====================
-check for values for error before ending fast_wrapper solver
-[beta_fast, delta_fast] 0.6515388835278839 -0.13898150502866669
-Edot_residual_guess, T_residual_guess -0.17324214139737934 -0.24935272491212676
+---dMdt_init befrore get_velocity_residuals--- 3078.4463294933357 solMass / Myr
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.93969537e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12227269] [-3.51612489e+11] [103.2226734]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [1.9396954e+23]
+mu 1.0181176926808696e-24
+dR2 [3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537732] [87903.12279663] [-3.51612491e+11] [103.22267339]
+params in get_velocity_residuals
+outputs in get_bubble_ODE_initial_conditions()
+R2 1.7137156442940526e+18
+dMdt [-3.71860278e+23]
+mu 1.0181176926808696e-24
+dR2 [-3.08567758e+11]
+r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime
+[0.55537752] [nan] [nan] [nan]

@@ -60,21 +60,20 @@ def read_data(input_file_str, x_axis_str, y_axis_str):
             
     
     elif file_extension == '.fits':
-        
+        # reads hdu
         hdu = fits.open(path2file)
-        
+        # grabs data
         data = hdu[1].data    
-        
+        # get header
         header_info = hdu[1].columns
-        
+        # check availability
         if x_axis_str not in header_info.names:
             raise Exception(f'\'{x_axis_str}\' is invalid. Column must be one of the following:\n{header_info.names}')
         if y_axis_str not in header_info.names:
             raise Exception(f'\'{y_axis_str}\' is invalid. Column must be one of the following:\n{header_info.names}')
-        
+        # get data
         x_array = np.array(data[x_axis_str])
         y_array = np.array(data[y_axis_str])
-        
 
     return x_array, y_array
 

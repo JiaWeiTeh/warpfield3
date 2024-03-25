@@ -112,16 +112,16 @@ def get_bubbleproperties(
     
     # Here is thje debug. Checking with the same condition if it yields same result.
     # ---------------------------------------
-    t_now = 0.003002 * u.Myr
-    alpha = 0.573
-    beta = 0.83
-    delta = -0.17851
-    Qi = 1.6993e65 / u.Myr
-    Eb = 2313300.0 * u.M_sun*u.pc**2/u.Myr**2
-    R2 = 0.5553 * u.pc
-    Lw = 2016500000.0 * u.M_sun*u.pc**2/u.Myr**3
-    vw = 3810.2 * u.km/u.s
-    dMdt_factor = 4.1858
+    # t_now = 0.003002 * u.Myr
+    # alpha = 0.573
+    # beta = 0.83
+    # delta = -0.17851
+    # Qi = 1.6993e65 / u.Myr
+    # Eb = 2313300.0 * u.M_sun*u.pc**2/u.Myr**2
+    # R2 = 0.5553 * u.pc
+    # Lw = 2016500000.0 * u.M_sun*u.pc**2/u.Myr**3
+    # vw = 3810.2 * u.km/u.s
+    # dMdt_factor = 4.1858
     # ---------------------------------------
     
     # R2 is r0
@@ -244,10 +244,16 @@ def get_bubbleproperties(
     # ----------- calculation of dMdt
 
     params = [t_now, T_goal, r_inner, R2, press, Qi, alpha, beta, delta, v0]
+    
+    print('params', params)
+    print('xi_Tb', xi_Tb)
+    print('Qi', Qi.to(1/u.Myr))
 
     # While evaluating for dMdt, we create a global variable to also store the values for
     # temperature and velocity. 
     # This is so that we don't have to run the function again for the final values. 
+    # We note here that T_array, the temperature structure, is in increasing order.
+    # This means r_array, the radius, is in DECREASING order. 
     global v_array, T_array, dTdr_array, r_array
     v_array = np.array([])
     T_array = np.array([])
@@ -255,11 +261,18 @@ def get_bubbleproperties(
     r_array = np.array([])
     
     
-    # print('\n\n---dMdt_init befrore get_velocity_residuals---', dMdt_init.to(u.M_sun/u.Myr))
+    print('\n\n---dMdt_init befrore get_velocity_residuals---', dMdt_init.to(u.M_sun/u.Myr))
+    
+    # ----------- calculation of structures, such as T_array, v_array, dTdr_array
     
     dMdt = scipy.optimize.fsolve(get_velocity_residuals, dMdt_init.to(u.M_sun/u.yr), args = (params,), 
-                                 full_output = 1, factor = 50, xtol = 1e-6)[0] * u.M_sun / u.yr
-
+                                 full_output = 1, factor = 5, xtol = 1e-5)[0] * u.M_sun / u.yr
+    # beware of negative dMdt values (usually due to high beta). If it happens, run again with smaller step size.
+    if dMdt.value < 0:
+        print('dMdt is negative. Re-running the estimate.')
+        dMdt = scipy.optimize.fsolve(get_velocity_residuals, dMdt_init.to(u.M_sun/u.yr), args = (params,), 
+                                     full_output = 1, factor = 1, xtol = 1e-5)[0] * u.M_sun / u.yr        
+        
     # print('done! dMdt (Msun/yr) and dMdt (Msun/Myr):', dMdt, dMdt * 1e6)
     # 0.0845262588579248 solMass / yr
     # dMdt 40416.890252523 [96559.42153809] - guess/real
@@ -277,6 +290,7 @@ def get_bubbleproperties(
     # # fix?
     dMdt_factor_out = dMdt_factor * dMdt / dMdt_init
     
+    print('dMdt, dMdt_init, dMdt_factor_out', dMdt, dMdt_init, dMdt_factor_out)
     # print('n', n_array)
 
     # =============================================================================
@@ -331,7 +345,7 @@ def get_bubbleproperties(
     # Step 3: we identify which index in the temperature array has cooling and which doesn't. 
     # The bubble will have these regions:
     #   1. Low resolution (bubble) region. This is the CIE region, where T > 10**5.5 K.
-    #   2. High resolution (conduction) region. This is the non0-CIE region.
+    #   2. High resolution (conduction zone) region. This is the non-CIE region.
     #   3. Intermediate region. This is between 1e4 and T[index_cooling_switch].
     # -----
     # Goal: calculate power-loss (luminosity) in these regions due to cooling. To do this
@@ -342,7 +356,8 @@ def get_bubbleproperties(
 
     # Temperature at which any lower will have no cooling
     _coolingswitch = 1e4 * u.K
-    # Temperature of switching between CIE and non-CIE. 
+    # Temperature of switching between CIE and non-CIE. Temperatures higher than 
+    # _CIEswitch results in switching on CIE.
     _CIEswitch = 10**5.5 * u.K
 
     #---------------- 0. Prep: insert entry at exactly _CIEswitch via interpolation
@@ -352,12 +367,18 @@ def get_bubbleproperties(
     # index of radius array at which T is closest (and higher) to _CIEswitch
     index_CIE_switch = operations.find_nearest_higher(T_array.value, _CIEswitch.value)
     
+    print('T_array', T_array)
+    print('T_array log', np.log10(T_array.value))
+    print('index_cooling_switch', index_cooling_switch)
+    print('index_CIE_switch', index_CIE_switch)    
     # print(f'index_CIE_switch: {index_CIE_switch}')
     # print(T_array[index_CIE_switch-1])
     # print(T_array[index_CIE_switch])
     # print(T_array[index_CIE_switch+1])
-    # interpolate so that we have an entry at exactly _CIEswitch.
     
+    
+    
+    # interpolate so that we have an entry at exactly _CIEswitch
     
     if index_cooling_switch != index_CIE_switch:
         # array sliced from beginning until somewhere after _CIEswitch
@@ -588,17 +609,33 @@ def get_bubbleproperties(
     # TODO: what is rgoal?
     # get temperature inside bubble at fixed scaled radius
     # temperature T at rgoal
-    print('rgoal', rgoal)
     # print(r_array[index_cooling_switch])
     
+    print('rgoal', rgoal, 'xi_Tb', xi_Tb, 'R1', R1, 'R2', R2)
+    print('rarray', r_array)
+    # print('index_cooling_switch', index_cooling_switch)
+    # print('index_CIE_switch', index_CIE_switch)
     
-    if rgoal > r_array[index_cooling_switch]: # assumes that r_cz runs from high to low values (so in fact I am looking for the highest element in r_cz)
+    # Remember that r_array is in decreasing order. 
+    # If rgoal is smaller than the radius of cooling threshold, i.e., larger than the index,
+    if rgoal > r_array[index_cooling_switch]: # looking for the smallest value in r_cz
+        print('rgoal is in case1')
+        # take interpolation
         T_rgoal = fT_interp_intermediate(rgoal)
-    elif rgoal > r_array[index_CIE_switch]: # assumes that r_cz runs from high to low values (so in fact I am looking for the smallest element in r_cz)
+    # if rgoal is instead at the point of CIE-nonCIE switch,
+    elif rgoal > r_array[index_CIE_switch]: # looking for the largest value in r_cz
+        print('rgoal is in case2')
         idx = operations.find_nearest(r_conduction.value, rgoal.value)
         T_rgoal = T_conduction[idx] + dTdr_conduction[idx]*(rgoal - r_conduction[idx])
+    # otherwise, interpolate.
     else:
+        print('rgoal is in case3')
+        print(r_bubble)
+        print(rgoal, len(r_bubble))
         idx = operations.find_nearest(r_bubble.value, rgoal.value)
+        print('idx', idx)
+        print('T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])')
+        print(T_bubble[idx], dTdr_bubble[idx]*(rgoal - r_bubble[idx]))
         T_rgoal = T_bubble[idx] + dTdr_bubble[idx]*(rgoal - r_bubble[idx])
     
     # print('Completed calculation of bubble luminosity.')
@@ -668,6 +705,7 @@ def get_bubbleproperties(
     print(f'mBubble: {mBubble.to(u.M_sun)}')
     
     print('End get_bubble_properties----------\n\n\n\n')
+    # sys.exit()
     
     return L_total, T_rgoal, L_bubble, L_conduction, L_intermediate, dMdt_factor_out, Tavg, mBubble
 
@@ -689,6 +727,9 @@ def get_init_dMdt(
     
     # above is the original code. But, i suspect this is why we get different answers compared to wfld.
     # the reason is because in theold code the factor is only powered once, where as here it is 5/2 according to the paper. 
+    
+    # however, I suspect the reason why the old code wasn't use, due to the exponent. I think Eric/Daniel removed
+    # it so that the guesses are smaller.
     
     dMdt_init = 12 / 75 * dMdt_factor * 4 * np.pi * R2**3 / t_now\
         * warpfield_params.mu_p / c.k_B.cgs * (t_now * warpfield_params.c_therm / R2**2)**(2/7) * press**(5/7)
@@ -732,7 +773,7 @@ def get_velocity_residuals(dMdt_init, params):
 
     # print('\ndMdt_init in get_velocity_residuals', dMdt_init.to(u.M_sun/u.Myr))
 
-    # print('params in get_velocity_residuals')
+    print('params in get_velocity_residuals')
     # print('t_now', t_now)
     # print('T_goal', T_goal)
     # print('r_inner', r_inner)
@@ -746,7 +787,8 @@ def get_velocity_residuals(dMdt_init, params):
     
     # perhaps one way to fix it is to just take the absolute value
     # i.e., 
-    dMdt_init = np.abs(dMdt_init.value) *u.M_sun/u.yr
+    # dMdt_init = np.abs(dMdt_init.value) *u.M_sun/u.yr
+    #  No!! change factor instead (step sizxze), a parameer in the solver. see old code.
 
     
     # --- end debug
@@ -756,8 +798,11 @@ def get_velocity_residuals(dMdt_init, params):
     # =============================================================================
     # Get initial bubble values for integration  
     # =============================================================================
-    # Watch out! these are unitless.
+    # Watch out! these are unitless (in units of pc, K, K/pc, and km/s)
     r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime = get_bubble_ODE_initial_conditions(dMdt_init, params)
+    
+    print('r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime')
+    print(r2Prime, T_r2Prime, dTdr_r2Prime, v_r2Prime)
     
     # =============================================================================
     # radius array at which bubble structure is being evaluated.
@@ -792,8 +837,22 @@ def get_velocity_residuals(dMdt_init, params):
     T_array = psoln[:, 1] * u.K
     dTdr_array = psoln[:, 2] * u.K/u.pc
         
-    # V0 is the velocity at r -> 0.
-    residual = (v0.to(u.km/u.s).value - v_array[-1].value)/v_array[0].value
+    # v0 is the velocity at r -> 0.
+    # v_array[-1] is the estimate of v0, given the guess of dMdt. 
+    
+    
+    #--- new idea: just use residual?
+    # the (v0+1e-4) term is just to avoid division by 0 if v0 is ever 0.
+    residual = ((v0 - v_array[-1])/(v0+1e-4*u.km/u.s)).value
+    
+    
+    # residual = (v0.to(u.km/u.s).value - v_array[-1] .value)
+    
+    #--- old idea
+    # residual = (v0.to(u.km/u.s).value - v_array[-1].value)/v_array[0].value
+    print('v0, v_array[-1], v_array[0]')
+    print(v0, v_array[-1], v_array[0])
+    # print(residual)
     # return
     return residual
     
@@ -811,7 +870,7 @@ def get_bubble_ODE_initial_conditions(dMdt, params):
         T, dTdr, and v. 
         
     old code: r2_prime is R2_prime in old code.
-    old code: get_start_bstruc
+    old code: get_start_bstruc (calc_bstruc_start)
 
     Parameters. This operation assumes full cgs units. 
     ----------
@@ -875,16 +934,17 @@ def get_bubble_ODE_initial_conditions(dMdt, params):
     # Question: I think mu here should point to ionised region
     # T(r)
     
-    # print('outputs in get_bubble_ODE_initial_conditions()')
-    # print('R2', R2)
-    # print('dMdt', dMdt)
-    # print('mu', mu)
-    # print('dR2', dR2)
+    print('outputs in get_bubble_ODE_initial_conditions()')
+    print('R2', R2)
+    print('dMdt', dMdt)
+    print('mu', mu)
+    print('dR2', dR2)
     
     # temperature
     T = (25/4 * c.k_B.cgs.value / mu / warpfield_params.c_therm.value * dMdt / (4 * np.pi * R2**2) )**(2/5) * dR2**(2/5) 
     # print('T', T)
     # v(r)
+    # In old code, mu is instead 0.5 * mp. 
     v = (alpha * R2 / t_now - dMdt / (4 * np.pi * R2**2) * c.k_B.cgs.value * T / mu / pressure) * u.cm/u.s
     # T'(r)
     dTdr = (- 2 / 5 * T / dR2) * u.K / u.cm
@@ -947,6 +1007,7 @@ def get_bubble_ODE(r_arr, initial_ODEs, params):
     # net cooling rate
     # dudt = nnLambda
     dudt = net_coolingcurve.get_dudt(t, ndens.to(1/u.cm**3), T, phi.to(1/u.s/u.cm**2))
+    # print('dudt', dudt, 'T', T, 'v', v, 'dTdr', dTdr, 'r_arr', r_arr, 'beta', beta, 'delta', delta)
     
     # old code: dTdrd
     dTdrr = pressure/(warpfield_params.c_therm * T**(5/2)) * (
@@ -956,10 +1017,15 @@ def get_bubble_ODE(r_arr, initial_ODEs, params):
     # old code: vd
     dvdr = (beta + delta) / t + (v - alpha * r_arr / t) * dTdr / T - 2 *  v / r_arr
     
+    # print('dvdr', dvdr)
+    # print('dTdr', dTdr)
+    # print('dTdrr', dTdrr)
+    
     # make sure they are in correct units
     dvdr = (dvdr.to(u.km/u.s/u.pc)).value
     dTdr = (dTdr.to(u.K/u.pc)).value
     dTdrr = (dTdrr.to(u.K/u.pc**2)).value
+    
     
     return dvdr, dTdr, dTdrr
     

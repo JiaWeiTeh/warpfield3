@@ -130,7 +130,7 @@ def get_dudt(age, ndens, T, phi):
     
     # if temperature is lower than the available non-CIE curve, error (or better, provide some interpolation in the future?)
     else:
-        raise Exception('Temperature not understood. Cooling curve and dudt cannot be computed.')
+        raise Exception(f'Temperature T = {T} not understood. Cooling curve and dudt cannot be computed.')
         
     
     

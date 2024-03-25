@@ -126,6 +126,7 @@ def get_beta_delta_wrapper(beta_guess, delta_guess, wrapper_params):
                     pwdot, pwdotdot,\
                     dMdt_factor = wrapper_params
                         
+                    
     # Start with first estimate. 
     # =============================================================================
     # First attempt
@@ -352,6 +353,8 @@ def get_beta_delta(beta_guess, delta_guess, wrapper_params):
     print('check for values for error before ending fast_wrapper solver')
     print('[beta_fast, delta_fast]', beta_fast, delta_fast)
     print('Edot_residual_guess, T_residual_guess', Edot_residual_guess, T_residual_guess)
+    
+    
     sys.exit()
     
     log_residual_fast = np.max(np.log10(np.abs(np.array(
@@ -468,7 +471,7 @@ def get_Edot_Tdot_residual_fast(bd_guesses, wrapper_params):
                 
                 
     # =============================================================================
-    # First, calculate Lb and T which are used to calculate Edot and T respectively.
+    # First, calculate Lb and T which are used to calculate Edot2 and T2 respectively.
     # =============================================================================
 
     # time, shell radius ( think its r2)
@@ -492,7 +495,7 @@ def get_Edot_Tdot_residual_fast(bd_guesses, wrapper_params):
     R1 = scipy.optimize.brentq(get_bubbleParams.get_r1,
                                1e-3 * R2.to(u.cm).value, R2.to(u.cm).value,
                                args = (R1_params),
-                               xtol=1e-18) * u.cm  # can go to high precision because computationally cheap (2e-5 s)
+                               xtol=1e-9) * u.cm  # can go to high precision because computationally cheap (2e-5 s)
     Pb = get_bubbleParams.bubble_E2P(Eb, R2, R1)
     
     # make sure these parameters are correct
@@ -547,16 +550,21 @@ def get_Edot_Tdot_residual_fast(bd_guesses, wrapper_params):
     # perhaps to make scipy run better, we take the logarithm of the estimates (i.e., deal with numbers 
     # <100 rather than 1e38.)
     
-    print('Showing residuals--------')
+    # Note: 16/03/24:
+    # The problem with Edot seems to be fixed now. The problem now lies in T2, where it doesnt seem to change
+    # however we choose to change delta. This is a problem.
+    
+    print('Finish bubble Edot and T calculation. Showing residuals--------')
     print('Edot', Edot, 'Edot2', Edot2)
+    print('beta, delta', beta, delta)
     print('T0', T0, 'T2', T2)
     print('second normalisation residuals', 'residual0', Edot_residual_new, 'residual1', T_residual_new)
-    print('end get_Edot_Tdot_residual_fast()====================')
+    print('end get_Edot_Tdot_residual_fast(). Beginning next loop====================')
         # -- here we end functions from zeroODE34
     
     # sys.exit()
     
-    return Edot_residual_new.value, T_residual_new.value
+    return [Edot_residual_new.value, T_residual_new.value]
 
 
 
@@ -611,7 +619,7 @@ def get_Edot_Tdot_residual_robust(bd_guesses, wrapper_params):
         # calculate Edot from beta, which required pressure, which required R1
         R1 = scipy.optimize.brentq(get_bubbleParams.get_r1, 1e-3 * R2.to(u.cm).value, R2.to(u.cm).value,
                                    args = (R1_params),
-                                   xtol=1e-18) * u.cm  # can go to high precision because computationally cheap (2e-5 s)
+                                   xtol=1e-9) * u.cm  # can go to high precision because computationally cheap (2e-5 s)
         
         Pb = get_bubbleParams.bubble_E2P(Eb, R2, R1)
         
